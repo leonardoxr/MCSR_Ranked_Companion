@@ -2,6 +2,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { getVersusStats, getVersusMatches } from '../endpoints';
 import type { VersusStats, MatchInfo, MatchFilterParams } from '@/types/api';
 import type { McsrApiError } from '../client';
+import { CACHE_PRESETS } from '../cache-config';
 
 export const versusKeys = {
   all: ['versus'] as const,
@@ -11,6 +12,10 @@ export const versusKeys = {
     [...versusKeys.all, 'matches', user1, user2, params] as const,
 };
 
+/**
+ * Hook to fetch head-to-head stats between two players
+ * Uses SEMI_STATIC cache (10 min stale) - versus stats don't change very often
+ */
 export function useVersusStats(
   user1: string,
   user2: string,
@@ -19,12 +24,16 @@ export function useVersusStats(
   return useQuery<VersusStats, McsrApiError>({
     queryKey: versusKeys.stats(user1, user2),
     queryFn: () => getVersusStats(user1, user2),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    ...CACHE_PRESETS.PLAYER_PROFILE,
     enabled: !!user1 && !!user2,
     ...options,
   });
 }
 
+/**
+ * Hook to fetch match history between two players
+ * Uses DYNAMIC cache (2 min stale) - match lists update regularly
+ */
 export function useVersusMatches(
   user1: string,
   user2: string,
@@ -34,7 +43,7 @@ export function useVersusMatches(
   return useQuery<MatchInfo[], McsrApiError>({
     queryKey: versusKeys.matches(user1, user2, params),
     queryFn: () => getVersusMatches(user1, user2, params),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    ...CACHE_PRESETS.RECENT_MATCHES,
     enabled: !!user1 && !!user2,
     ...options,
   });

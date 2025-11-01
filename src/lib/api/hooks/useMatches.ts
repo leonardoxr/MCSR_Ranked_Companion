@@ -2,6 +2,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { getMatches, getMatch } from '../endpoints';
 import type { MatchInfo, MatchFilterParams } from '@/types/api';
 import type { McsrApiError } from '../client';
+import { CACHE_PRESETS } from '../cache-config';
 
 export const matchKeys = {
   all: ['matches'] as const,
@@ -11,6 +12,10 @@ export const matchKeys = {
   detail: (id: string) => [...matchKeys.details(), id] as const,
 };
 
+/**
+ * Hook to fetch match lists
+ * Uses DYNAMIC cache (2 min stale) - match lists update regularly with new matches
+ */
 export function useMatches(
   params?: MatchFilterParams,
   options?: Omit<UseQueryOptions<MatchInfo[], McsrApiError>, 'queryKey' | 'queryFn'>
@@ -18,11 +23,16 @@ export function useMatches(
   return useQuery<MatchInfo[], McsrApiError>({
     queryKey: matchKeys.list(params),
     queryFn: () => getMatches(params),
-    staleTime: 1 * 60 * 1000, // 1 minute
+    ...CACHE_PRESETS.RECENT_MATCHES,
     ...options,
   });
 }
 
+/**
+ * Hook to fetch specific match details
+ * Uses STATIC cache (30 min stale) - completed match details never change
+ * Conservative refetch strategy since historical data is immutable
+ */
 export function useMatch(
   matchId: string,
   options?: Omit<UseQueryOptions<MatchInfo, McsrApiError>, 'queryKey' | 'queryFn'>
@@ -30,7 +40,7 @@ export function useMatch(
   return useQuery<MatchInfo, McsrApiError>({
     queryKey: matchKeys.detail(matchId),
     queryFn: () => getMatch(matchId),
-    staleTime: 5 * 60 * 1000, // 5 minutes (match details don't change)
+    ...CACHE_PRESETS.MATCH_DETAILS,
     enabled: !!matchId,
     ...options,
   });

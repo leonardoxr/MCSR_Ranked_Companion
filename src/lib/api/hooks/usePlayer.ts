@@ -2,6 +2,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { getUser, getUserMatches, getUserAchievements } from '../endpoints';
 import type { UserInfo, MatchInfo, Achievement, MatchFilterParams } from '@/types/api';
 import type { McsrApiError } from '../client';
+import { CACHE_PRESETS } from '../cache-config';
 
 /**
  * Query keys for player-related queries
@@ -16,6 +17,8 @@ export const playerKeys = {
 
 /**
  * Hook to fetch player profile
+ * Uses SEMI_STATIC cache (10 min stale) - player profiles including skins don't change often
+ * Refetches on mount to catch skin changes when viewing a profile
  */
 export function usePlayer(
   username: string,
@@ -24,7 +27,7 @@ export function usePlayer(
   return useQuery<UserInfo, McsrApiError>({
     queryKey: playerKeys.profile(username),
     queryFn: () => getUser(username),
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    ...CACHE_PRESETS.PLAYER_PROFILE,
     enabled: !!username,
     ...options,
   });
@@ -32,6 +35,7 @@ export function usePlayer(
 
 /**
  * Hook to fetch player match history
+ * Uses DYNAMIC cache (2 min stale) - recent matches update regularly
  */
 export function usePlayerMatches(
   username: string,
@@ -41,7 +45,7 @@ export function usePlayerMatches(
   return useQuery<MatchInfo[], McsrApiError>({
     queryKey: playerKeys.matches(username, params),
     queryFn: () => getUserMatches(username, params),
-    staleTime: 1 * 60 * 1000, // 1 minute
+    ...CACHE_PRESETS.RECENT_MATCHES,
     enabled: !!username,
     ...options,
   });
@@ -49,6 +53,7 @@ export function usePlayerMatches(
 
 /**
  * Hook to fetch player achievements
+ * Uses SEMI_STATIC cache (10 min stale) - achievements rarely change
  */
 export function usePlayerAchievements(
   username: string,
@@ -57,7 +62,7 @@ export function usePlayerAchievements(
   return useQuery<Achievement[], McsrApiError>({
     queryKey: playerKeys.achievements(username),
     queryFn: () => getUserAchievements(username),
-    staleTime: 5 * 60 * 1000, // 5 minutes (achievements don't change often)
+    ...CACHE_PRESETS.ACHIEVEMENTS,
     enabled: !!username,
     ...options,
   });

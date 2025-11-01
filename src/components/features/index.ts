@@ -4,6 +4,7 @@ export { PlayerHead3D } from './PlayerHead3D';
 export { PlayerStatsBar } from './PlayerStatsBar';
 export { RankBadge } from './RankBadge';
 export { PlayerCard } from './PlayerCard';
+export { CountryFlag } from './CountryFlag';
 
 // Match components
 export { MatchCard } from './MatchCard';

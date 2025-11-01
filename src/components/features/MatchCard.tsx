@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
+import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import {
   formatTime,
@@ -129,14 +130,17 @@ export function MatchCard({
                       size="sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          'font-semibold truncate',
-                          isWinner && 'text-emerald'
-                        )}
-                      >
-                        {player.nickname}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <CountryFlag country={player.country} size="sm" />
+                        <p
+                          className={cn(
+                            'font-semibold truncate',
+                            isWinner && 'text-emerald'
+                          )}
+                        >
+                          {player.nickname}
+                        </p>
+                      </div>
                       {isWinner && result.time && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="h-3 w-3" />

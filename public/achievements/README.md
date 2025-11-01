@@ -4,32 +4,32 @@ This directory contains images for displaying achievements in the application.
 
 ## Directory Structure
 
-Place achievement images in this directory (`public/achievements/`) with the following naming convention:
+Place achievement images in this directory (`public/achievements/`) with the following naming convention (SVG preferred):
 
-- `best-time.png` - BestTime achievement
-- `win-streak.png` - HighestWinStreak achievement
-- `matches-played.png` - PlayedMatches achievement
-- `playtime.png` - Playtime achievement
-- `wins.png` - Wins achievement
-- `season-result.png` - SeasonOutcome achievement
-- `playoffs-result.png` - PlayoffsOutcome achievement
-- `summon-wither.png` - SummonWither achievement
-- `iron-pickless.png` - IronPickless achievement
-- `oneshot.png` - Oneshot achievement
-- `overtake.png` - Overtake achievement
-- `foodless.png` - Foodless achievement
-- `classic-run.png` - ClassicRun achievement
-- `netherite.png` - Netherite achievement
-- `armorless.png` - Armorless achievement
-- `high-level.png` - HighLevel achievement
-- `egap-holder.png` - EgapHolder achievement
-- `iron-hoe.png` - IronHoe achievement
-- `weekly-race.png` - WeeklyRace achievement
-- `secret.png` - Secret achievement
+-- `best-time.svg` - BestTime achievement
+-- `win-streak.svg` - HighestWinStreak achievement
+-- `matches-played.svg` - PlayedMatches achievement
+-- `playtime.svg` - Playtime achievement
+-- `wins.svg` - Wins achievement
+-- `season-result.svg` - SeasonOutcome achievement
+-- `playoffs-result.svg` - PlayoffsOutcome achievement
+-- `summon-wither.svg` - SummonWither achievement
+-- `iron-pickless.svg` - IronPickless achievement
+-- `oneshot.svg` - Oneshot achievement
+-- `overtake.svg` - Overtake achievement
+-- `foodless.svg` - Foodless achievement
+-- `classic-run.svg` - ClassicRun achievement
+-- `netherite.svg` - Netherite achievement
+-- `armorless.svg` - Armorless achievement
+-- `high-level.svg` - HighLevel achievement
+-- `egap-holder.svg` - EgapHolder achievement
+-- `iron-hoe.svg` - IronHoe achievement
+-- `weekly-race.svg` - WeeklyRace achievement
+-- `secret.svg` - Secret achievement
 
 ## Image Specifications
 
-- **Format**: PNG (recommended) or SVG
+- **Format**: SVG (recommended) or PNG
 - **Size**: 64x64px to 128x128px (square)
 - **Style**: Match Minecraft's aesthetic if possible
 - **Background**: Transparent background recommended

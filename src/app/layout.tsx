@@ -43,7 +43,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-sans antialiased')}>
+      <body className={cn('font-mono antialiased bg-cave')}>
         <Providers>
           <div className="relative min-h-screen bg-background">
             <main className="container mx-auto px-4 py-6">

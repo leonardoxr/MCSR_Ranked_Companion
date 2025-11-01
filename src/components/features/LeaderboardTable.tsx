@@ -29,7 +29,7 @@ export function LeaderboardTable({
   showRankChange = false,
 }: LeaderboardTableProps) {
   return (
-    <Card className={className}>
+    <Card variant="mc" className={className}>
       <CardContent className="p-0">
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 text-sm font-semibold text-muted-foreground">

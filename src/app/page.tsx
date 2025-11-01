@@ -31,7 +31,7 @@ export default function HomePage() {
     <div className="space-y-12">
       {/* Hero Section */}
       <section className="text-center py-12">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-minecraft-diamond to-minecraft-emerald bg-clip-text text-transparent">
+        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-minecraft-diamond to-minecraft-emerald bg-clip-text text-transparent mc-title">
           MCSR Ranked Companion
         </h1>
         <p className="text-xl text-muted-foreground mb-8">
@@ -55,7 +55,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Leaderboard */}
           <Link href="/leaderboard">
-            <Card className="h-full hover:shadow-lg transition-all hover:border-primary cursor-pointer">
+            <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-yellow-500/10 rounded-lg w-fit mb-2">
                   <Trophy className="h-8 w-8 text-yellow-500" />
@@ -76,7 +76,7 @@ export default function HomePage() {
 
           {/* Live Matches */}
           <Link href="/live">
-            <Card className="h-full hover:shadow-lg transition-all hover:border-primary cursor-pointer">
+            <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-red-500/10 rounded-lg w-fit mb-2 relative">
                   <Radio className="h-8 w-8 text-red-500" />
@@ -100,7 +100,7 @@ export default function HomePage() {
           </Link>
 
           {/* Player Comparison */}
-          <Card className="h-full hover:shadow-lg transition-all">
+          <Card variant="mc" className="h-full transition-all">
             <CardHeader>
               <div className="p-3 bg-purple-500/10 rounded-lg w-fit mb-2">
                 <Swords className="h-8 w-8 text-purple-500" />
@@ -158,7 +158,7 @@ export default function HomePage() {
 
       {/* Tech Stack */}
       <section className="max-w-2xl mx-auto">
-        <Card>
+        <Card variant="mc">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />

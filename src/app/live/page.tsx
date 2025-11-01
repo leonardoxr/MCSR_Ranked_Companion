@@ -71,7 +71,7 @@ export default function LiveMatchesPage() {
           })}
         </div>
       ) : (
-        <Card>
+        <Card variant="mc">
           <CardContent className="py-16 text-center">
             <Radio className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
             <h3 className="text-xl font-semibold mb-2">No Live Matches</h3>
@@ -110,7 +110,8 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
 
   return (
     <Card
-      className="hover:shadow-lg transition-all border-l-4 border-l-red-500"
+      variant="mc"
+      className="transition-all border-l-4 border-l-red-500"
     >
       <CardHeader>
         <div className="flex items-start justify-between">

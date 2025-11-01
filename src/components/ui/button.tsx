@@ -16,9 +16,9 @@ const buttonVariants = cva(
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
-        emerald: 'bg-emerald text-white hover:bg-emerald/90',
-        diamond: 'bg-diamond text-white hover:bg-diamond/90',
-        redstone: 'bg-redstone text-white hover:bg-redstone/90',
+        emerald: 'bg-emerald text-white hover:bg-emerald/90 shadow-[0_0_20px_rgba(46,204,113,0.3)]',
+        diamond: 'bg-diamond text-white hover:bg-diamond/90 shadow-[0_0_20px_rgba(79,195,247,0.35)]',
+        redstone: 'bg-redstone text-white hover:bg-redstone/90 shadow-[0_0_20px_rgba(231,76,60,0.35)]',
       },
       size: {
         default: 'h-10 px-4 py-2',

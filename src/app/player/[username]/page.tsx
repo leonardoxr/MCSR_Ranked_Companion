@@ -96,7 +96,7 @@ export default function PlayerPage() {
       {/* Statistics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Season Stats */}
-        <Card>
+        <Card variant="mc">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Trophy className="h-5 w-5 text-primary" />
@@ -120,7 +120,7 @@ export default function PlayerPage() {
         </Card>
 
         {/* All-Time Stats */}
-        <Card>
+        <Card variant="mc">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
@@ -137,7 +137,7 @@ export default function PlayerPage() {
         </Card>
 
         {/* Performance Stats */}
-        <Card>
+        <Card variant="mc">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
@@ -179,7 +179,7 @@ export default function PlayerPage() {
 
       {/* Achievements */}
       {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && (
-        <Card>
+        <Card variant="mc">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
@@ -200,7 +200,7 @@ export default function PlayerPage() {
       )}
 
       {/* Match History */}
-      <Card>
+      <Card variant="mc">
         <CardHeader>
           <CardTitle>Recent Matches</CardTitle>
         </CardHeader>

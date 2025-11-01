@@ -32,7 +32,7 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
   const total = wins + losses;
 
   return (
-    <Card className={className}>
+    <Card variant="mc" className={className}>
       <CardHeader>
         <CardTitle>Win Rate</CardTitle>
       </CardHeader>

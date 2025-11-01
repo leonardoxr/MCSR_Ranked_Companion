@@ -51,7 +51,7 @@ export function PlayerCard({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <Card className={cn('hover:shadow-lg transition-shadow', className)}>
+    <Card variant="mc" className={cn('transition-shadow', className)}>
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <PlayerAvatar
@@ -92,7 +92,7 @@ export function PlayerCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className={cn('hover:shadow-lg transition-shadow', className)}>
+    <Card variant="mc" className={cn('transition-shadow', className)}>
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">

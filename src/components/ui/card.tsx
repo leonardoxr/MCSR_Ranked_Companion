@@ -1,14 +1,20 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+type Variant = 'default' | 'mc';
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: Variant;
+}
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => (
+  ({ className, variant = 'default', ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-border bg-card text-card-foreground shadow-sm',
+        variant === 'mc'
+          ? 'mc-card border border-border bg-card text-card-foreground'
+          : 'rounded-lg border border-border bg-card text-card-foreground shadow-sm',
         className
       )}
       {...props}

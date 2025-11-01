@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "fetch:achievements": "node scripts/fetch-achievements.js"
   },
   "dependencies": {
     "next": "^15.0.0",

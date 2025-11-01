@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { Avatar } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import type { UUID } from '@/types/api';
@@ -24,6 +25,7 @@ export function PlayerAvatar({
   className,
   showOverlay = true,
 }: PlayerAvatarProps) {
+  const t = useTranslations();
   const avatarUrl = uuid
     ? `https://crafatar.com/avatars/${uuid}?overlay=${showOverlay}`
     : undefined;
@@ -31,7 +33,7 @@ export function PlayerAvatar({
   return (
     <Avatar
       src={avatarUrl}
-      alt={username || 'Player'}
+      alt={username || t('common.player')}
       fallback={username?.[0]?.toUpperCase()}
       size={size}
       className={cn('border-2 border-border', className)}

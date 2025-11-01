@@ -23,6 +23,8 @@
     "rank": "Rank #{rank}",
     "noData": "Nenhum dado disponível",
     "noDataMessage": "Não há dados para exibir no momento",
+    "notAvailable": "N/D",
+    "player": "Jogador",
     "elo": "ELO",
     "tier": "Nível"
   },
@@ -78,7 +80,15 @@
         "description": "Visualize a progressão de ELO, taxas de vitória e tendências de desempenho"
       }
     },
-    "builtWith": "Construído Com"
+    "builtWith": "Construído Com",
+    "techStack": {
+      "nextjs": "Next.js 15",
+      "react": "React 18",
+      "typescript": "TypeScript",
+      "tanstack": "TanStack Query",
+      "tailwind": "Tailwind CSS",
+      "framer": "Framer Motion"
+    }
   },
   "leaderboard": {
     "title": "Classificação",
@@ -180,6 +190,8 @@
     "matchTimeline": "Cronologia da Partida",
     "completions": "Completamentos",
     "watchVod": "Assistir VOD",
+    "spectators": "espectadores",
+    "unknownPlayer": "Jogador Desconhecido",
     "status": {
       "forfeited": "Desistiu",
       "decayed": "Expirou",
@@ -202,11 +214,23 @@
     "winRate": "% Taxa de Vitória",
     "statisticsComparison": "Comparação de Estatísticas",
     "recentMatches": "Partidas Diretas Recentes",
-    "noMatches": "Nenhuma partida direta encontrada"
+    "noMatches": "Nenhuma partida direta encontrada",
+    "loadError": "Não foi possível carregar estatísticas diretas para {player1} vs {player2}",
+    "eloRating": "Classificação ELO"
   },
   "timeline": {
     "title": "Cronologia da Partida",
     "noEvents": "Nenhum evento de cronologia disponível",
+    "play": "Reproduzir",
+    "pause": "Pausar",
+    "theme": "Tema",
+    "themeStandard": "Padrão",
+    "themeTexture": "Textura",
+    "speed": "Velocidade",
+    "speedSlow": "0.5x",
+    "speedNormal": "1x",
+    "speedFast": "2x",
+    "unknownPlayer": "Desconhecido",
     "events": {
       "enter_nether": "Entrou no Nether",
       "enter_bastion": "Entrou no Bastião",
@@ -217,6 +241,16 @@
       "enter_end": "Entrou no End",
       "finish": "Finalizou",
       "died": "Morreu"
+    },
+    "milestones": {
+      "title": "Marcos",
+      "event": "Evento",
+      "enter_nether": "Entrou no Nether",
+      "enter_bastion": "Entrou no Bastião",
+      "enter_fortress": "Entrou na Fortaleza",
+      "enter_stronghold": "Encontrou Fortaleza (Stronghold)",
+      "enter_end": "Entrou no End",
+      "finish": "Finalizar"
     }
   },
   "charts": {
@@ -263,7 +297,8 @@
     "EgapHolder": "Portador de Egap",
     "IronHoe": "Enxada de Ferro",
     "WeeklyRace": "Corrida Semanal",
-    "Secret": "Segredo"
+    "Secret": "Segredo",
+    "level": "Nível"
   },
   "errors": {
     "default": "Ocorreu um erro ao carregar os dados.",

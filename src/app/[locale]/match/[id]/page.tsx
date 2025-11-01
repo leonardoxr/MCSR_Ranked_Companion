@@ -116,7 +116,7 @@ export default function MatchDetailsPage() {
           <CardContent>
             <p className="text-xl font-bold">{match.players.length}</p>
             <p className="text-sm text-muted-foreground">
-              {match.spectators.length} spectators
+              {match.spectators.length} {t('match.spectators')}
             </p>
           </CardContent>
         </Card>
@@ -206,7 +206,7 @@ export default function MatchDetailsPage() {
                         {eloChange.change > 0 ? '+' : ''}{eloChange.change}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {eloChange.eloRate} ELO
+                        {eloChange.eloRate} {t('common.elo')}
                       </p>
                     </div>
                   )}
@@ -293,7 +293,7 @@ export default function MatchDetailsPage() {
                     className="flex items-center justify-between p-3 border border-border rounded-lg"
                   >
                     <span className="font-semibold">
-                      {player?.nickname || 'Unknown Player'}
+                      {player?.nickname || t('match.unknownPlayer')}
                     </span>
                     <span className="text-sm font-mono">
                       {formatTime(completion.time)}
@@ -327,7 +327,7 @@ export default function MatchDetailsPage() {
                     rel="noopener noreferrer"
                     className="block text-primary hover:underline"
                   >
-                    {player?.nickname || 'Player'} - {vod.url}
+                    {player?.nickname || t('common.player')} - {vod.url}
                   </a>
                 );
               })}

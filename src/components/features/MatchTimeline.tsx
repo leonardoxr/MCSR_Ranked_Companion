@@ -38,22 +38,9 @@ const eventIcons: Record<string, React.ReactNode> = {
   default: <Pickaxe className="h-4 w-4" />,
 };
 
-const eventLabels: Record<string, string> = {
-  enter_nether: 'Entered Nether',
-  enter_bastion: 'Entered Bastion',
-  enter_fortress: 'Entered Fortress',
-  first_portal: 'First Portal',
-  second_portal: 'Second Portal',
-  enter_stronghold: 'Entered Stronghold',
-  enter_end: 'Entered End',
-  finish: 'Finished',
-  died: 'Died',
-};
-
 function normalizeType(t: string): string {
   const v = t.toLowerCase().replace(/\s+/g, '_').replace(/\./g, '_');
-  if (eventLabels[v as keyof typeof eventLabels]) return v;
-  return v; // show raw if unknown
+  return v;
 }
 
 const eventColors: Record<string, string> = {
@@ -121,7 +108,7 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
   React.useEffect(() => {
     setPlayhead((p) => Math.min(p, total));
   }, [total]);
-  const nameOf = (uuid: string) => players?.find((p) => p.uuid === uuid)?.nickname || 'Unknown';
+  const nameOf = (uuid: string) => players?.find((p) => p.uuid === uuid)?.nickname || t('timeline.unknownPlayer');
   const playerOf = (uuid: string) => players?.find((p) => p.uuid === uuid) || null;
 
   // Choose up to two players for two-lane playback: winner + opponent, else first two
@@ -218,11 +205,11 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                  aria-label={isPlaying ? t('timeline.pause') : t('timeline.play')}
                   onClick={() => setIsPlaying((v) => !v)}
                   className="px-2 py-1 rounded border border-border hover:bg-muted text-sm"
                 >
-                  {isPlaying ? 'Pause' : 'Play'}
+                  {isPlaying ? t('timeline.pause') : t('timeline.play')}
                 </button>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <button
@@ -230,38 +217,38 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                     className={cn('px-2 py-0.5 rounded', speed === 0.5 ? 'bg-muted' : 'hover:bg-muted')}
                     onClick={() => setSpeed(0.5)}
                   >
-                    0.5x
+                    {t('timeline.speedSlow')}
                   </button>
                   <button
                     type="button"
                     className={cn('px-2 py-0.5 rounded', speed === 1 ? 'bg-muted' : 'hover:bg-muted')}
                     onClick={() => setSpeed(1)}
                   >
-                    1x
+                    {t('timeline.speedNormal')}
                   </button>
                   <button
                     type="button"
                     className={cn('px-2 py-0.5 rounded', speed === 2 ? 'bg-muted' : 'hover:bg-muted')}
                     onClick={() => setSpeed(2)}
                   >
-                    2x
+                    {t('timeline.speedFast')}
                   </button>
                 </div>
                 <div className="flex items-center gap-1 ml-3 text-xs">
-                  <span className="text-muted-foreground">Theme</span>
+                  <span className="text-muted-foreground">{t('timeline.theme')}</span>
                   <button
                     type="button"
                     className={cn('px-2 py-0.5 rounded', theme === 'standard' ? 'bg-muted' : 'hover:bg-muted')}
                     onClick={() => setTheme('standard')}
                   >
-                    Standard
+                    {t('timeline.themeStandard')}
                   </button>
                   <button
                     type="button"
                     className={cn('px-2 py-0.5 rounded', theme === 'texture' ? 'bg-muted' : 'hover:bg-muted')}
                     onClick={() => setTheme('texture')}
                   >
-                    Texture
+                    {t('timeline.themeTexture')}
                   </button>
                 </div>
               </div>
@@ -338,7 +325,7 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                         const passed = playhead >= evt.time;
                         const pct = total ? (evt.time / total) * 100 : 0;
                         const key = normalizeType(evt.type);
-                        const label = eventLabels[key] || evt.type;
+                        const label = getEventLabel(key);
                         const isActive = sortedEvents[activeIdx]?.uuid === evt.uuid && sortedEvents[activeIdx]?.time === evt.time;
                         return (
                           <motion.div

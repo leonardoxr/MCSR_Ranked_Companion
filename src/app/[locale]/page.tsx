@@ -171,12 +171,12 @@ export default function HomePage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-              <TechBadge name="Next.js 15" />
-              <TechBadge name="React 18" />
-              <TechBadge name="TypeScript" />
-              <TechBadge name="TanStack Query" />
-              <TechBadge name="Tailwind CSS" />
-              <TechBadge name="Framer Motion" />
+              <TechBadge name={t('home.techStack.nextjs')} />
+              <TechBadge name={t('home.techStack.react')} />
+              <TechBadge name={t('home.techStack.typescript')} />
+              <TechBadge name={t('home.techStack.tanstack')} />
+              <TechBadge name={t('home.techStack.tailwind')} />
+              <TechBadge name={t('home.techStack.framer')} />
             </div>
           </CardContent>
         </Card>

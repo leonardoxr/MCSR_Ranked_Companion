@@ -23,6 +23,8 @@
     "rank": "Rank #{rank}",
     "noData": "No data available",
     "noDataMessage": "There is no data to display at this time",
+    "notAvailable": "N/A",
+    "player": "Player",
     "elo": "ELO",
     "tier": "Tier"
   },
@@ -78,7 +80,15 @@
         "description": "Visualize ELO progression, win rates, and performance trends"
       }
     },
-    "builtWith": "Built With"
+    "builtWith": "Built With",
+    "techStack": {
+      "nextjs": "Next.js 15",
+      "react": "React 18",
+      "typescript": "TypeScript",
+      "tanstack": "TanStack Query",
+      "tailwind": "Tailwind CSS",
+      "framer": "Framer Motion"
+    }
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -180,6 +190,8 @@
     "matchTimeline": "Match Timeline",
     "completions": "Completions",
     "watchVod": "Watch VOD",
+    "spectators": "spectators",
+    "unknownPlayer": "Unknown Player",
     "status": {
       "forfeited": "Forfeited",
       "decayed": "Decayed",
@@ -202,11 +214,23 @@
     "winRate": "% Win Rate",
     "statisticsComparison": "Statistics Comparison",
     "recentMatches": "Recent Head-to-Head Matches",
-    "noMatches": "No head-to-head matches found"
+    "noMatches": "No head-to-head matches found",
+    "loadError": "Could not load head-to-head stats for {player1} vs {player2}",
+    "eloRating": "ELO Rating"
   },
   "timeline": {
     "title": "Match Timeline",
     "noEvents": "No timeline events available",
+    "play": "Play",
+    "pause": "Pause",
+    "theme": "Theme",
+    "themeStandard": "Standard",
+    "themeTexture": "Texture",
+    "speed": "Speed",
+    "speedSlow": "0.5x",
+    "speedNormal": "1x",
+    "speedFast": "2x",
+    "unknownPlayer": "Unknown",
     "events": {
       "enter_nether": "Entered Nether",
       "enter_bastion": "Entered Bastion",
@@ -217,6 +241,16 @@
       "enter_end": "Entered End",
       "finish": "Finished",
       "died": "Died"
+    },
+    "milestones": {
+      "title": "Milestones",
+      "event": "Event",
+      "enter_nether": "Entered Nether",
+      "enter_bastion": "Entered Bastion",
+      "enter_fortress": "Entered Fortress",
+      "enter_stronghold": "Found Stronghold",
+      "enter_end": "Entered The End",
+      "finish": "Finish"
     }
   },
   "charts": {
@@ -263,7 +297,8 @@
     "EgapHolder": "Egap Holder",
     "IronHoe": "Iron Hoe",
     "WeeklyRace": "Weekly Race",
-    "Secret": "Secret"
+    "Secret": "Secret",
+    "level": "Level"
   },
   "errors": {
     "default": "An error occurred while loading the data.",

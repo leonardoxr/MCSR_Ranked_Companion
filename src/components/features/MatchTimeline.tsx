@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, useAnimationFrame } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -72,6 +73,7 @@ const eventColors: Record<string, string> = {
  * Shows key milestones with icons and timestamps
  */
 export function MatchTimeline({ events, className, players }: MatchTimelineProps) {
+  const t = useTranslations();
   const sortedEvents = React.useMemo(() => [...events].sort((a, b) => a.time - b.time), [events]);
   const total = React.useMemo(() => (sortedEvents.length ? Math.max(...sortedEvents.map((e) => e.time)) : 0), [sortedEvents]);
   const [isPlaying, setIsPlaying] = React.useState(true);
@@ -198,10 +200,15 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
     return () => window.removeEventListener('keydown', onKey);
   }, [sortedEvents, activeIdx]);
 
+  const getEventLabel = (type: string): string => {
+    const labelKey = `timeline.events.${type}`;
+    return t(labelKey);
+  };
+
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle>Match Timeline</CardTitle>
+        <CardTitle>{t('timeline.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative">

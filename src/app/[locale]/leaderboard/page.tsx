@@ -1,19 +1,24 @@
 'use client';
 
 import * as React from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useLeaderboard } from '@/lib/api/hooks/useLeaderboard';
 import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import { Trophy, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import type { Locale } from '@/i18n/config';
 
 const PAGE_SIZE = 50;
 
 export default function LeaderboardPage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const [page, setPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -26,7 +31,7 @@ export default function LeaderboardPage() {
     setSearchQuery(query);
     if (query) {
       // Navigate to player profile
-      router.push(`/player/${encodeURIComponent(query)}`);
+      router.push(`/${locale}/player/${encodeURIComponent(query)}`);
     }
   };
 
@@ -50,9 +55,9 @@ export default function LeaderboardPage() {
               <Trophy className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Leaderboard</h1>
+              <h1 className="text-3xl font-bold">{t('leaderboard.title')}</h1>
               <p className="text-muted-foreground">
-                Top ranked MCSR players worldwide
+                {t('leaderboard.description')}
               </p>
             </div>
           </div>
@@ -65,7 +70,7 @@ export default function LeaderboardPage() {
               value={searchQuery}
               onChange={setSearchQuery}
               onSearch={handleSearch}
-              placeholder="Search for a player..."
+              placeholder={t('leaderboard.searchPlaceholder')}
             />
           </div>
         </div>
@@ -76,7 +81,7 @@ export default function LeaderboardPage() {
         <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Current Page
+              {t('leaderboard.currentPage')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -90,7 +95,7 @@ export default function LeaderboardPage() {
         <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Players Shown
+              {t('leaderboard.playersShown')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -103,22 +108,22 @@ export default function LeaderboardPage() {
         <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Season
+              {t('common.season')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-2xl font-bold">Current</p>
+            <p className="text-2xl font-bold">{t('common.current')}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Leaderboard Table */}
       {isLoading ? (
-        <LoadingState message="Loading leaderboard..." />
+        <LoadingState message={t('leaderboard.loading')} />
       ) : error ? (
         <ErrorState
-          title="Failed to Load Leaderboard"
-          message={error.message || 'An error occurred while fetching the leaderboard'}
+          title={t('leaderboard.error')}
+          message={error.message || t('leaderboard.errorMessage')}
         />
       ) : players && players.length > 0 ? (
         <>
@@ -132,17 +137,17 @@ export default function LeaderboardPage() {
               disabled={page === 1}
             >
               <ChevronLeft className="h-4 w-4 mr-2" />
-              Previous
+              {t('common.previous')}
             </Button>
             <div className="flex items-center px-4 py-2 bg-muted rounded-lg">
-              <span className="font-semibold">Page {page}</span>
+              <span className="font-semibold">{t('common.page', { page })}</span>
             </div>
             <Button
               variant="outline"
               onClick={handleNextPage}
               disabled={!players || players.length < PAGE_SIZE}
             >
-              Next
+              {t('common.next')}
               <ChevronRight className="h-4 w-4 ml-2" />
             </Button>
           </div>
@@ -150,7 +155,7 @@ export default function LeaderboardPage() {
       ) : (
         <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">
-            No players found on this page
+            {t('leaderboard.noPlayers')}
           </CardContent>
         </Card>
       )}

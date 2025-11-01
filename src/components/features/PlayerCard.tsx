@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
   Card,
@@ -33,6 +34,7 @@ export function PlayerCard({
   className,
   variant = 'default',
 }: PlayerCardProps) {
+  const t = useTranslations();
   const { nickname, uuid, eloRate, eloRank } = player;
   const isUserInfo = 'statistics' in player;
   const statistics = isUserInfo ? player.statistics : null;
@@ -74,7 +76,7 @@ export function PlayerCard({
                   {winRate && (
                     <span className="flex items-center gap-1">
                       <Target className="h-3 w-3" />
-                      {winRate}% WR
+                      {winRate}% {t('player.stats.wrShort')}
                     </span>
                   )}
                 </div>
@@ -107,7 +109,7 @@ export function PlayerCard({
                   {eloRate && <RankBadge elo={eloRate} showElo />}
                   {eloRank && (
                     <CardDescription className="text-base">
-                      Rank #{eloRank.toLocaleString()}
+                      {t('player.rank')} #{eloRank.toLocaleString()}
                     </CardDescription>
                   )}
                 </div>
@@ -128,22 +130,22 @@ export function PlayerCard({
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <StatItem
                 icon={<Trophy className="h-4 w-4" />}
-                label="Wins"
+                label={t('player.stats.wins')}
                 value={statistics.total.wins.ranked.toLocaleString()}
               />
               <StatItem
                 icon={<Target className="h-4 w-4" />}
-                label="Win Rate"
+                label={t('player.stats.winRate')}
                 value={winRate ? `${winRate}%` : 'N/A'}
               />
               <StatItem
                 icon={<TrendingUp className="h-4 w-4" />}
-                label="Highest Win Streak"
+                label={t('player.stats.highestWinStreak')}
                 value={statistics.total.highestWinStreak.ranked?.toLocaleString() || '0'}
               />
               <StatItem
                 icon={<Clock className="h-4 w-4" />}
-                label="Total Playtime"
+                label={t('player.stats.totalPlaytime')}
                 value={formatPlaytime(statistics.total.playtime.ranked || 0)}
               />
             </div>
@@ -153,7 +155,7 @@ export function PlayerCard({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Best Time (Ranked)
+                      {t('player.stats.bestTimeRanked')}
                     </p>
                     <p className="text-lg font-semibold">
                       {formatTime(statistics.total.bestTime.ranked)}
@@ -161,7 +163,7 @@ export function PlayerCard({
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-1">
-                      Matches Played
+                      {t('player.stats.matchesPlayed')}
                     </p>
                     <p className="text-lg font-semibold">
                       {statistics.total.playedMatches.ranked}

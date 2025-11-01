@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import type { Locale } from '@/i18n/config';
 import { usePlayer, usePlayerMatches } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { MatchCard } from '@/components/features/MatchCard';
@@ -17,6 +19,8 @@ import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
   const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const username = params?.username as string;
 
   const { data: player, isLoading, error } = usePlayer(username);
@@ -25,7 +29,7 @@ export default function PlayerPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <LoadingState message="Loading player profile..." />
+        <LoadingState message={t('player.loading')} />
       </div>
     );
   }
@@ -34,8 +38,8 @@ export default function PlayerPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
-          title="Player Not Found"
-          message={error?.message || `Could not find player "${username}"`}
+          title={t('player.notFound')}
+          message={error?.message || t('player.notFoundMessage', { username })}
         />
       </div>
     );
@@ -47,8 +51,8 @@ export default function PlayerPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
-          title="Invalid Player Data"
-          message="The player data received from the API is incomplete. Please try again later."
+          title={t('player.invalidData')}
+          message={t('player.invalidDataMessage')}
         />
       </div>
     );
@@ -100,22 +104,22 @@ export default function PlayerPage() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Trophy className="h-5 w-5 text-primary" />
-              Season Stats
+              {t('player.seasonStats')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <StatRow label="Matches Played" value={seasonStats.playedMatches} />
-            <StatRow label="Wins" value={seasonStats.wins} />
-            <StatRow label="Losses" value={seasonStats.losses} />
+            <StatRow label={t('player.stats.matchesPlayed')} value={seasonStats.playedMatches} />
+            <StatRow label={t('player.stats.wins')} value={seasonStats.wins} />
+            <StatRow label={t('player.stats.losses')} value={seasonStats.losses} />
             <StatRow
-              label="Win Rate"
+              label={t('player.stats.winRate')}
               value={
                 seasonStats.playedMatches > 0
                   ? `${((seasonStats.wins / seasonStats.playedMatches) * 100).toFixed(1)}%`
                   : 'N/A'
               }
             />
-            <StatRow label="Current Streak" value={seasonStats.currentWinStreak} />
+            <StatRow label={t('player.stats.currentStreak')} value={seasonStats.currentWinStreak} />
           </CardContent>
         </Card>
 
@@ -124,15 +128,15 @@ export default function PlayerPage() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Target className="h-5 w-5 text-primary" />
-              All-Time Stats
+              {t('player.allTimeStats')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <StatRow label="Total Matches" value={totalStats.playedMatches} />
-            <StatRow label="Total Wins" value={totalStats.wins} />
-            <StatRow label="Highest Streak" value={totalStats.highestWinStreak} />
-            <StatRow label="Completions" value={totalStats.completions} />
-            <StatRow label="Forfeits" value={totalStats.forfeits} />
+            <StatRow label={t('player.stats.totalMatches')} value={totalStats.playedMatches} />
+            <StatRow label={t('player.stats.totalWins')} value={totalStats.wins} />
+            <StatRow label={t('player.stats.highestStreak')} value={totalStats.highestWinStreak} />
+            <StatRow label={t('player.stats.completions')} value={totalStats.completions} />
+            <StatRow label={t('player.stats.forfeits')} value={totalStats.forfeits} />
           </CardContent>
         </Card>
 
@@ -141,25 +145,25 @@ export default function PlayerPage() {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary" />
-              Performance
+              {t('player.performance')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <StatRow
-              label="Best Time"
+              label={t('player.stats.bestTime')}
               value={totalStats.bestTime ? formatTime(totalStats.bestTime) : 'N/A'}
             />
             <StatRow
-              label="Avg Completion"
+              label={t('player.stats.avgCompletion')}
               value={
                 totalStats.completions > 0
                   ? formatTime(totalStats.completionTime / totalStats.completions)
                   : 'N/A'
               }
             />
-            <StatRow label="Total Playtime" value={formatPlaytime(totalStats.playtime)} />
+            <StatRow label={t('player.stats.totalPlaytime')} value={formatPlaytime(totalStats.playtime)} />
             <StatRow
-              label="Last Online"
+              label={t('player.stats.lastOnline')}
               value={formatRelativeTime(player.timestamp.lastOnline)}
             />
           </CardContent>
@@ -183,7 +187,7 @@ export default function PlayerPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
-              Achievements ({player.achievements.display.length})
+              {t('player.achievements')} ({player.achievements.display.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -202,11 +206,11 @@ export default function PlayerPage() {
       {/* Match History */}
       <Card variant="mc">
         <CardHeader>
-          <CardTitle>Recent Matches</CardTitle>
+          <CardTitle>{t('player.recentMatches')}</CardTitle>
         </CardHeader>
         <CardContent>
           {matchesLoading ? (
-            <LoadingState message="Loading matches..." />
+            <LoadingState message={t('common.loading')} />
           ) : Array.isArray(matches) && matches.length > 0 ? (
             <div className="space-y-4">
               {matches.map((match) => (
@@ -214,7 +218,7 @@ export default function PlayerPage() {
               ))}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground py-8">No matches found</p>
+            <p className="text-center text-muted-foreground py-8">{t('player.noMatches')}</p>
           )}
         </CardContent>
       </Card>

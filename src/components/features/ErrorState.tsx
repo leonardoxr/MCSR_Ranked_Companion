@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { AlertCircle, RefreshCw } from 'lucide-react';
@@ -19,11 +20,13 @@ export interface ErrorStateProps {
  */
 export function ErrorState({
   className,
-  title = 'Something went wrong',
-  message = 'An error occurred while loading the data.',
+  title,
+  message,
   onRetry,
-  retryLabel = 'Try again',
+  retryLabel,
 }: ErrorStateProps) {
+  const t = useTranslations();
+
   return (
     <Card className={className}>
       <CardContent className="p-12">
@@ -31,12 +34,12 @@ export function ErrorState({
           <div className="rounded-full bg-destructive/10 p-3 mb-4">
             <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
-          <h3 className="text-lg font-semibold mb-2">{title}</h3>
-          <p className="text-muted-foreground mb-6 max-w-md">{message}</p>
+          <h3 className="text-lg font-semibold mb-2">{title || t('errors.somethingWentWrong')}</h3>
+          <p className="text-muted-foreground mb-6 max-w-md">{message || t('errors.loadingError')}</p>
           {onRetry && (
             <Button onClick={onRetry} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
-              {retryLabel}
+              {retryLabel || t('common.tryAgain')}
             </Button>
           )}
         </div>
@@ -61,11 +64,13 @@ export interface EmptyStateProps {
 
 export function EmptyState({
   className,
-  title = 'No data available',
-  message = 'There is no data to display at the moment.',
+  title,
+  message,
   icon,
   action,
 }: EmptyStateProps) {
+  const t = useTranslations();
+
   return (
     <Card className={className}>
       <CardContent className="p-12">
@@ -75,8 +80,8 @@ export function EmptyState({
               {icon}
             </div>
           )}
-          <h3 className="text-lg font-semibold mb-2">{title}</h3>
-          <p className="text-muted-foreground mb-6 max-w-md">{message}</p>
+          <h3 className="text-lg font-semibold mb-2">{title || t('common.noDataAvailable')}</h3>
+          <p className="text-muted-foreground mb-6 max-w-md">{message || t('common.noDataMessage')}</p>
           {action && (
             <Button onClick={action.onClick} variant="default">
               {action.label}

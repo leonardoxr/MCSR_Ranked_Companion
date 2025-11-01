@@ -9,6 +9,8 @@ import { formatTime, formatTimeDifference } from '@/lib/utils/formatters';
 import { motion } from 'framer-motion';
 import { PlayerAvatar } from './PlayerAvatar';
 import { CountryFlag } from './CountryFlag';
+import { MinecraftIcon } from './MinecraftIcon';
+import type { MinecraftIconName } from './MinecraftIcon';
 
 function PlayerName({ uuid, name, country, side }: { uuid: UUID; name: string; country: CountryCode | null; side: 'left'|'right' }) {
   return (
@@ -34,6 +36,16 @@ const ORDER: string[] = [
   'enter_end',
   'finish',
 ];
+
+// Icon mapping for milestones
+const milestoneIcons: Record<string, MinecraftIconName> = {
+  enter_nether: 'nether-portal',
+  enter_bastion: 'gilded-blackstone',
+  enter_fortress: 'nether-bricks',
+  enter_stronghold: 'stone-bricks',
+  enter_end: 'end-portal',
+  finish: 'dragon-egg',
+};
 
 function normalizeType(raw: string): string {
   const t = raw.toLowerCase().replace(/\s+/g, '_').replace(/\./g, '_');
@@ -136,8 +148,9 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                 </motion.div>
 
                 {/* Label */}
-                <div className={cn('px-3 py-3 text-center font-semibold', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {t(`timeline.milestones.${type}`)}
+                <div className={cn('px-3 py-3 text-center font-semibold flex items-center justify-center gap-2', isEven ? 'bg-background/40' : 'bg-background/20')}>
+                  {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
+                  <span>{t(`timeline.milestones.${type}`)}</span>
                 </div>
 
                 {/* Right time */}

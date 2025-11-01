@@ -100,3 +100,10 @@ export const MATCH_TYPE_COLORS = {
   3: '#9b59b6', // Private - Purple
   4: '#f39c12', // Event - Orange
 } as const;
+
+/**
+ * Get color for match type
+ */
+export function getMatchTypeColor(type: number): string {
+  return MATCH_TYPE_COLORS[type as keyof typeof MATCH_TYPE_COLORS] || '#95a5a6';
+}

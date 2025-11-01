@@ -59,8 +59,9 @@ export function formatRelativeTime(timestamp: Timestamp): string {
 /**
  * Format timestamp as absolute date
  */
-export function formatDate(timestamp: Timestamp, formatStr: string = 'PPP'): string {
-  return format(timestampToDate(timestamp), formatStr);
+export function formatDate(timestamp: Timestamp | Date, formatStr: string = 'PPP'): string {
+  const date = timestamp instanceof Date ? timestamp : timestampToDate(timestamp);
+  return format(date, formatStr);
 }
 
 /**
@@ -100,4 +101,20 @@ export function calculateWinRate(wins: number, losses: number): number {
   const total = wins + losses;
   if (total === 0) return 0;
   return (wins / total) * 100;
+}
+
+/**
+ * Format win rate as percentage string
+ */
+export function formatWinRate(wins: number, losses: number, decimals: number = 1): string {
+  const winRate = calculateWinRate(wins, losses);
+  return winRate.toFixed(decimals);
+}
+
+/**
+ * Format ELO change with sign
+ */
+export function formatEloChange(change: number): string {
+  const sign = change >= 0 ? '+' : '';
+  return `${sign}${change}`;
 }

@@ -4,6 +4,7 @@ export { PlayerHead3D } from './PlayerHead3D';
 export { PlayerStatsBar } from './PlayerStatsBar';
 export { RankBadge } from './RankBadge';
 export { PlayerCard } from './PlayerCard';
+export { CountryFlag } from './CountryFlag';
 
 // Match components
 export { MatchCard } from './MatchCard';
@@ -19,6 +20,10 @@ export { PerformanceChart } from './PerformanceChart';
 
 // Achievement components
 export { AchievementIcon, AchievementCard } from './AchievementIcon';
+
+// Minecraft icon component
+export { MinecraftIcon } from './MinecraftIcon';
+export type { MinecraftIconName, MinecraftIconProps } from './MinecraftIcon';
 
 // Utility components
 export { SearchBar } from './SearchBar';

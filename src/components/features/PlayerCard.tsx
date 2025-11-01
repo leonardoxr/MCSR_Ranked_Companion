@@ -14,6 +14,7 @@ import { PlayerAvatar } from './PlayerAvatar';
 import { PlayerHead3D } from './PlayerHead3D';
 import { PlayerStatsBar } from './PlayerStatsBar';
 import { RankBadge } from './RankBadge';
+import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import { formatWinRate } from '@/lib/utils/formatters';
 import type { UserProfile, UserInfo } from '@/types/api';
@@ -35,7 +36,7 @@ export function PlayerCard({
   variant = 'default',
 }: PlayerCardProps) {
   const t = useTranslations();
-  const { nickname, uuid, eloRate, eloRank } = player;
+  const { nickname, uuid, eloRate, eloRank, country } = player;
   const isUserInfo = 'statistics' in player;
   const statistics = isUserInfo ? player.statistics : null;
 
@@ -64,6 +65,7 @@ export function PlayerCard({
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
+                  <CountryFlag country={country} size="sm" />
                   <h3 className="font-semibold text-lg truncate">{nickname}</h3>
                   {eloRate && <RankBadge elo={eloRate} />}
                 </div>
@@ -104,7 +106,10 @@ export function PlayerCard({
                 size={128}
               />
               <div>
-                <CardTitle className="text-2xl mb-2">{nickname}</CardTitle>
+                <div className="flex items-center gap-2 mb-2">
+                  <CountryFlag country={country} size="md" />
+                  <CardTitle className="text-2xl">{nickname}</CardTitle>
+                </div>
                 <div className="flex items-center gap-2">
                   {eloRate && <RankBadge elo={eloRate} showElo />}
                   {eloRank && (

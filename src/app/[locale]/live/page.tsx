@@ -7,6 +7,7 @@ import type { Locale } from '@/i18n/config';
 import { useLiveMatches } from '@/lib/api/hooks/useLiveMatches';
 import { PlayerAvatar } from '@/components/features/PlayerAvatar';
 import { RankBadge } from '@/components/features/RankBadge';
+import { CountryFlag } from '@/components/features/CountryFlag';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui';
@@ -184,7 +185,10 @@ function LiveMatchCard({ match, locale, onClick }: LiveMatchCardProps) {
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{player.nickname}</p>
+                    <div className="flex items-center gap-2">
+                      <CountryFlag country={player.country} size="sm" />
+                      <p className="font-semibold truncate">{player.nickname}</p>
+                    </div>
                     {player.eloRate && (
                       <div className="flex items-center gap-2 mt-1">
                         <RankBadge elo={player.eloRate} showElo />

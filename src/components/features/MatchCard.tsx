@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
+import { CountryFlag } from './CountryFlag';
+import { MinecraftIcon } from './MinecraftIcon';
 import { cn } from '@/lib/utils';
 import {
   formatTime,
@@ -129,14 +131,17 @@ export function MatchCard({
                       size="sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          'font-semibold truncate',
-                          isWinner && 'text-emerald'
-                        )}
-                      >
-                        {player.nickname}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <CountryFlag country={player.country} size="sm" />
+                        <p
+                          className={cn(
+                            'font-semibold truncate',
+                            isWinner && 'text-emerald'
+                          )}
+                        >
+                          {player.nickname}
+                        </p>
+                      </div>
                       {isWinner && result.time && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="h-3 w-3" />
@@ -170,9 +175,17 @@ export function MatchCard({
           {/* Seed info */}
           {seed && (
             <div className="mt-3 pt-3 border-t border-border">
-              <p className="text-xs text-muted-foreground">
-                {t('match.seed')}: {seed.overworld} • {t('match.bastion')}: {seed.nether}
-              </p>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <MinecraftIcon name="grass-block" size="sm" title={t('match.seed')} />
+                  <span>{t('match.seed')}: {seed.overworld}</span>
+                </div>
+                <span>•</span>
+                <div className="flex items-center gap-1.5">
+                  <MinecraftIcon name="gilded-blackstone" size="sm" title={t('match.bastion')} />
+                  <span>{t('match.bastion')}: {seed.nether}</span>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>

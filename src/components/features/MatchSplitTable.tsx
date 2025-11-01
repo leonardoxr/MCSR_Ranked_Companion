@@ -3,16 +3,20 @@
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import type { MatchInfo, TimelineEvent, UUID } from '@/types/api';
+import type { MatchInfo, TimelineEvent, UUID, CountryCode } from '@/types/api';
 import { cn } from '@/lib/utils';
 import { formatTime, formatTimeDifference } from '@/lib/utils/formatters';
 import { motion } from 'framer-motion';
 import { PlayerAvatar } from './PlayerAvatar';
+import { CountryFlag } from './CountryFlag';
+import { MinecraftIcon } from './MinecraftIcon';
+import type { MinecraftIconName } from './MinecraftIcon';
 
-function PlayerName({ uuid, name, side }: { uuid: UUID; name: string; side: 'left'|'right' }) {
+function PlayerName({ uuid, name, country, side }: { uuid: UUID; name: string; country: CountryCode | null; side: 'left'|'right' }) {
   return (
     <div className={cn('flex items-center gap-2', side === 'right' && 'flex-row-reverse')}>
       <PlayerAvatar uuid={uuid} username={name} size="xs" />
+      <CountryFlag country={country} size="xs" />
       <span className="truncate max-w-[140px]">{name}</span>
     </div>
   );
@@ -32,6 +36,16 @@ const ORDER: string[] = [
   'enter_end',
   'finish',
 ];
+
+// Icon mapping for milestones
+const milestoneIcons: Record<string, MinecraftIconName> = {
+  enter_nether: 'nether-portal',
+  enter_bastion: 'gilded-blackstone',
+  enter_fortress: 'nether-bricks',
+  enter_stronghold: 'stone-bricks',
+  enter_end: 'end-portal',
+  finish: 'dragon-egg',
+};
 
 function normalizeType(raw: string): string {
   const t = raw.toLowerCase().replace(/\s+/g, '_').replace(/\./g, '_');
@@ -86,11 +100,11 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
           {/* Header row */}
           <div className="px-3 py-2 bg-muted/40 font-semibold truncate flex items-center gap-2">
             <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
-            <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} side="left" /></span>
+            <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} country={left.country} side="left" /></span>
           </div>
           <div className="px-3 py-2 bg-muted/40 text-center font-semibold">{t('timeline.milestones.event')}</div>
           <div className="px-3 py-2 bg-muted/40 text-right font-semibold truncate flex items-center justify-end gap-2">
-            {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
+            {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} country={right.country} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
           </div>
 
           {ORDER.map((type, idx) => {
@@ -134,8 +148,9 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                 </motion.div>
 
                 {/* Label */}
-                <div className={cn('px-3 py-3 text-center font-semibold', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {t(`timeline.milestones.${type}`)}
+                <div className={cn('px-3 py-3 text-center font-semibold flex items-center justify-center gap-2', isEven ? 'bg-background/40' : 'bg-background/20')}>
+                  {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
+                  <span>{t(`timeline.milestones.${type}`)}</span>
                 </div>
 
                 {/* Right time */}

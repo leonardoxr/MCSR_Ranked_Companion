@@ -59,7 +59,7 @@ export function EloChart({
               dataKey="date"
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return formatDate(date, 'short');
+                return formatDate(date, 'MMM d');
               }}
               className="text-xs text-muted-foreground"
             />
@@ -127,7 +127,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   return (
     <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
       <p className="text-sm font-semibold mb-1">
-        {formatDate(new Date(data.date), 'long')}
+        {formatDate(new Date(data.date), 'PPP')}
       </p>
       <p className="text-lg font-bold text-primary">{data.elo} ELO</p>
       <p className="text-xs text-muted-foreground">{rank.name} Tier</p>

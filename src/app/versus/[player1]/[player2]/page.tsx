@@ -177,24 +177,24 @@ export default function VersusPage() {
               />
               <ComparisonBar
                 label="Total Wins"
-                player1Value={player1Data.statistics.total.ranked.wins}
-                player2Value={player2Data.statistics.total.ranked.wins}
+                player1Value={player1Data.statistics.total.wins.ranked}
+                player2Value={player2Data.statistics.total.wins.ranked}
                 player1Name={player1Data.nickname}
                 player2Name={player2Data.nickname}
                 format={(val) => val.toLocaleString()}
               />
               <ComparisonBar
                 label="Win Streak"
-                player1Value={player1Data.statistics.total.ranked.highestWinStreak}
-                player2Value={player2Data.statistics.total.ranked.highestWinStreak}
+                player1Value={player1Data.statistics.total.highestWinStreak.ranked}
+                player2Value={player2Data.statistics.total.highestWinStreak.ranked}
                 player1Name={player1Data.nickname}
                 player2Name={player2Data.nickname}
                 format={(val) => val.toLocaleString()}
               />
               <ComparisonBar
                 label="Best Time"
-                player1Value={player1Data.statistics.total.ranked.bestTime || 0}
-                player2Value={player2Data.statistics.total.ranked.bestTime || 0}
+                player1Value={player1Data.statistics.total.bestTime.ranked || 0}
+                player2Value={player2Data.statistics.total.bestTime.ranked || 0}
                 player1Name={player1Data.nickname}
                 player2Name={player2Data.nickname}
                 format={formatTime}

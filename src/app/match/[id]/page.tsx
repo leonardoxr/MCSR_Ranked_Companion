@@ -50,7 +50,7 @@ export default function MatchDetailsPage() {
   }
 
   const winner = match.result;
-  const winnerProfile = match.players.find((p) => p.uuid === winner.uuid);
+  const winnerProfile = winner.uuid ? match.players.find((p) => p.uuid === winner.uuid) : null;
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -73,7 +73,7 @@ export default function MatchDetailsPage() {
           <div>
             <h1 className="text-3xl font-bold">Match Details</h1>
             <p className="text-muted-foreground">
-              {formatDate(new Date(match.date * 1000), 'long')}
+              {formatDate(new Date(match.date * 1000), 'PPP')}
             </p>
           </div>
         </div>
@@ -89,10 +89,14 @@ export default function MatchDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">{winnerProfile?.nickname || 'Unknown'}</p>
-            <p className="text-sm text-muted-foreground">
-              {formatTime(winner.time)}
+            <p className="text-xl font-bold">
+              {winnerProfile?.nickname || (match.forfeited ? 'Forfeited' : 'No Winner')}
             </p>
+            {winner.time && (
+              <p className="text-sm text-muted-foreground">
+                {formatTime(winner.time)}
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -121,7 +125,7 @@ export default function MatchDetailsPage() {
           <CardContent>
             <p className="text-xl font-bold">Season {match.season}</p>
             <p className="text-sm text-muted-foreground">
-              Rank #{match.rank.season.toLocaleString()}
+              {match.rank?.season ? `Rank #${match.rank.season.toLocaleString()}` : 'Unranked'}
             </p>
           </CardContent>
         </Card>
@@ -157,7 +161,7 @@ export default function MatchDetailsPage() {
           <div className="space-y-4">
             {match.players.map((player) => {
               const eloChange = match.changes.find((c) => c.uuid === player.uuid);
-              const isWinner = player.uuid === winner.uuid;
+              const isWinner = winner.uuid && player.uuid === winner.uuid;
 
               return (
                 <div
@@ -217,16 +221,16 @@ export default function MatchDetailsPage() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Overworld Type</p>
-              <p className="font-semibold capitalize">{match.seed.overworldType}</p>
+              <p className="font-semibold capitalize">{match.seed.overworld}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Bastion Type</p>
-              <p className="font-semibold capitalize">{match.seed.bastionType}</p>
+              <p className="font-semibold capitalize">{match.seed.nether}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">End Tower Heights</p>
               <p className="font-mono text-sm">
-                {match.seed.endTowerHeights.join(', ')}
+                {match.seed.endTowers.join(', ')}
               </p>
             </div>
           </div>
@@ -285,8 +289,8 @@ export default function MatchDetailsPage() {
         </Card>
       )}
 
-      {/* VOD Link */}
-      {match.vod && (
+      {/* VOD Links */}
+      {match.vod && match.vod.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -295,14 +299,22 @@ export default function MatchDetailsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <a
-              href={match.vod}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              {match.vod}
-            </a>
+            <div className="space-y-2">
+              {match.vod.map((vod, idx) => {
+                const player = match.players.find((p) => p.uuid === vod.uuid);
+                return (
+                  <a
+                    key={idx}
+                    href={vod.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block text-primary hover:underline"
+                  >
+                    {player?.nickname || 'Player'} - {vod.url}
+                  </a>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
       )}

@@ -37,8 +37,8 @@ export function PlayerCard({
 
   const winRate = statistics
     ? formatWinRate(
-        statistics.total.ranked.wins,
-        statistics.total.ranked.losses
+        statistics.total.wins.ranked,
+        statistics.total.loses.ranked
       )
     : null;
 
@@ -121,7 +121,7 @@ export function PlayerCard({
               <StatItem
                 icon={<Trophy className="h-4 w-4" />}
                 label="Wins"
-                value={statistics.total.ranked.wins.toLocaleString()}
+                value={statistics.total.wins.ranked.toLocaleString()}
               />
               <StatItem
                 icon={<Target className="h-4 w-4" />}
@@ -131,16 +131,16 @@ export function PlayerCard({
               <StatItem
                 icon={<TrendingUp className="h-4 w-4" />}
                 label="Highest Win Streak"
-                value={statistics.total.ranked.highestWinStreak?.toLocaleString() || '0'}
+                value={statistics.total.highestWinStreak.ranked?.toLocaleString() || '0'}
               />
               <StatItem
                 icon={<Clock className="h-4 w-4" />}
                 label="Total Playtime"
-                value={formatPlaytime(statistics.total.ranked.playtime || 0)}
+                value={formatPlaytime(statistics.total.playtime.ranked || 0)}
               />
             </div>
 
-            {statistics.total.ranked.bestTime && (
+            {statistics.total.bestTime.ranked && (
               <div className="mt-4 pt-4 border-t border-border">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -148,7 +148,7 @@ export function PlayerCard({
                       Best Time (Ranked)
                     </p>
                     <p className="text-lg font-semibold">
-                      {formatTime(statistics.total.ranked.bestTime)}
+                      {formatTime(statistics.total.bestTime.ranked)}
                     </p>
                   </div>
                   <div>
@@ -156,7 +156,7 @@ export function PlayerCard({
                       Matches Played
                     </p>
                     <p className="text-lg font-semibold">
-                      {statistics.total.ranked.playedMatches}
+                      {statistics.total.playedMatches.ranked}
                     </p>
                   </div>
                 </div>

@@ -4,8 +4,10 @@ import type {
   MatchInfo,
   Achievement,
   LeaderboardUser,
+  LeaderboardResponse,
   VersusStats,
   LiveMatch,
+  LiveMatchesResponse,
   WeeklyRaceInfo,
   MatchFilterParams,
   PaginationParams,
@@ -96,7 +98,8 @@ export async function getMatch(matchId: string): Promise<MatchInfo> {
 export async function getLeaderboard(
   params?: PaginationParams & { season?: number }
 ): Promise<LeaderboardUser[]> {
-  return get<LeaderboardUser[]>('/leaderboard', { params });
+  const response = await get<LeaderboardResponse>('/leaderboard', { params });
+  return response.users;
 }
 
 // ============================================================================
@@ -137,7 +140,8 @@ export async function getVersusMatches(
  * Get currently active matches
  */
 export async function getLiveMatches(): Promise<LiveMatch[]> {
-  return get<LiveMatch[]>('/live');
+  const response = await get<LiveMatchesResponse>('/live');
+  return response.liveMatches;
 }
 
 // ============================================================================

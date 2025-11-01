@@ -95,7 +95,7 @@ export default function LeaderboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">
-              {players?.length.toLocaleString() || '0'}
+              {Array.isArray(players) ? players.length.toLocaleString() : '0'}
             </p>
           </CardContent>
         </Card>

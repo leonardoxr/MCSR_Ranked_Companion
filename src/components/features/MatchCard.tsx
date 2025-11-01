@@ -39,7 +39,7 @@ export function MatchCard({
 }: MatchCardProps) {
   const { id, type, result, date, seed, players, changes } = match;
 
-  const winner = result.uuid;
+  const winner = result.uuid; // Can be null for forfeited matches
   const matchTypeColor = getMatchTypeColor(type);
 
   const getMatchTypeName = (type: MatchType): string => {
@@ -91,7 +91,7 @@ export function MatchCard({
           {/* Players */}
           <div className="space-y-3">
             {players.map((player) => {
-              const isWinner = player.uuid === winner;
+              const isWinner = winner && player.uuid === winner;
               const isHighlighted = player.uuid === highlightPlayer;
               const playerChange = changes.find((c) => c.uuid === player.uuid);
               const eloChange = playerChange?.change || null;
@@ -158,7 +158,7 @@ export function MatchCard({
           {seed && (
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground">
-                Seed: {seed.overworldType} • Bastion: {seed.bastionType}
+                Seed: {seed.overworld} • Bastion: {seed.nether}
               </p>
             </div>
           )}

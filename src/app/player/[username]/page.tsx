@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import { usePlayer, usePlayerMatches, usePlayerAchievements } from '@/lib/api/hooks/usePlayer';
+import { usePlayer, usePlayerMatches } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { MatchCard } from '@/components/features/MatchCard';
 import { LoadingState } from '@/components/features/LoadingState';
@@ -11,7 +11,7 @@ import { EloChart } from '@/components/features/EloChart';
 import { WinRateChart } from '@/components/features/WinRateChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Trophy, Target, TrendingUp, Clock, Award } from 'lucide-react';
-import { formatDate } from '@/lib/utils/formatters';
+import { formatRelativeTime } from '@/lib/utils/formatters';
 import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
@@ -20,7 +20,6 @@ export default function PlayerPage() {
 
   const { data: player, isLoading, error } = usePlayer(username);
   const { data: matches, isLoading: matchesLoading } = usePlayerMatches(username, { count: 20 });
-  const { data: achievements } = usePlayerAchievements(username);
 
   if (isLoading) {
     return (
@@ -41,8 +40,21 @@ export default function PlayerPage() {
     );
   }
 
+  // Validate player data structure
+  if (!player.statistics?.season || !player.statistics?.total) {
+    console.error('Invalid player data structure:', player);
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <ErrorState
+          title="Invalid Player Data"
+          message="The player data received from the API is incomplete. Please try again later."
+        />
+      </div>
+    );
+  }
+
   // Transform match data for ELO chart
-  const eloData: EloDataPoint[] = matches
+  const eloData: EloDataPoint[] = Array.isArray(matches)
     ? matches
         .map((match) => {
           const playerChange = match.changes.find((c) => c.uuid === player.uuid);
@@ -55,8 +67,25 @@ export default function PlayerPage() {
         .reverse()
     : [];
 
-  const seasonStats = player.statistics.season.ranked;
-  const totalStats = player.statistics.total.ranked;
+  // Extract ranked stats from the API structure
+  const seasonStats = {
+    playedMatches: player.statistics.season.playedMatches.ranked,
+    wins: player.statistics.season.wins.ranked,
+    losses: player.statistics.season.loses.ranked, // API uses "loses"
+    currentWinStreak: player.statistics.season.currentWinStreak.ranked,
+  };
+
+  const totalStats = {
+    playedMatches: player.statistics.total.playedMatches.ranked,
+    wins: player.statistics.total.wins.ranked,
+    losses: player.statistics.total.loses.ranked, // API uses "loses"
+    highestWinStreak: player.statistics.total.highestWinStreak.ranked,
+    completions: player.statistics.total.completions.ranked,
+    forfeits: player.statistics.total.forfeits.ranked,
+    bestTime: player.statistics.total.bestTime.ranked,
+    completionTime: player.statistics.total.completionTime.ranked,
+    playtime: player.statistics.total.playtime.ranked,
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -130,7 +159,7 @@ export default function PlayerPage() {
             <StatRow label="Total Playtime" value={formatPlaytime(totalStats.playtime)} />
             <StatRow
               label="Last Online"
-              value={formatDate(new Date(player.lastOnline * 1000), 'relative')}
+              value={formatRelativeTime(player.timestamp.lastOnline)}
             />
           </CardContent>
         </Card>
@@ -139,7 +168,7 @@ export default function PlayerPage() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {eloData.length > 0 && <EloChart data={eloData} showRankLines />}
-        {matches && matches.length > 0 && (
+        {Array.isArray(matches) && matches.length > 0 && (
           <WinRateChart
             wins={totalStats.wins}
             losses={totalStats.losses}
@@ -148,24 +177,24 @@ export default function PlayerPage() {
       </div>
 
       {/* Achievements */}
-      {achievements && achievements.length > 0 && (
+      {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Award className="h-5 w-5 text-primary" />
-              Achievements ({achievements.length})
+              Achievements ({player.achievements.display.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {achievements.slice(0, 8).map((achievement) => (
+              {player.achievements.display.slice(0, 8).map((achievement, index) => (
                 <div
-                  key={achievement.id}
+                  key={`${achievement.id}-${achievement.date}-${index}`}
                   className="flex flex-col items-center p-4 border border-border rounded-lg hover:bg-accent transition-colors"
                 >
                   <Award className="h-8 w-8 mb-2 text-primary" />
                   <span className="text-sm font-medium text-center">
-                    Achievement #{achievement.id}
+                    {achievement.id}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     Level {achievement.level}
@@ -185,7 +214,7 @@ export default function PlayerPage() {
         <CardContent>
           {matchesLoading ? (
             <LoadingState message="Loading matches..." />
-          ) : matches && matches.length > 0 ? (
+          ) : Array.isArray(matches) && matches.length > 0 ? (
             <div className="space-y-4">
               {matches.map((match) => (
                 <MatchCard key={match.id} match={match} highlightPlayer={player.uuid} />

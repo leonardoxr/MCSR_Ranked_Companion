@@ -1,11 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
 import { RankBadge } from './RankBadge';
+import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import { formatWinRate } from '@/lib/utils/formatters';
 import type { LeaderboardUser } from '@/types/api';
@@ -28,15 +30,17 @@ export function LeaderboardTable({
   highlightPlayer,
   showRankChange = false,
 }: LeaderboardTableProps) {
+  const t = useTranslations();
+
   return (
     <Card variant="mc" className={className}>
       <CardContent className="p-0">
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 text-sm font-semibold text-muted-foreground">
-          <div className="col-span-1">Rank</div>
-          <div className="col-span-5">Player</div>
-          <div className="col-span-3">Tier</div>
-          <div className="col-span-3">ELO</div>
+          <div className="col-span-1">{t('leaderboard.table.rank')}</div>
+          <div className="col-span-5">{t('leaderboard.table.player')}</div>
+          <div className="col-span-3">{t('leaderboard.table.tier')}</div>
+          <div className="col-span-3">{t('leaderboard.table.elo')}</div>
         </div>
 
         {/* Table Body */}
@@ -81,6 +85,7 @@ export function LeaderboardTable({
                           #{player.eloRank.toLocaleString()}
                         </span>
                       )}
+                      <CountryFlag country={player.country} size="sm" />
                       <span className="font-semibold truncate">{player.nickname}</span>
                     </div>
                     {showRankChange && player.eloRank && (
@@ -99,7 +104,7 @@ export function LeaderboardTable({
                   {player.eloRate ? (
                     <RankBadge elo={player.eloRate} showText={false} showElo />
                   ) : (
-                    <span className="font-semibold text-lg">Unranked</span>
+                    <span className="font-semibold text-lg">{t('common.unranked')}</span>
                   )}
                 </div>
               </motion.div>
@@ -109,7 +114,7 @@ export function LeaderboardTable({
 
         {players.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No players found
+            {t('leaderboard.noPlayersFound')}
           </div>
         )}
       </CardContent>

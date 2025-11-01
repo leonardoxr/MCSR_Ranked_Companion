@@ -1,9 +1,11 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
+import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import {
   formatTime,
@@ -38,6 +40,7 @@ export function MatchCard({
   className,
   highlightPlayer,
 }: MatchCardProps) {
+  const t = useTranslations();
   const { id, type, result, date, seed, players, changes } = match;
   const router = useRouter();
 
@@ -47,15 +50,15 @@ export function MatchCard({
   const getMatchTypeName = (type: MatchType): string => {
     switch (type) {
       case MatchType.Ranked:
-        return 'RANKED';
+        return t('match.types.ranked');
       case MatchType.Casual:
-        return 'CASUAL';
+        return t('match.types.casual');
       case MatchType.Private:
-        return 'PRIVATE';
+        return t('match.types.private');
       case MatchType.Event:
-        return 'EVENT';
+        return t('match.types.event');
       default:
-        return 'UNKNOWN';
+        return t('match.types.unknown');
     }
   };
 
@@ -127,14 +130,17 @@ export function MatchCard({
                       size="sm"
                     />
                     <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          'font-semibold truncate',
-                          isWinner && 'text-emerald'
-                        )}
-                      >
-                        {player.nickname}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <CountryFlag country={player.country} size="sm" />
+                        <p
+                          className={cn(
+                            'font-semibold truncate',
+                            isWinner && 'text-emerald'
+                          )}
+                        >
+                          {player.nickname}
+                        </p>
+                      </div>
                       {isWinner && result.time && (
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="h-3 w-3" />
@@ -169,7 +175,7 @@ export function MatchCard({
           {seed && (
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground">
-                Seed: {seed.overworld} • Bastion: {seed.nether}
+                {t('match.seed')}: {seed.overworld} • {t('match.bastion')}: {seed.nether}
               </p>
             </div>
           )}

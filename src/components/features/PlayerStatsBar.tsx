@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import {
   Trophy,
@@ -16,6 +17,7 @@ import {
   Star,
 } from 'lucide-react';
 import { RankBadge } from './RankBadge';
+import { CountryFlag } from './CountryFlag';
 import type { UserInfo } from '@/types/api';
 
 export interface PlayerStatsBarProps {
@@ -33,6 +35,7 @@ export function PlayerStatsBar({
   variant = 'both',
   className,
 }: PlayerStatsBarProps) {
+  const t = useTranslations();
   const [activeTab, setActiveTab] = React.useState<'season' | 'all-time'>('season');
 
   const seasonStats = player.statistics?.season;
@@ -78,7 +81,7 @@ export function PlayerStatsBar({
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
-            SEASON
+            {t('player.stats.season').toUpperCase()}
           </button>
           <button
             onClick={() => setActiveTab('all-time')}
@@ -89,7 +92,7 @@ export function PlayerStatsBar({
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
-            ALL TIME
+            {t('player.stats.allTime').toUpperCase()}
           </button>
         </div>
       )}
@@ -107,10 +110,11 @@ export function PlayerStatsBar({
             )}
 
             {/* Player Name */}
+            <CountryFlag country={player.country} size="sm" />
             <span className="font-semibold">{player.nickname}</span>
 
             {/* Season Label */}
-            <span className="text-muted-foreground">SEASON</span>
+            <span className="text-muted-foreground">{t('player.stats.season').toUpperCase()}</span>
 
             {/* Rank Badge */}
             {player.eloRate && (
@@ -121,7 +125,7 @@ export function PlayerStatsBar({
             {player.eloRate && (
               <StatItem
                 icon={<Star className="h-4 w-4" />}
-                value={`(${player.eloRate.toLocaleString()} elo)`}
+                value={`(${player.eloRate.toLocaleString()} ${t('common.elo').toLowerCase()})`}
               />
             )}
 
@@ -129,21 +133,21 @@ export function PlayerStatsBar({
             {peakElo > 0 && peakElo !== player.eloRate && (
               <StatItem
                 icon={<TrendingUp className="h-4 w-4" />}
-                value={`${peakElo.toLocaleString()} peak elo`}
+                value={`${peakElo.toLocaleString()} ${t('player.stats.peakElo')}`}
               />
             )}
 
             {/* Win Rate */}
             <StatItem
               icon={<Target className="h-4 w-4" />}
-              value={`${seasonWinRate}% winrate`}
+              value={`${seasonWinRate}% ${t('player.stats.winrate')}`}
             />
 
             {/* Best Time */}
             {totalStats.bestTime.ranked && (
               <StatItem
                 icon={<Timer className="h-4 w-4" />}
-                value={`${formatTime(totalStats.bestTime.ranked)} pb`}
+                value={`${formatTime(totalStats.bestTime.ranked)} ${t('player.stats.pb')}`}
               />
             )}
 
@@ -151,7 +155,7 @@ export function PlayerStatsBar({
             {seasonStats.highestWinStreak.ranked > 0 && (
               <StatItem
                 icon={<Flame className="h-4 w-4" />}
-                value={`${seasonStats.highestWinStreak.ranked} best winstreak`}
+                value={`${seasonStats.highestWinStreak.ranked} ${t('player.stats.bestWinstreak')}`}
               />
             )}
 
@@ -159,21 +163,21 @@ export function PlayerStatsBar({
             {avgCompletion > 0 && (
               <StatItem
                 icon={<Clock className="h-4 w-4" />}
-                value={`${formatTime(avgCompletion)} average`}
+                value={`${formatTime(avgCompletion)} ${t('player.stats.average')}`}
               />
             )}
 
             {/* Forfeit Rate */}
             <StatItem
               icon={<XCircle className="h-4 w-4" />}
-              value={`${forfeitRate}% forfeit rate`}
+              value={`${forfeitRate}% ${t('player.stats.forfeitRate')}`}
             />
 
             {/* Points */}
             {points > 0 && (
               <StatItem
                 icon={<Zap className="h-4 w-4" />}
-                value={`${points} points`}
+                value={`${points} ${t('player.stats.points')}`}
               />
             )}
           </>
@@ -182,23 +186,23 @@ export function PlayerStatsBar({
             {/* Wins */}
             <StatItem
               icon={<Trophy className="h-4 w-4" />}
-              value={`${totalStats.wins.ranked.toLocaleString()} wins`}
+              value={`${totalStats.wins.ranked.toLocaleString()} ${t('player.stats.wins')}`}
             />
 
             {/* Completions */}
             <StatItem
               icon={<Medal className="h-4 w-4" />}
-              value={`${totalStats.completions.ranked.toLocaleString()} completions`}
+              value={`${totalStats.completions.ranked.toLocaleString()} ${t('player.stats.completions')}`}
             />
 
             {/* ALL TIME Label */}
-            <span className="text-muted-foreground">ALL TIME</span>
+            <span className="text-muted-foreground">{t('player.stats.allTime').toUpperCase()}</span>
 
             {/* Best Time */}
             {totalStats.bestTime.ranked && (
               <StatItem
                 icon={<Timer className="h-4 w-4" />}
-                value={`${formatTime(totalStats.bestTime.ranked)} pb`}
+                value={`${formatTime(totalStats.bestTime.ranked)} ${t('player.stats.pb')}`}
               />
             )}
           </>

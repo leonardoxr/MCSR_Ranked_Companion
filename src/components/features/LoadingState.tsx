@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, Skeleton } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
@@ -17,9 +18,11 @@ export interface LoadingStateProps {
  */
 export function LoadingState({
   className,
-  message = 'Loading...',
+  message,
   variant = 'spinner',
 }: LoadingStateProps) {
+  const t = useTranslations();
+
   if (variant === 'skeleton') {
     return (
       <Card className={className}>
@@ -41,7 +44,7 @@ export function LoadingState({
   return (
     <div className={cn('flex flex-col items-center justify-center p-12', className)}>
       <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-      <p className="text-muted-foreground">{message}</p>
+      <p className="text-muted-foreground">{message || t('common.loading')}</p>
     </div>
   );
 }

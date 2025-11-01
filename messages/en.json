@@ -1,0 +1,279 @@
+{
+  "app": {
+    "title": "MCSR Ranked Companion",
+    "description": "Track your Minecraft Speedrun Ranked statistics, matches, and performance",
+    "keywords": "minecraft, speedrun, mcsr, ranked, statistics"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "tryAgain": "Try again",
+    "back": "Back",
+    "search": "Search",
+    "clear": "Clear",
+    "clearSearch": "Clear search",
+    "next": "Next",
+    "previous": "Previous",
+    "page": "Page {page}",
+    "vs": "VS",
+    "live": "LIVE",
+    "unranked": "Unranked",
+    "season": "Season",
+    "current": "Current",
+    "rank": "Rank #{rank}",
+    "noData": "No data available",
+    "noDataMessage": "There is no data to display at this time",
+    "elo": "ELO",
+    "tier": "Tier"
+  },
+  "nav": {
+    "home": "Home",
+    "leaderboard": "Leaderboard",
+    "liveMatches": "Live Matches",
+    "playerComparison": "Player Comparison"
+  },
+  "home": {
+    "title": "MCSR Ranked Companion",
+    "subtitle": "Track your speedrun statistics, analyze matches, and climb the leaderboard",
+    "searchPlaceholder": "Search for a player...",
+    "leaderboard": {
+      "title": "Leaderboard",
+      "description": "View global rankings and top players",
+      "button": "View Rankings"
+    },
+    "liveMatches": {
+      "title": "Live Matches",
+      "description": "Watch ongoing matches in real-time",
+      "button": "Watch Live"
+    },
+    "playerComparison": {
+      "title": "Player Comparison",
+      "description": "Compare head-to-head statistics",
+      "searchPrompt": "Search for two players to compare their stats"
+    },
+    "features": {
+      "title": "Features",
+      "playerProfiles": {
+        "title": "Player Profiles",
+        "description": "View detailed player statistics, match history, achievements, and ELO progression"
+      },
+      "leaderboardRankings": {
+        "title": "Leaderboard Rankings",
+        "description": "Browse global rankings with pagination and search functionality"
+      },
+      "matchDetails": {
+        "title": "Match Details",
+        "description": "Analyze individual matches with timelines, seed info, and player performance"
+      },
+      "liveMatches": {
+        "title": "Live Matches",
+        "description": "Real-time updates of ongoing matches with auto-refresh"
+      },
+      "headToHead": {
+        "title": "Head-to-Head",
+        "description": "Compare two players directly with detailed statistics and match history"
+      },
+      "performanceCharts": {
+        "title": "Performance Charts",
+        "description": "Visualize ELO progression, win rates, and performance trends"
+      }
+    },
+    "builtWith": "Built With"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "description": "Top ranked MCSR players worldwide",
+    "searchPlaceholder": "Search for a player...",
+    "currentPage": "Current Page",
+    "playersShown": "Players Shown",
+    "loading": "Loading leaderboard...",
+    "error": "Failed to Load Leaderboard",
+    "errorMessage": "An error occurred while fetching the leaderboard",
+    "noPlayers": "No players found on this page",
+    "noPlayersFound": "No players found",
+    "table": {
+      "rank": "Rank",
+      "player": "Player",
+      "tier": "Tier",
+      "elo": "ELO"
+    }
+  },
+  "live": {
+    "title": "Live Matches",
+    "description": "Watch ongoing matches in real-time",
+    "count": "{count} Live",
+    "loading": "Loading live matches...",
+    "error": "Failed to Load Live Matches",
+    "errorMessage": "An error occurred while fetching live matches",
+    "noMatches": "No Live Matches",
+    "noMatchesMessage": "There are no matches currently in progress. Check back later!",
+    "autoRefresh": "Auto-refreshing every 30 seconds",
+    "liveMatch": "Live Match",
+    "inProgress": "In progress",
+    "matchTime": "Match Time",
+    "players": "Players",
+    "watchStream": "Watch Stream"
+  },
+  "player": {
+    "loading": "Loading player profile...",
+    "notFound": "Player Not Found",
+    "notFoundMessage": "Could not find player \"{username}\"",
+    "invalidData": "Invalid Player Data",
+    "invalidDataMessage": "The player data received from the API is incomplete. Please try again later.",
+    "seasonStats": "Season Stats",
+    "allTimeStats": "All-Time Stats",
+    "performance": "Performance",
+    "recentMatches": "Recent Matches",
+    "achievements": "Achievements",
+    "noMatches": "No matches found",
+    "rank": "Rank",
+    "stats": {
+      "matchesPlayed": "Matches Played",
+      "wins": "Wins",
+      "losses": "Losses",
+      "winRate": "Win Rate",
+      "wrShort": "WR",
+      "currentStreak": "Current Streak",
+      "totalMatches": "Total Matches",
+      "totalWins": "Total Wins",
+      "highestStreak": "Highest Streak",
+      "completions": "Completions",
+      "forfeits": "Forfeits",
+      "bestTime": "Best Time",
+      "avgCompletion": "Avg Completion",
+      "totalPlaytime": "Total Playtime",
+      "lastOnline": "Last Online",
+      "peakElo": "peak elo",
+      "winrate": "winrate",
+      "pb": "pb",
+      "bestWinstreak": "best winstreak",
+      "average": "average",
+      "forfeitRate": "forfeit rate",
+      "points": "points",
+      "highestWinStreak": "Highest Win Streak",
+      "bestTimeRanked": "Best Time (Ranked)",
+      "season": "SEASON",
+      "allTime": "ALL TIME"
+    },
+    "tabs": {
+      "season": "SEASON",
+      "allTime": "ALL TIME"
+    }
+  },
+  "match": {
+    "loading": "Loading match details...",
+    "notFound": "Match Not Found",
+    "notFoundMessage": "Could not find match \"{matchId}\"",
+    "title": "Match Details",
+    "winner": "Winner",
+    "forfeited": "Forfeited",
+    "noWinner": "No Winner",
+    "players": "Players",
+    "category": "Category",
+    "playersEloChanges": "Players & ELO Changes",
+    "seedInformation": "Seed Information",
+    "seedId": "Seed ID",
+    "overworldType": "Overworld Type",
+    "bastionType": "Bastion Type",
+    "endTowerHeights": "End Tower Heights",
+    "variations": "Variations",
+    "matchTimeline": "Match Timeline",
+    "completions": "Completions",
+    "watchVod": "Watch VOD",
+    "status": {
+      "forfeited": "Forfeited",
+      "decayed": "Decayed",
+      "completed": "Completed"
+    },
+    "types": {
+      "ranked": "RANKED",
+      "casual": "CASUAL",
+      "private": "PRIVATE",
+      "event": "EVENT",
+      "unknown": "UNKNOWN"
+    },
+    "seed": "Seed:",
+    "bastion": "Bastion:"
+  },
+  "versus": {
+    "title": "Head-to-Head",
+    "subtitle": "{player1} vs {player2}",
+    "totalMatches": "{count} Total Matches",
+    "winRate": "% Win Rate",
+    "statisticsComparison": "Statistics Comparison",
+    "recentMatches": "Recent Head-to-Head Matches",
+    "noMatches": "No head-to-head matches found"
+  },
+  "timeline": {
+    "title": "Match Timeline",
+    "noEvents": "No timeline events available",
+    "events": {
+      "enter_nether": "Entered Nether",
+      "enter_bastion": "Entered Bastion",
+      "enter_fortress": "Entered Fortress",
+      "first_portal": "First Portal",
+      "second_portal": "Second Portal",
+      "enter_stronghold": "Entered Stronghold",
+      "enter_end": "Entered End",
+      "finish": "Finished",
+      "died": "Died"
+    }
+  },
+  "charts": {
+    "eloProgression": "ELO Progression",
+    "winRate": "Win Rate",
+    "wins": "Wins",
+    "winsShort": "W",
+    "losses": "Losses",
+    "lossesShort": "L",
+    "total": "{count} total",
+    "performanceOverview": "Performance Overview",
+    "averageTime": "Average Time",
+    "bestTime": "Best Time",
+    "average": "Average:",
+    "best": "Best:",
+    "matches": "matches",
+    "tier": "Tier"
+  },
+  "ranks": {
+    "coal": "Coal",
+    "iron": "Iron",
+    "gold": "Gold",
+    "emerald": "Emerald",
+    "diamond": "Diamond",
+    "netherite": "Netherite"
+  },
+  "achievements": {
+    "BestTime": "Best Time",
+    "HighestWinStreak": "Highest Win Streak",
+    "PlayedMatches": "Played Matches",
+    "Playtime": "Playtime",
+    "Wins": "Wins",
+    "SeasonOutcome": "Season Outcome",
+    "PlayoffsOutcome": "Playoffs Outcome",
+    "SummonWither": "Summon Wither",
+    "IronPickless": "Iron Pickless",
+    "Oneshot": "One Shot",
+    "Overtake": "Overtake",
+    "Foodless": "Foodless",
+    "ClassicRun": "Classic Run",
+    "Netherite": "Netherite",
+    "Armorless": "Armorless",
+    "HighLevel": "High Level",
+    "EgapHolder": "Egap Holder",
+    "IronHoe": "Iron Hoe",
+    "WeeklyRace": "Weekly Race",
+    "Secret": "Secret"
+  },
+  "errors": {
+    "default": "An error occurred while loading the data.",
+    "noResponse": "No response from server. Please check your connection.",
+    "unknown": "An unknown error occurred",
+    "somethingWentWrong": "Something went wrong",
+    "loadingError": "An error occurred while loading the data."
+  },
+  "search": {
+    "placeholder": "Search players...",
+    "clearLabel": "Clear search"
+  }
+}

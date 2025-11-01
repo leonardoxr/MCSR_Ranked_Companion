@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import type { Locale } from '@/i18n/config';
 import { useVersusStats, useVersusMatches } from '@/lib/api/hooks/useVersus';
 import { usePlayer } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
@@ -15,6 +17,8 @@ import { RankBadge } from '@/components/features/RankBadge';
 
 export default function VersusPage() {
   const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const router = useRouter();
   const player1Name = params?.player1 as string;
   const player2Name = params?.player2 as string;
@@ -34,7 +38,7 @@ export default function VersusPage() {
   if (statsLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <LoadingState message="Loading head-to-head statistics..." />
+        <LoadingState message={t('common.loading')} />
       </div>
     );
   }
@@ -43,7 +47,7 @@ export default function VersusPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
-          title="Could Not Load Comparison"
+          title={t('common.error')}
           message={
             statsError?.message ||
             `Could not load head-to-head stats for ${player1Name} vs ${player2Name}`
@@ -69,7 +73,7 @@ export default function VersusPage() {
         className="mb-4"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
+        {t('common.back')}
       </Button>
 
       {/* Header */}
@@ -78,9 +82,9 @@ export default function VersusPage() {
           <Swords className="h-12 w-12 text-primary" />
         </div>
         <div>
-          <h1 className="text-4xl font-bold mb-2">Head-to-Head</h1>
+          <h1 className="text-4xl font-bold mb-2">{t('versus.title')}</h1>
           <p className="text-xl text-muted-foreground">
-            {versusStats.player1.nickname} vs {versusStats.player2.nickname}
+            {t('versus.subtitle', { player1: versusStats.player1.nickname, player2: versusStats.player2.nickname })}
           </p>
         </div>
       </div>
@@ -102,16 +106,16 @@ export default function VersusPage() {
                 {versusStats.player1Wins}
               </p>
               <p className="text-sm text-muted-foreground">
-                {player1WinRate}% Win Rate
+                {player1WinRate}{t('versus.winRate')}
               </p>
             </motion.div>
 
             {/* VS */}
             <div className="flex flex-col items-center justify-center p-6 bg-muted/50">
               <Swords className="h-8 w-8 text-muted-foreground mb-2" />
-              <p className="text-sm font-semibold text-muted-foreground">VS</p>
+              <p className="text-sm font-semibold text-muted-foreground">{t('common.vs')}</p>
               <p className="text-xs text-muted-foreground mt-2">
-                {versusStats.totalMatches} Total Matches
+                {t('versus.totalMatches', { count: versusStats.totalMatches })}
               </p>
             </div>
 
@@ -128,7 +132,7 @@ export default function VersusPage() {
                 {versusStats.player2Wins}
               </p>
               <p className="text-sm text-muted-foreground">
-                {player2WinRate}% Win Rate
+                {player2WinRate}{t('versus.winRate')}
               </p>
             </motion.div>
           </div>
@@ -163,7 +167,7 @@ export default function VersusPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Target className="h-5 w-5" />
-              Statistics Comparison
+              {t('versus.statisticsComparison')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -182,7 +186,7 @@ export default function VersusPage() {
                 )}
               />
               <ComparisonBar
-                label="Total Wins"
+                label={t('player.stats.totalWins')}
                 player1Value={player1Data.statistics.total.wins.ranked}
                 player2Value={player2Data.statistics.total.wins.ranked}
                 player1Name={player1Data.nickname}
@@ -190,7 +194,7 @@ export default function VersusPage() {
                 format={(val) => val.toLocaleString()}
               />
               <ComparisonBar
-                label="Win Streak"
+                label={t('player.stats.highestStreak')}
                 player1Value={player1Data.statistics.total.highestWinStreak.ranked}
                 player2Value={player2Data.statistics.total.highestWinStreak.ranked}
                 player1Name={player1Data.nickname}
@@ -198,7 +202,7 @@ export default function VersusPage() {
                 format={(val) => val.toLocaleString()}
               />
               <ComparisonBar
-                label="Best Time"
+                label={t('player.stats.bestTime')}
                 player1Value={player1Data.statistics.total.bestTime.ranked || 0}
                 player2Value={player2Data.statistics.total.bestTime.ranked || 0}
                 player1Name={player1Data.nickname}
@@ -216,12 +220,12 @@ export default function VersusPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5" />
-            Recent Head-to-Head Matches
+            {t('versus.recentMatches')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {matchesLoading ? (
-            <LoadingState message="Loading matches..." />
+            <LoadingState message={t('common.loading')} />
           ) : matches && matches.length > 0 ? (
             <div className="space-y-4">
               {matches.map((match) => (
@@ -234,7 +238,7 @@ export default function VersusPage() {
             </div>
           ) : (
             <p className="text-center text-muted-foreground py-8">
-              No head-to-head matches found
+              {t('versus.noMatches')}
             </p>
           )}
         </CardContent>

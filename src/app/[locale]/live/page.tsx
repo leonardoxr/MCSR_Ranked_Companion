@@ -1,9 +1,13 @@
 'use client';
 
 import * as React from 'react';
+import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import type { Locale } from '@/i18n/config';
 import { useLiveMatches } from '@/lib/api/hooks/useLiveMatches';
 import { PlayerAvatar } from '@/components/features/PlayerAvatar';
 import { RankBadge } from '@/components/features/RankBadge';
+import { CountryFlag } from '@/components/features/CountryFlag';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui';
@@ -13,6 +17,9 @@ import { useRouter } from 'next/navigation';
 import type { LiveMatch } from '@/types/api';
 
 export default function LiveMatchesPage() {
+  const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const router = useRouter();
   const { data: liveMatches, isLoading, error } = useLiveMatches();
 
@@ -30,16 +37,16 @@ export default function LiveMatchesPage() {
               </span>
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Live Matches</h1>
+              <h1 className="text-3xl font-bold">{t('live.title')}</h1>
               <p className="text-muted-foreground">
-                Watch ongoing matches in real-time
+                {t('live.description')}
               </p>
             </div>
           </div>
           {Array.isArray(liveMatches) && liveMatches.length > 0 && (
             <Badge variant="outline" className="text-lg px-4 py-2">
               <Activity className="h-4 w-4 mr-2" />
-              {liveMatches.length} Live
+              {t('live.count', { count: liveMatches.length })}
             </Badge>
           )}
         </div>
@@ -47,11 +54,11 @@ export default function LiveMatchesPage() {
 
       {/* Live Matches */}
       {isLoading ? (
-        <LoadingState message="Loading live matches..." />
+        <LoadingState message={t('live.loading')} />
       ) : error ? (
         <ErrorState
-          title="Failed to Load Live Matches"
-          message={error.message || 'An error occurred while fetching live matches'}
+          title={t('live.error')}
+          message={error.message || t('live.errorMessage')}
         />
       ) : liveMatches && liveMatches.length > 0 ? (
         <div className="grid grid-cols-1 gap-6">
@@ -62,6 +69,7 @@ export default function LiveMatchesPage() {
               <LiveMatchCard
                 key={matchKey}
                 match={match}
+                locale={locale}
                 onClick={() => {
                   // Live matches don't have permanent IDs, so we can't navigate to a match page
                   // This would need a different implementation for live match details
@@ -74,9 +82,9 @@ export default function LiveMatchesPage() {
         <Card variant="mc">
           <CardContent className="py-16 text-center">
             <Radio className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No Live Matches</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('live.noMatches')}</h3>
             <p className="text-muted-foreground">
-              There are no matches currently in progress. Check back later!
+              {t('live.noMatchesMessage')}
             </p>
           </CardContent>
         </Card>
@@ -85,7 +93,7 @@ export default function LiveMatchesPage() {
       {/* Auto-refresh indicator */}
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
         <Activity className="h-4 w-4 animate-pulse" />
-        Auto-refreshing every 30 seconds
+        {t('live.autoRefresh')}
       </div>
     </div>
   );
@@ -93,10 +101,12 @@ export default function LiveMatchesPage() {
 
 interface LiveMatchCardProps {
   match: LiveMatch;
+  locale: Locale;
   onClick: () => void;
 }
 
-function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
+function LiveMatchCard({ match, locale, onClick }: LiveMatchCardProps) {
+  const t = useTranslations();
   const router = useRouter();
   const [currentTime, setCurrentTime] = React.useState(match.currentTime);
 
@@ -124,9 +134,9 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
               </span>
             </div>
             <div>
-              <CardTitle className="text-xl">Live Match</CardTitle>
+              <CardTitle className="text-xl">{t('live.liveMatch')}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                In progress
+                {t('live.inProgress')}
               </p>
             </div>
           </div>
@@ -134,7 +144,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
             <div className="text-2xl font-mono font-bold text-red-500 pulse-glow">
               {formatElapsedTime(currentTime)}
             </div>
-            <p className="text-xs text-muted-foreground">Match Time</p>
+            <p className="text-xs text-muted-foreground">{t('live.matchTime')}</p>
           </div>
         </div>
       </CardHeader>
@@ -144,18 +154,18 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
         <div className="grid grid-cols-2 gap-4 pb-4 border-b border-border">
           <div className="flex items-center gap-2 text-sm">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span>{match.players.length} Players</span>
+            <span>{match.players.length} {t('live.players')}</span>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <Activity className="h-4 w-4 text-muted-foreground" />
-            <span className="text-red-500 font-semibold">LIVE</span>
+            <span className="text-red-500 font-semibold">{t('common.live')}</span>
           </div>
         </div>
 
         {/* Players */}
         <div>
           <h4 className="text-sm font-semibold text-muted-foreground mb-3">
-            Players
+            {t('live.players')}
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {match.players.map((player) => {
@@ -166,7 +176,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
                   className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/player/${player.nickname}`);
+                    router.push(`/${locale}/player/${player.nickname}`);
                   }}
                 >
                   <PlayerAvatar
@@ -175,7 +185,10 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{player.nickname}</p>
+                    <div className="flex items-center gap-2">
+                      <CountryFlag country={player.country} size="sm" />
+                      <p className="font-semibold truncate">{player.nickname}</p>
+                    </div>
                     {player.eloRate && (
                       <div className="flex items-center gap-2 mt-1">
                         <RankBadge elo={player.eloRate} showElo />
@@ -194,7 +207,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
                         className="text-xs text-primary hover:underline"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Watch Stream
+                        {t('live.watchStream')}
                       </a>
                     )}
                   </div>

@@ -2,16 +2,18 @@
 
 import * as React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
-import type { MatchInfo, TimelineEvent, UUID } from '@/types/api';
+import type { MatchInfo, TimelineEvent, UUID, CountryCode } from '@/types/api';
 import { cn } from '@/lib/utils';
 import { formatTime, formatTimeDifference } from '@/lib/utils/formatters';
 import { motion } from 'framer-motion';
 import { PlayerAvatar } from './PlayerAvatar';
+import { CountryFlag } from './CountryFlag';
 
-function PlayerName({ uuid, name, side }: { uuid: UUID; name: string; side: 'left'|'right' }) {
+function PlayerName({ uuid, name, country, side }: { uuid: UUID; name: string; country: CountryCode | null; side: 'left'|'right' }) {
   return (
     <div className={cn('flex items-center gap-2', side === 'right' && 'flex-row-reverse')}>
       <PlayerAvatar uuid={uuid} username={name} size="xs" />
+      <CountryFlag country={country} size="xs" />
       <span className="truncate max-w-[140px]">{name}</span>
     </div>
   );
@@ -93,11 +95,11 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
           {/* Header row */}
           <div className="px-3 py-2 bg-muted/40 font-semibold truncate flex items-center gap-2">
             <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
-            <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} side="left" /></span>
+            <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} country={left.country} side="left" /></span>
           </div>
           <div className="px-3 py-2 bg-muted/40 text-center font-semibold">Event</div>
           <div className="px-3 py-2 bg-muted/40 text-right font-semibold truncate flex items-center justify-end gap-2">
-            {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
+            {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} country={right.country} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
           </div>
 
           {ORDER.map((type, idx) => {

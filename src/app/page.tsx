@@ -1,6 +1,34 @@
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
+import { SearchBar } from '@/components/features/SearchBar';
+import { useRouter } from 'next/navigation';
+import {
+  Trophy,
+  Radio,
+  Users,
+  Swords,
+  User,
+  ArrowRight,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from 'lucide-react';
+
 export default function HomePage() {
+  const router = useRouter();
+  const [searchValue, setSearchValue] = React.useState('');
+
+  const handleSearch = (query: string) => {
+    if (query) {
+      router.push(`/player/${encodeURIComponent(query)}`);
+    }
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Hero Section */}
       <section className="text-center py-12">
         <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-minecraft-diamond to-minecraft-emerald bg-clip-text text-transparent">
@@ -9,35 +37,174 @@ export default function HomePage() {
         <p className="text-xl text-muted-foreground mb-8">
           Track your speedrun statistics, analyze matches, and climb the leaderboard
         </p>
-      </section>
 
-      {/* Quick Start Section */}
-      <section className="max-w-2xl mx-auto">
-        <div className="bg-card border border-border rounded-lg p-8">
-          <h2 className="text-2xl font-bold mb-4">Getting Started</h2>
-          <p className="text-muted-foreground mb-4">
-            This is a cross-platform companion app for MCSR Ranked players. Features include:
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-            <li>Real-time player statistics and ELO tracking</li>
-            <li>Beautiful match history with detailed breakdowns</li>
-            <li>Interactive leaderboards with filters</li>
-            <li>Head-to-head player comparisons</li>
-            <li>Live match viewer</li>
-            <li>Achievement showcase</li>
-          </ul>
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto">
+          <SearchBar
+            value={searchValue}
+            onChange={setSearchValue}
+            onSearch={handleSearch}
+            placeholder="Search for a player..."
+          />
         </div>
       </section>
 
-      {/* Status Section */}
-      <section className="max-w-2xl mx-auto">
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="text-lg font-semibold mb-2">🚧 Under Development</h3>
-          <p className="text-sm text-muted-foreground">
-            This application is currently being built. Check back soon for updates!
-          </p>
+      {/* Quick Navigation */}
+      <section>
+        <h2 className="text-3xl font-bold text-center mb-8">Explore</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Leaderboard */}
+          <Link href="/leaderboard">
+            <Card className="h-full hover:shadow-lg transition-all hover:border-primary cursor-pointer">
+              <CardHeader>
+                <div className="p-3 bg-yellow-500/10 rounded-lg w-fit mb-2">
+                  <Trophy className="h-8 w-8 text-yellow-500" />
+                </div>
+                <CardTitle>Leaderboard</CardTitle>
+                <CardDescription>
+                  View global rankings and top players
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="ghost" className="w-full justify-between">
+                  View Rankings
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Live Matches */}
+          <Link href="/live">
+            <Card className="h-full hover:shadow-lg transition-all hover:border-primary cursor-pointer">
+              <CardHeader>
+                <div className="p-3 bg-red-500/10 rounded-lg w-fit mb-2 relative">
+                  <Radio className="h-8 w-8 text-red-500" />
+                  <span className="absolute top-2 right-2 flex h-3 w-3">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                  </span>
+                </div>
+                <CardTitle>Live Matches</CardTitle>
+                <CardDescription>
+                  Watch ongoing matches in real-time
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button variant="ghost" className="w-full justify-between">
+                  Watch Live
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Player Comparison */}
+          <Card className="h-full hover:shadow-lg transition-all">
+            <CardHeader>
+              <div className="p-3 bg-purple-500/10 rounded-lg w-fit mb-2">
+                <Swords className="h-8 w-8 text-purple-500" />
+              </div>
+              <CardTitle>Player Comparison</CardTitle>
+              <CardDescription>
+                Compare head-to-head statistics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Search for two players to compare their stats
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </section>
+
+      {/* Features Section */}
+      <section className="max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">Features</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FeatureCard
+            icon={<User className="h-6 w-6" />}
+            title="Player Profiles"
+            description="View detailed player statistics, match history, achievements, and ELO progression"
+          />
+          <FeatureCard
+            icon={<Trophy className="h-6 w-6" />}
+            title="Leaderboard Rankings"
+            description="Browse global rankings with pagination and search functionality"
+          />
+          <FeatureCard
+            icon={<Target className="h-6 w-6" />}
+            title="Match Details"
+            description="Analyze individual matches with timelines, seed info, and player performance"
+          />
+          <FeatureCard
+            icon={<Radio className="h-6 w-6" />}
+            title="Live Matches"
+            description="Real-time updates of ongoing matches with auto-refresh"
+          />
+          <FeatureCard
+            icon={<Swords className="h-6 w-6" />}
+            title="Head-to-Head"
+            description="Compare two players directly with detailed statistics and match history"
+          />
+          <FeatureCard
+            icon={<TrendingUp className="h-6 w-6" />}
+            title="Performance Charts"
+            description="Visualize ELO progression, win rates, and performance trends"
+          />
+        </div>
+      </section>
+
+      {/* Tech Stack */}
+      <section className="max-w-2xl mx-auto">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              Built With
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+              <TechBadge name="Next.js 15" />
+              <TechBadge name="React 18" />
+              <TechBadge name="TypeScript" />
+              <TechBadge name="TanStack Query" />
+              <TechBadge name="Tailwind CSS" />
+              <TechBadge name="Framer Motion" />
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+    </div>
+  );
+}
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
+  return (
+    <div className="flex gap-4 p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
+      <div className="p-2 bg-primary/10 rounded-lg h-fit text-primary">
+        {icon}
+      </div>
+      <div>
+        <h3 className="font-semibold mb-1">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+function TechBadge({ name }: { name: string }) {
+  return (
+    <div className="px-3 py-2 bg-muted rounded-lg text-center font-medium">
+      {name}
     </div>
   );
 }

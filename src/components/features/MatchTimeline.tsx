@@ -79,13 +79,13 @@ export function MatchTimeline({ events, className }: MatchTimelineProps) {
           {/* Events */}
           <div className="space-y-4">
             {sortedEvents.map((evt, index) => {
-              const icon = eventIcons[evt.event] || eventIcons.default;
-              const label = eventLabels[evt.event] || evt.event;
-              const color = eventColors[evt.event] || 'text-muted-foreground';
+              const icon = eventIcons[evt.type] || eventIcons.default;
+              const label = eventLabels[evt.type] || evt.type;
+              const color = eventColors[evt.type] || 'text-muted-foreground';
 
               return (
                 <motion.div
-                  key={`${evt.event}-${evt.time}-${index}`}
+                  key={`${evt.type}-${evt.time}-${evt.uuid}-${index}`}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.05 }}

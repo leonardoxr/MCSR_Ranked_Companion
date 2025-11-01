@@ -70,9 +70,9 @@ export interface UserProfile {
  */
 export interface MatchSeed {
   id: string | number;
-  overworldType: string;
-  bastionType: 'housing' | 'treasure' | 'bridge' | 'stables';
-  endTowerHeights: [number, number, number, number];
+  overworld: string; // API uses "overworld" not "overworldType"
+  nether: string; // API uses "nether" not "bastionType"
+  endTowers: [number, number, number, number]; // API uses "endTowers" not "endTowerHeights"
   variations: string[];
 }
 
@@ -102,12 +102,21 @@ export interface MatchRank {
 }
 
 /**
+ * VOD information
+ */
+export interface VodInfo {
+  uuid: UUID;
+  url: string;
+  startsAt: Timestamp;
+}
+
+/**
  * Timeline event in a match
  */
 export interface TimelineEvent {
-  event: string;
+  uuid: UUID;
   time: Milliseconds;
-  uuid?: UUID;
+  type: string; // API uses "type" not "event"
 }
 
 /**
@@ -122,28 +131,72 @@ export interface Completion {
  * Comprehensive match information
  */
 export interface MatchInfo {
-  id: string;
+  id: string | number; // API can return number
   type: MatchType;
   season: number;
   category: string;
+  gameMode?: string; // API includes "gameMode" field
   date: Timestamp;
   players: UserProfile[];
   spectators: UserProfile[];
-  result: MatchResult;
+  result: MatchResult | { uuid: null; time: Milliseconds }; // Result can have null uuid for forfeits
   forfeited: boolean;
   decayed: boolean;
-  rank: MatchRank;
+  rank: MatchRank | { season: null; allTime: null }; // Rank can be null
   changes: EloChange[];
   seed: MatchSeed;
   // Advanced fields (only in /matches/{id})
   completions?: Completion[];
   timelines?: TimelineEvent[];
   replayExist?: boolean;
-  vod?: string | null;
+  vod?: VodInfo[]; // API returns array of VOD info, not string
+  tag?: string | null; // Match tag
+  seedType?: string; // Duplicate of seed.overworld
+  bastionType?: string; // Duplicate of seed.nether
+  beginner?: boolean; // Beginner match flag
+  botSource?: string | null; // Bot source if applicable
 }
 
 /**
- * User statistics for a specific mode
+ * Statistics value for ranked and casual modes
+ */
+interface StatValue<T> {
+  ranked: T;
+  casual: T;
+}
+
+/**
+ * Complete user statistics structure (matches actual API response)
+ */
+export interface UserStatistics {
+  season: {
+    bestTime: StatValue<Milliseconds | null>;
+    highestWinStreak: StatValue<number>;
+    currentWinStreak: StatValue<number>;
+    playedMatches: StatValue<number>;
+    playtime: StatValue<Milliseconds>;
+    completionTime: StatValue<Milliseconds>;
+    forfeits: StatValue<number>;
+    completions: StatValue<number>;
+    wins: StatValue<number>;
+    loses: StatValue<number>; // Note: API uses "loses" not "losses"
+  };
+  total: {
+    bestTime: StatValue<Milliseconds | null>;
+    highestWinStreak: StatValue<number>;
+    currentWinStreak: StatValue<number>;
+    playedMatches: StatValue<number>;
+    playtime: StatValue<Milliseconds>;
+    completionTime: StatValue<Milliseconds>;
+    forfeits: StatValue<number>;
+    completions: StatValue<number>;
+    wins: StatValue<number>;
+    loses: StatValue<number>; // Note: API uses "loses" not "losses"
+  };
+}
+
+/**
+ * Helper type for easier access to user statistics
  */
 export interface UserStats {
   bestTime: Milliseconds | null;
@@ -159,24 +212,10 @@ export interface UserStats {
 }
 
 /**
- * Complete user statistics structure
- */
-export interface UserStatistics {
-  season: {
-    ranked: UserStats;
-    casual: UserStats;
-  };
-  total: {
-    ranked: UserStats;
-    casual: UserStats;
-  };
-}
-
-/**
  * Achievement data
  */
 export interface Achievement {
-  id: number;
+  id: string; // Achievement type identifier (e.g., "seasonResult", "playoffsResult")
   date: Timestamp;
   data: string[];
   level: number;
@@ -208,14 +247,15 @@ export interface SeasonResult {
   last: {
     eloRate: EloRate;
     eloRank: Rank;
-    phasePoints: number;
+    phasePoint: number; // Note: API uses "phasePoint" not "phasePoints"
   };
   highest: EloRate;
   lowest: EloRate;
-  phaseInfos: Array<{
+  phases: Array<{
     phase: number;
-    points: number;
-    rank: Rank;
+    eloRate: EloRate;
+    eloRank: Rank;
+    point: number; // Note: API uses "point" not "points"
   }>;
 }
 
@@ -223,10 +263,12 @@ export interface SeasonResult {
  * Extended user information
  */
 export interface UserInfo extends UserProfile {
-  firstOnline: Timestamp;
-  lastOnline: Timestamp;
-  lastRanked: Timestamp;
-  nextDecay: Timestamp | null;
+  timestamp: {
+    firstOnline: Timestamp;
+    lastOnline: Timestamp;
+    lastRanked: Timestamp;
+    nextDecay: Timestamp | null;
+  };
   statistics: UserStatistics;
   connections: UserConnections;
   achievements: {
@@ -234,6 +276,7 @@ export interface UserInfo extends UserProfile {
     total: Achievement[];
   };
   seasonResult: SeasonResult | null;
+  weeklyRaces: unknown[]; // Included in API response
 }
 
 /**
@@ -243,8 +286,20 @@ export interface LeaderboardUser extends UserProfile {
   seasonResult: {
     eloRate: EloRate;
     eloRank: Rank;
-    phasePoints: number;
+    phasePoint: number; // Note: API uses "phasePoint" not "phasePoints"
   };
+}
+
+/**
+ * Leaderboard response structure
+ */
+export interface LeaderboardResponse {
+  season: {
+    startsAt: Timestamp;
+    endsAt: Timestamp;
+    number: number;
+  };
+  users: LeaderboardUser[];
 }
 
 /**
@@ -280,16 +335,31 @@ export interface VersusStats {
 }
 
 /**
+ * Live match player data
+ */
+export interface LiveMatchPlayerData {
+  liveUrl: string | null;
+  timeline: {
+    time: Milliseconds;
+    type: string;
+  } | null;
+}
+
+/**
  * Live match data
  */
 export interface LiveMatch {
-  id: string;
+  currentTime: Milliseconds;
   players: UserProfile[];
-  spectators: UserProfile[];
-  type: MatchType;
-  category: string;
-  seed: MatchSeed;
-  startTime: Timestamp;
+  data: Record<UUID, LiveMatchPlayerData>;
+}
+
+/**
+ * Live matches response
+ */
+export interface LiveMatchesResponse {
+  players: number;
+  liveMatches: LiveMatch[];
 }
 
 /**

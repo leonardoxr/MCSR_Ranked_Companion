@@ -88,11 +88,36 @@ const createApiClient = (): AxiosInstance => {
 export const apiClient = createApiClient();
 
 /**
+ * MCSR API response wrapper
+ */
+interface McsrApiResponse<T> {
+  status: 'success' | 'error';
+  data: T;
+}
+
+/**
  * Helper function for GET requests
  */
 export async function get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-  const response = await apiClient.get<T>(url, config);
-  return response.data;
+  const response = await apiClient.get<McsrApiResponse<T> | T>(url, config);
+
+  // Check if response is wrapped in { status, data } format
+  if (response.data && typeof response.data === 'object' && 'status' in response.data) {
+    const wrappedResponse = response.data as McsrApiResponse<T>;
+    
+    // Unwrap the MCSR API response
+    if (wrappedResponse.status === 'error') {
+      throw new McsrApiError(400, {
+        error: typeof wrappedResponse.data === 'string' ? wrappedResponse.data : 'Unknown error',
+        status: 400,
+      });
+    }
+
+    return wrappedResponse.data;
+  }
+
+  // Response is direct data (no wrapper)
+  return response.data as T;
 }
 
 /**

@@ -70,7 +70,7 @@ async function validateAPIs() {
     const matches = await getUserMatches(TEST_PLAYER, { count: 1 });
     if (matches.length === 0) throw new Error('No matches to test with');
 
-    const matchId = matches[0].id;
+    const matchId = String(matches[0].id);
     const match = await getMatch(matchId);
 
     if (!match.id) throw new Error('Match ID is missing');

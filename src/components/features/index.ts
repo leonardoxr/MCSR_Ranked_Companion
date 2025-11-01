@@ -15,6 +15,9 @@ export { EloChart } from './EloChart';
 export { WinRateChart } from './WinRateChart';
 export { PerformanceChart } from './PerformanceChart';
 
+// Achievement components
+export { AchievementIcon, AchievementCard } from './AchievementIcon';
+
 // Utility components
 export { SearchBar } from './SearchBar';
 export {

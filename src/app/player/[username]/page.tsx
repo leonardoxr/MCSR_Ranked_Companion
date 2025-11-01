@@ -12,6 +12,7 @@ import { WinRateChart } from '@/components/features/WinRateChart';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Trophy, Target, TrendingUp, Clock, Award } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/utils/formatters';
+import { AchievementCard } from '@/components/features/AchievementIcon';
 import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
@@ -61,7 +62,7 @@ export default function PlayerPage() {
           return {
             date: match.date * 1000,
             elo: playerChange?.eloRate || 0,
-            matchId: match.id,
+            matchId: String(match.id),
           };
         })
         .reverse()
@@ -188,18 +189,10 @@ export default function PlayerPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {player.achievements.display.slice(0, 8).map((achievement, index) => (
-                <div
+                <AchievementCard
                   key={`${achievement.id}-${achievement.date}-${index}`}
-                  className="flex flex-col items-center p-4 border border-border rounded-lg hover:bg-accent transition-colors"
-                >
-                  <Award className="h-8 w-8 mb-2 text-primary" />
-                  <span className="text-sm font-medium text-center">
-                    {achievement.id}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Level {achievement.level}
-                  </span>
-                </div>
+                  achievement={achievement}
+                />
               ))}
             </div>
           </CardContent>

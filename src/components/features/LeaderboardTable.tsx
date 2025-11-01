@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
@@ -42,6 +43,7 @@ export function LeaderboardTable({
         <div className="divide-y divide-border">
           {players.map((player, index) => {
             const isHighlighted = player.uuid === highlightPlayer;
+            const playerUrl = `/player/${encodeURIComponent(player.nickname)}?matches=ranked&sort=newest`;
 
             return (
               <motion.div
@@ -50,24 +52,37 @@ export function LeaderboardTable({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.02 }}
                 className={cn(
-                  'grid grid-cols-12 gap-4 px-6 py-4 hover:bg-muted/50 transition-colors cursor-pointer',
+                  'relative grid grid-cols-12 gap-4 px-6 py-4 transition-colors',
                   isHighlighted && 'bg-primary/10'
                 )}
               >
+                {/* Clickable Link Overlay */}
+                <Link
+                  href={playerUrl}
+                  className="absolute inset-0 rounded-lg hover:bg-zinc-800/50 dark:hover:bg-zinc-800 transition-colors z-0"
+                />
+
                 {/* Rank */}
-                <div className="col-span-1 flex items-center">
+                <div className="col-span-1 flex items-center relative z-10">
                   <RankBadgeIcon rank={player.eloRank || 0} />
                 </div>
 
                 {/* Player */}
-                <div className="col-span-5 flex items-center gap-3 min-w-0">
+                <div className="col-span-5 flex items-center gap-3 min-w-0 relative z-10">
                   <PlayerAvatar
                     uuid={player.uuid}
                     username={player.nickname}
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{player.nickname}</p>
+                    <div className="flex h-8 items-center gap-2 text-xl">
+                      {player.eloRank && (
+                        <span className="font-semibold text-muted-foreground">
+                          #{player.eloRank.toLocaleString()}
+                        </span>
+                      )}
+                      <span className="font-semibold truncate">{player.nickname}</span>
+                    </div>
                     {showRankChange && player.eloRank && (
                       <RankChangeIndicator change={0} />
                     )}
@@ -75,12 +90,12 @@ export function LeaderboardTable({
                 </div>
 
                 {/* Tier */}
-                <div className="col-span-3 flex items-center">
+                <div className="col-span-3 flex items-center relative z-10">
                   {player.eloRate && <RankBadge elo={player.eloRate} />}
                 </div>
 
                 {/* ELO */}
-                <div className="col-span-3 flex items-center">
+                <div className="col-span-3 flex items-center relative z-10">
                   <span className="font-semibold text-lg">
                     {player.eloRate?.toLocaleString() || 'Unranked'}
                   </span>

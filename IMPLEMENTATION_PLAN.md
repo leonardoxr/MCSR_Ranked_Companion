@@ -2131,26 +2131,106 @@ export default async function PlayerPage({ params }: PlayerPageProps) {
 
 ---
 
-## Phase 4: Mobile App (Capacitor)
+## Phase 4: Mobile App (Capacitor) 🔄 IN PROGRESS
 
-### Step 4.1: Capacitor Setup
+**Goal**: Transform the web app into native mobile applications for iOS and Android while maintaining 95%+ code reuse and adding mobile-specific enhancements.
+
+**Timeline**: 1-2 weeks
+**Priority**: High (critical for multi-platform presence)
+
+---
+
+### Step 4.1: Initial Capacitor Setup
+
+**Prerequisites**:
+```bash
+# For Android development
+- Android Studio (latest stable)
+- Android SDK 33+ (API Level 33)
+- Java Development Kit (JDK) 17
+
+# For iOS development (macOS only)
+- Xcode 14+
+- CocoaPods
+- iOS Deployment Target: 13.0+
+```
+
+**Installation and Initialization**:
 
 ```bash
-# Install Capacitor
+# 1. Install Capacitor core dependencies
 pnpm add @capacitor/core @capacitor/cli
+
+# 2. Install platform-specific packages
 pnpm add @capacitor/android @capacitor/ios
 
-# Initialize Capacitor
-npx cap init "MCSR Companion" "com.mcsr.companion" --web-dir=out
-
-# Add platforms
-npx cap add android
-npx cap add ios
-
-# Install useful plugins
+# 3. Install essential Capacitor plugins
 pnpm add @capacitor/status-bar @capacitor/splash-screen
 pnpm add @capacitor/share @capacitor/preferences @capacitor/app
+pnpm add @capacitor/haptics @capacitor/toast @capacitor/network
+pnpm add @capacitor/browser @capacitor/clipboard @capacitor/device
+
+# 4. Initialize Capacitor
+npx cap init "MCSR Companion" "com.mcsr.companion" --web-dir=out
+
+# 5. Add mobile platforms
+npx cap add android
+npx cap add ios
 ```
+
+**Update Next.js Configuration for Static Export**:
+
+**next.config.js**:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // Capacitor requires static export
+  output: 'export',
+
+  // Disable image optimization for static export
+  images: {
+    unoptimized: true,
+  },
+
+  // Asset prefix for Capacitor
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
+
+  // Trailing slash for consistent routing
+  trailingSlash: true,
+
+  // Image optimization config
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'crafatar.com',
+        pathname: '/avatars/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'crafatar.com',
+        pathname: '/renders/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
+        pathname: '/**',
+      },
+    ],
+  },
+
+  // React strict mode
+  reactStrictMode: true,
+
+  // SWC minification
+  swcMinify: true,
+};
+
+module.exports = nextConfig;
+```
+
+**Capacitor Configuration**:
 
 **capacitor.config.ts**:
 
@@ -2161,70 +2241,1576 @@ const config: CapacitorConfig = {
   appId: 'com.mcsr.companion',
   appName: 'MCSR Companion',
   webDir: 'out',
+
+  // Server configuration
   server: {
     androidScheme: 'https',
     iosScheme: 'https',
+    // For development, enable live reload
+    // url: 'http://192.168.1.100:3000',
+    // cleartext: true,
   },
+
+  // Plugin configurations
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
+      launchAutoHide: true,
+      launchFadeOutDuration: 500,
       backgroundColor: '#1a1a2e',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'CENTER_CROP',
       showSpinner: false,
+      androidSpinnerStyle: 'large',
+      iosSpinnerStyle: 'small',
+      spinnerColor: '#4fc3f7',
+      splashFullScreen: true,
+      splashImmersive: true,
     },
+
     StatusBar: {
       style: 'dark',
       backgroundColor: '#1a1a2e',
     },
+
+    Keyboard: {
+      resize: 'body',
+      style: 'dark',
+      resizeOnFullScreen: true,
+    },
+  },
+
+  // Android specific configuration
+  android: {
+    buildOptions: {
+      keystorePath: undefined,
+      keystorePassword: undefined,
+      keystoreAlias: undefined,
+      keystoreAliasPassword: undefined,
+      releaseType: 'APK',
+    },
+  },
+
+  // iOS specific configuration
+  ios: {
+    contentInset: 'automatic',
+    scrollEnabled: true,
   },
 };
 
 export default config;
 ```
 
-### Step 4.2: Mobile-Specific Features
-
-**src/lib/capacitor/storage.ts**:
-
-```typescript
-import { Preferences } from '@capacitor/preferences';
-
-export const storage = {
-  async set(key: string, value: any): Promise<void> {
-    await Preferences.set({
-      key,
-      value: JSON.stringify(value),
-    });
-  },
-
-  async get<T>(key: string): Promise<T | null> {
-    const { value } = await Preferences.get({ key });
-    return value ? JSON.parse(value) : null;
-  },
-
-  async remove(key: string): Promise<void> {
-    await Preferences.remove({ key });
-  },
-
-  async clear(): Promise<void> {
-    await Preferences.clear();
-  },
-};
-```
-
-### Step 4.3: Build for Mobile
-
-Update **package.json**:
+**Package.json Scripts**:
 
 ```json
 {
   "scripts": {
-    "build:mobile": "next build && next export",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+
+    "build:mobile": "next build",
     "cap:sync": "pnpm build:mobile && cap sync",
-    "cap:android": "pnpm cap:sync && cap open android",
-    "cap:ios": "pnpm cap:sync && cap open ios"
+    "cap:copy": "cap copy",
+
+    "android:dev": "cap open android",
+    "android:build": "pnpm build:mobile && cap sync android && cap open android",
+    "android:run": "cap run android",
+
+    "ios:dev": "cap open ios",
+    "ios:build": "pnpm build:mobile && cap sync ios && cap open ios",
+    "ios:run": "cap run ios",
+
+    "mobile:update": "pnpm build:mobile && cap copy && cap sync"
   }
 }
 ```
+
+---
+
+### Step 4.2: Platform Detection and Mobile Utilities
+
+**src/lib/mobile/platform.ts**:
+
+```typescript
+import { Capacitor } from '@capacitor/core';
+import { Device } from '@capacitor/device';
+
+/**
+ * Platform detection utilities
+ */
+export const Platform = {
+  /**
+   * Check if running as native mobile app
+   */
+  isNative: () => Capacitor.isNativePlatform(),
+
+  /**
+   * Check if running on iOS
+   */
+  isIOS: () => Capacitor.getPlatform() === 'ios',
+
+  /**
+   * Check if running on Android
+   */
+  isAndroid: () => Capacitor.getPlatform() === 'android',
+
+  /**
+   * Check if running in web browser
+   */
+  isWeb: () => Capacitor.getPlatform() === 'web',
+
+  /**
+   * Get current platform name
+   */
+  getPlatform: () => Capacitor.getPlatform(),
+};
+
+/**
+ * Get device information
+ */
+export async function getDeviceInfo() {
+  const info = await Device.getInfo();
+  const id = await Device.getId();
+
+  return {
+    ...info,
+    uuid: id.identifier,
+  };
+}
+
+/**
+ * Platform-specific configuration
+ */
+export function getPlatformConfig() {
+  if (Platform.isIOS()) {
+    return {
+      statusBarHeight: 44, // iPhone status bar
+      safeAreaTop: 44,
+      safeAreaBottom: 34, // iPhone home indicator
+      hapticFeedback: true,
+    };
+  }
+
+  if (Platform.isAndroid()) {
+    return {
+      statusBarHeight: 24,
+      safeAreaTop: 0,
+      safeAreaBottom: 0,
+      hapticFeedback: true,
+    };
+  }
+
+  return {
+    statusBarHeight: 0,
+    safeAreaTop: 0,
+    safeAreaBottom: 0,
+    hapticFeedback: false,
+  };
+}
+```
+
+---
+
+### Step 4.3: Mobile-Optimized Storage Layer
+
+**src/lib/mobile/storage.ts**:
+
+```typescript
+import { Preferences } from '@capacitor/preferences';
+import { Platform } from './platform';
+
+/**
+ * Mobile-optimized storage using Capacitor Preferences
+ * Falls back to localStorage for web
+ */
+export const MobileStorage = {
+  /**
+   * Set a value in storage
+   */
+  async set(key: string, value: any): Promise<void> {
+    try {
+      if (Platform.isNative()) {
+        await Preferences.set({
+          key,
+          value: JSON.stringify(value),
+        });
+      } else {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch (error) {
+      console.error(`Storage set error for key ${key}:`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get a value from storage
+   */
+  async get<T>(key: string): Promise<T | null> {
+    try {
+      if (Platform.isNative()) {
+        const { value } = await Preferences.get({ key });
+        return value ? JSON.parse(value) : null;
+      } else {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+      }
+    } catch (error) {
+      console.error(`Storage get error for key ${key}:`, error);
+      return null;
+    }
+  },
+
+  /**
+   * Remove a value from storage
+   */
+  async remove(key: string): Promise<void> {
+    try {
+      if (Platform.isNative()) {
+        await Preferences.remove({ key });
+      } else {
+        localStorage.removeItem(key);
+      }
+    } catch (error) {
+      console.error(`Storage remove error for key ${key}:`, error);
+    }
+  },
+
+  /**
+   * Clear all storage
+   */
+  async clear(): Promise<void> {
+    try {
+      if (Platform.isNative()) {
+        await Preferences.clear();
+      } else {
+        localStorage.clear();
+      }
+    } catch (error) {
+      console.error('Storage clear error:', error);
+    }
+  },
+
+  /**
+   * Get all keys
+   */
+  async keys(): Promise<string[]> {
+    try {
+      if (Platform.isNative()) {
+        const { keys } = await Preferences.keys();
+        return keys;
+      } else {
+        return Object.keys(localStorage);
+      }
+    } catch (error) {
+      console.error('Storage keys error:', error);
+      return [];
+    }
+  },
+};
+
+/**
+ * Cached storage for frequently accessed data
+ */
+export class CachedStorage<T> {
+  private cache: Map<string, T> = new Map();
+  private prefix: string;
+
+  constructor(prefix: string) {
+    this.prefix = prefix;
+  }
+
+  private getKey(key: string): string {
+    return `${this.prefix}:${key}`;
+  }
+
+  async get(key: string): Promise<T | null> {
+    // Check cache first
+    if (this.cache.has(key)) {
+      return this.cache.get(key)!;
+    }
+
+    // Load from storage
+    const value = await MobileStorage.get<T>(this.getKey(key));
+    if (value !== null) {
+      this.cache.set(key, value);
+    }
+
+    return value;
+  }
+
+  async set(key: string, value: T): Promise<void> {
+    this.cache.set(key, value);
+    await MobileStorage.set(this.getKey(key), value);
+  }
+
+  async remove(key: string): Promise<void> {
+    this.cache.delete(key);
+    await MobileStorage.remove(this.getKey(key));
+  }
+
+  clearCache(): void {
+    this.cache.clear();
+  }
+}
+
+/**
+ * Storage keys for the app
+ */
+export const StorageKeys = {
+  // User preferences
+  FAVORITES: 'favorites',
+  RECENT_SEARCHES: 'recent_searches',
+  THEME: 'theme',
+  NOTIFICATIONS_ENABLED: 'notifications_enabled',
+
+  // Cached data
+  LEADERBOARD_CACHE: 'leaderboard_cache',
+  PLAYER_CACHE: 'player_cache',
+  MATCHES_CACHE: 'matches_cache',
+
+  // App state
+  LAST_VIEWED_PLAYER: 'last_viewed_player',
+  ONBOARDING_COMPLETED: 'onboarding_completed',
+} as const;
+
+/**
+ * Typed storage helpers
+ */
+export const FavoritesStorage = new CachedStorage<string[]>('favorites');
+export const RecentSearchesStorage = new CachedStorage<string[]>('recent_searches');
+```
+
+---
+
+### Step 4.4: Native Features Integration
+
+**src/lib/mobile/features.ts**:
+
+```typescript
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Toast } from '@capacitor/toast';
+import { Share } from '@capacitor/share';
+import { Browser } from '@capacitor/browser';
+import { Clipboard } from '@capacitor/clipboard';
+import { Network } from '@capacitor/network';
+import { App } from '@capacitor/app';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Platform } from './platform';
+
+/**
+ * Haptic feedback utilities
+ */
+export const HapticFeedback = {
+  /**
+   * Light impact (button press)
+   */
+  async light() {
+    if (Platform.isNative()) {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    }
+  },
+
+  /**
+   * Medium impact (selection change)
+   */
+  async medium() {
+    if (Platform.isNative()) {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    }
+  },
+
+  /**
+   * Heavy impact (important action)
+   */
+  async heavy() {
+    if (Platform.isNative()) {
+      await Haptics.impact({ style: ImpactStyle.Heavy });
+    }
+  },
+
+  /**
+   * Selection changed (picker, slider)
+   */
+  async selection() {
+    if (Platform.isNative()) {
+      await Haptics.selectionChanged();
+    }
+  },
+
+  /**
+   * Notification feedback
+   */
+  async notification(type: 'success' | 'warning' | 'error' = 'success') {
+    if (Platform.isNative()) {
+      await Haptics.notification({ type: type.toUpperCase() as any });
+    }
+  },
+};
+
+/**
+ * Toast notifications
+ */
+export const ToastNotification = {
+  async show(text: string, duration: 'short' | 'long' = 'short') {
+    if (Platform.isNative()) {
+      await Toast.show({
+        text,
+        duration: duration,
+        position: 'bottom',
+      });
+    } else {
+      // Fallback for web (you can use a custom toast component)
+      console.log('Toast:', text);
+    }
+  },
+
+  async success(text: string) {
+    await HapticFeedback.notification('success');
+    await this.show(text, 'short');
+  },
+
+  async error(text: string) {
+    await HapticFeedback.notification('error');
+    await this.show(text, 'long');
+  },
+};
+
+/**
+ * Share functionality
+ */
+export const ShareUtils = {
+  /**
+   * Share text content
+   */
+  async shareText(text: string, title?: string) {
+    try {
+      await Share.share({
+        text,
+        title,
+        dialogTitle: 'Share via',
+      });
+      await HapticFeedback.light();
+    } catch (error) {
+      console.error('Share error:', error);
+    }
+  },
+
+  /**
+   * Share player profile
+   */
+  async sharePlayer(username: string, eloRate: number, rank: number) {
+    const text = `Check out ${username}'s MCSR Ranked stats!\nELO: ${eloRate} | Rank: #${rank}\nhttps://mcsrranked.com/users/${username}`;
+    await this.shareText(text, `${username} - MCSR Ranked`);
+  },
+
+  /**
+   * Share match result
+   */
+  async shareMatch(matchId: string, winner: string, time: number) {
+    const text = `${winner} won in ${this.formatTime(time)}!\nView match: https://mcsrranked.com/matches/${matchId}`;
+    await this.shareText(text, 'MCSR Ranked Match');
+  },
+
+  formatTime(ms: number): string {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  },
+};
+
+/**
+ * Browser utilities
+ */
+export const BrowserUtils = {
+  /**
+   * Open URL in in-app browser
+   */
+  async open(url: string) {
+    if (Platform.isNative()) {
+      await Browser.open({ url, presentationStyle: 'popover' });
+    } else {
+      window.open(url, '_blank');
+    }
+  },
+
+  /**
+   * Open player VOD
+   */
+  async openVOD(vodUrl: string) {
+    await this.open(vodUrl);
+    await HapticFeedback.light();
+  },
+
+  /**
+   * Open player's Twitch
+   */
+  async openTwitch(username: string) {
+    await this.open(`https://twitch.tv/${username}`);
+  },
+};
+
+/**
+ * Clipboard utilities
+ */
+export const ClipboardUtils = {
+  /**
+   * Copy text to clipboard
+   */
+  async copy(text: string) {
+    await Clipboard.write({ string: text });
+    await ToastNotification.show('Copied to clipboard');
+    await HapticFeedback.light();
+  },
+
+  /**
+   * Read from clipboard
+   */
+  async read(): Promise<string> {
+    const { value } = await Clipboard.read();
+    return value;
+  },
+
+  /**
+   * Copy player UUID
+   */
+  async copyUUID(uuid: string) {
+    await this.copy(uuid);
+  },
+
+  /**
+   * Copy match ID
+   */
+  async copyMatchId(matchId: string) {
+    await this.copy(matchId);
+  },
+};
+
+/**
+ * Network status monitoring
+ */
+export const NetworkMonitor = {
+  /**
+   * Check current network status
+   */
+  async getStatus() {
+    const status = await Network.getStatus();
+    return {
+      connected: status.connected,
+      connectionType: status.connectionType,
+    };
+  },
+
+  /**
+   * Listen for network status changes
+   */
+  onChange(callback: (connected: boolean) => void) {
+    Network.addListener('networkStatusChange', (status) => {
+      callback(status.connected);
+    });
+  },
+
+  /**
+   * Remove network listener
+   */
+  removeListeners() {
+    Network.removeAllListeners();
+  },
+};
+
+/**
+ * App lifecycle management
+ */
+export const AppLifecycle = {
+  /**
+   * Handle app state changes
+   */
+  onStateChange(callback: (isActive: boolean) => void) {
+    App.addListener('appStateChange', ({ isActive }) => {
+      callback(isActive);
+    });
+  },
+
+  /**
+   * Handle deep links
+   */
+  onDeepLink(callback: (url: string) => void) {
+    App.addListener('appUrlOpen', (data) => {
+      callback(data.url);
+    });
+  },
+
+  /**
+   * Get app info
+   */
+  async getInfo() {
+    return await App.getInfo();
+  },
+};
+
+/**
+ * Status bar management
+ */
+export const StatusBarManager = {
+  /**
+   * Set status bar style
+   */
+  async setStyle(style: 'light' | 'dark') {
+    if (Platform.isNative()) {
+      await StatusBar.setStyle({
+        style: style === 'light' ? Style.Light : Style.Dark,
+      });
+    }
+  },
+
+  /**
+   * Show status bar
+   */
+  async show() {
+    if (Platform.isNative()) {
+      await StatusBar.show();
+    }
+  },
+
+  /**
+   * Hide status bar
+   */
+  async hide() {
+    if (Platform.isNative()) {
+      await StatusBar.hide();
+    }
+  },
+
+  /**
+   * Set background color (Android only)
+   */
+  async setBackgroundColor(color: string) {
+    if (Platform.isAndroid()) {
+      await StatusBar.setBackgroundColor({ color });
+    }
+  },
+};
+```
+
+---
+
+### Step 4.5: Mobile-Optimized Components
+
+**src/components/mobile/MobileNav.tsx**:
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Home, Trophy, Users, Star, Menu } from 'lucide-react';
+import { HapticFeedback } from '@/lib/mobile/features';
+import { Platform } from '@/lib/mobile/platform';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+
+const navItems = [
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy },
+  { href: '/live', label: 'Live', icon: Users },
+  { href: '/favorites', label: 'Favorites', icon: Star },
+];
+
+export function MobileNav() {
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleNavClick = async () => {
+    if (Platform.isNative()) {
+      await HapticFeedback.light();
+    }
+  };
+
+  return (
+    <>
+      {/* Bottom Navigation Bar (Mobile) */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-background border-t border-border z-50">
+        <div className="flex justify-around items-center h-16 safe-area-bottom">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={handleNavClick}
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon className="w-6 h-6" />
+                <span className="text-xs mt-1">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      {/* Hamburger Menu (Mobile Alternative) */}
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild className="md:hidden">
+          <button className="p-2">
+            <Menu className="w-6 h-6" />
+          </button>
+        </SheetTrigger>
+        <SheetContent side="right" className="w-64">
+          <nav className="flex flex-col gap-4 mt-8">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => {
+                    handleNavClick();
+                    setIsOpen(false);
+                  }}
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent transition-colors"
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </>
+  );
+}
+```
+
+**src/components/mobile/PullToRefresh.tsx**:
+
+```typescript
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { HapticFeedback } from '@/lib/mobile/features';
+
+interface PullToRefreshProps {
+  onRefresh: () => Promise<void>;
+  children: React.ReactNode;
+}
+
+export function PullToRefresh({ onRefresh, children }: PullToRefreshProps) {
+  const [isPulling, setIsPulling] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const startY = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const PULL_THRESHOLD = 80;
+
+  const handleTouchStart = (e: TouchEvent) => {
+    if (window.scrollY === 0) {
+      startY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (isRefreshing || window.scrollY > 0) return;
+
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - startY.current;
+
+    if (distance > 0) {
+      setIsPulling(true);
+      setPullDistance(Math.min(distance, PULL_THRESHOLD * 1.5));
+
+      if (distance > PULL_THRESHOLD) {
+        HapticFeedback.light();
+      }
+    }
+  };
+
+  const handleTouchEnd = async () => {
+    if (pullDistance > PULL_THRESHOLD && !isRefreshing) {
+      setIsRefreshing(true);
+      await HapticFeedback.medium();
+      await onRefresh();
+      setIsRefreshing(false);
+    }
+
+    setIsPulling(false);
+    setPullDistance(0);
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('touchstart', handleTouchStart);
+    container.addEventListener('touchmove', handleTouchMove);
+    container.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullDistance, isRefreshing]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      {/* Pull indicator */}
+      <div
+        className="absolute top-0 left-0 right-0 flex items-center justify-center transition-all duration-200"
+        style={{
+          height: pullDistance,
+          opacity: isPulling ? 1 : 0,
+        }}
+      >
+        <RefreshCw
+          className={`w-6 h-6 ${isRefreshing ? 'animate-spin' : ''}`}
+          style={{
+            transform: `rotate(${pullDistance * 3}deg)`,
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div style={{ marginTop: isPulling ? pullDistance : 0 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Step 4.6: Mobile-Specific Hooks
+
+**src/lib/hooks/useMobileFeatures.ts**:
+
+```typescript
+'use client';
+
+import { useEffect, useState } from 'react';
+import { Platform } from '@/lib/mobile/platform';
+import { NetworkMonitor, AppLifecycle } from '@/lib/mobile/features';
+
+/**
+ * Hook to detect if running on mobile
+ */
+export function useIsMobile() {
+  return Platform.isNative();
+}
+
+/**
+ * Hook for network status
+ */
+export function useNetworkStatus() {
+  const [isOnline, setIsOnline] = useState(true);
+  const [connectionType, setConnectionType] = useState<string>('unknown');
+
+  useEffect(() => {
+    // Get initial status
+    NetworkMonitor.getStatus().then((status) => {
+      setIsOnline(status.connected);
+      setConnectionType(status.connectionType);
+    });
+
+    // Listen for changes
+    NetworkMonitor.onChange((connected) => {
+      setIsOnline(connected);
+    });
+
+    return () => {
+      NetworkMonitor.removeListeners();
+    };
+  }, []);
+
+  return { isOnline, connectionType };
+}
+
+/**
+ * Hook for app state (active/background)
+ */
+export function useAppState() {
+  const [isActive, setIsActive] = useState(true);
+
+  useEffect(() => {
+    AppLifecycle.onStateChange((active) => {
+      setIsActive(active);
+    });
+  }, []);
+
+  return { isActive };
+}
+
+/**
+ * Hook for safe area insets
+ */
+export function useSafeArea() {
+  const config = getPlatformConfig();
+
+  return {
+    top: config.safeAreaTop,
+    bottom: config.safeAreaBottom,
+  };
+}
+
+/**
+ * Hook for orientation changes
+ */
+export function useOrientation() {
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setOrientation(
+        window.innerHeight > window.innerWidth ? 'portrait' : 'landscape'
+      );
+    };
+
+    handleOrientationChange();
+    window.addEventListener('resize', handleOrientationChange);
+
+    return () => {
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, []);
+
+  return orientation;
+}
+```
+
+---
+
+### Step 4.7: Platform-Specific Configuration
+
+#### Android Configuration
+
+**android/app/src/main/AndroidManifest.xml**:
+
+Add internet and network state permissions:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.permission.VIBRATE" />
+
+  <application
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme"
+    android:usesCleartextTraffic="true">
+
+    <!-- Deep linking support -->
+    <intent-filter android:autoVerify="true">
+      <action android:name="android.intent.action.VIEW" />
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+      <data android:scheme="mcsrcompanion" />
+      <data android:host="player" />
+      <data android:host="match" />
+    </intent-filter>
+  </application>
+</manifest>
+```
+
+**android/app/build.gradle**:
+
+```gradle
+android {
+    namespace "com.mcsr.companion"
+    compileSdkVersion 33
+
+    defaultConfig {
+        applicationId "com.mcsr.companion"
+        minSdkVersion 22
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
+```
+
+#### iOS Configuration
+
+**ios/App/Info.plist**:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDisplayName</key>
+  <string>MCSR Companion</string>
+
+  <key>CFBundleIdentifier</key>
+  <string>com.mcsr.companion</string>
+
+  <key>CFBundleVersion</key>
+  <string>1.0.0</string>
+
+  <!-- Deep linking -->
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>mcsrcompanion</string>
+      </array>
+    </dict>
+  </array>
+
+  <!-- Dark mode support -->
+  <key>UIUserInterfaceStyle</key>
+  <string>Automatic</string>
+
+  <!-- Status bar -->
+  <key>UIStatusBarHidden</key>
+  <false/>
+  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <true/>
+</dict>
+</plist>
+```
+
+---
+
+### Step 4.8: App Icons and Splash Screens
+
+**Generate app icons** using a tool like [appicon.co](https://appicon.co/):
+
+1. Create a 1024x1024px icon with the MCSR Companion logo
+2. Upload to icon generator
+3. Download platform-specific assets
+
+**Android Icon Structure**:
+```
+android/app/src/main/res/
+├── mipmap-hdpi/
+│   └── ic_launcher.png (72x72)
+├── mipmap-mdpi/
+│   └── ic_launcher.png (48x48)
+├── mipmap-xhdpi/
+│   └── ic_launcher.png (96x96)
+├── mipmap-xxhdpi/
+│   └── ic_launcher.png (144x144)
+└── mipmap-xxxhdpi/
+    └── ic_launcher.png (192x192)
+```
+
+**iOS Icon Structure**:
+```
+ios/App/Assets.xcassets/AppIcon.appiconset/
+├── AppIcon-20x20@1x.png
+├── AppIcon-20x20@2x.png
+├── AppIcon-40x40@1x.png
+└── ... (all required sizes)
+```
+
+**Splash Screen**:
+
+Create a splash screen image (2732x2732px recommended):
+
+```
+resources/
+├── splash.png          # Main splash image
+├── splash-dark.png     # Dark mode variant
+└── icon.png           # App icon
+```
+
+Run Capacitor CLI to generate splash screens:
+```bash
+npx @capacitor/assets generate
+```
+
+---
+
+### Step 4.9: Offline Support and Caching
+
+**Service Worker for Progressive Web App** (also benefits mobile):
+
+**public/sw.js**:
+
+```javascript
+const CACHE_NAME = 'mcsr-companion-v1';
+const urlsToCache = [
+  '/',
+  '/leaderboard',
+  '/live',
+  '/offline',
+];
+
+// Install event
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(urlsToCache))
+  );
+});
+
+// Fetch event - cache-first strategy for assets
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // API requests - network-first
+  if (url.hostname === 'api.mcsrranked.com') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Static assets - cache-first
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => response || fetch(event.request))
+  );
+});
+
+// Activate event - cleanup old caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    })
+  );
+});
+```
+
+**Offline Indicator Component**:
+
+**src/components/mobile/OfflineIndicator.tsx**:
+
+```typescript
+'use client';
+
+import { useNetworkStatus } from '@/lib/hooks/useMobileFeatures';
+import { WifiOff } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+export function OfflineIndicator() {
+  const { isOnline } = useNetworkStatus();
+
+  if (isOnline) return null;
+
+  return (
+    <Alert variant="destructive" className="fixed top-0 left-0 right-0 z-50 rounded-none">
+      <WifiOff className="h-4 w-4" />
+      <AlertDescription>
+        You're offline. Some features may be unavailable.
+      </AlertDescription>
+    </Alert>
+  );
+}
+```
+
+---
+
+### Step 4.10: Build and Deployment
+
+#### Development Workflow
+
+```bash
+# 1. Start Next.js dev server
+pnpm dev
+
+# 2. In another terminal, sync to mobile (live reload)
+# Update capacitor.config.ts with your local IP:
+# server: { url: 'http://192.168.1.100:3000', cleartext: true }
+
+# 3. Open in Android Studio
+pnpm android:dev
+
+# 4. Run on device/emulator
+# Use Android Studio's run button or:
+pnpm android:run
+
+# For iOS (macOS only)
+pnpm ios:dev
+pnpm ios:run
+```
+
+#### Production Build
+
+**Android APK/AAB**:
+
+```bash
+# 1. Build the Next.js app
+pnpm build:mobile
+
+# 2. Sync to Android
+cap sync android
+
+# 3. Open Android Studio
+cap open android
+
+# 4. In Android Studio:
+# - Build > Generate Signed Bundle / APK
+# - Select Android App Bundle (AAB) for Play Store
+# - Or APK for direct distribution
+
+# Output location:
+# android/app/build/outputs/bundle/release/app-release.aab
+# android/app/build/outputs/apk/release/app-release.apk
+```
+
+**iOS IPA**:
+
+```bash
+# 1. Build the Next.js app
+pnpm build:mobile
+
+# 2. Sync to iOS
+cap sync ios
+
+# 3. Open Xcode
+cap open ios
+
+# 4. In Xcode:
+# - Select "Any iOS Device (arm64)"
+# - Product > Archive
+# - Distribute App > App Store Connect
+# - Follow the upload wizard
+
+# For TestFlight:
+# - Use "TestFlight & App Store" distribution
+# - Upload to App Store Connect
+# - Add to TestFlight for beta testing
+```
+
+#### Google Play Store Submission
+
+**Requirements**:
+1. Google Play Developer Account ($25 one-time fee)
+2. App screenshots (phone, tablet, possibly TV)
+3. Feature graphic (1024x500px)
+4. App description and marketing materials
+5. Privacy policy URL
+
+**Checklist**:
+- [ ] Create app listing in Play Console
+- [ ] Upload app bundle (AAB)
+- [ ] Add screenshots (min 2, max 8 per device type)
+- [ ] Write app description (short and full)
+- [ ] Set content rating
+- [ ] Add privacy policy
+- [ ] Submit for review
+
+**android/app/build.gradle signing config**:
+
+```gradle
+android {
+    signingConfigs {
+        release {
+            if (project.hasProperty('MCSR_RELEASE_STORE_FILE')) {
+                storeFile file(MCSR_RELEASE_STORE_FILE)
+                storePassword MCSR_RELEASE_STORE_PASSWORD
+                keyAlias MCSR_RELEASE_KEY_ALIAS
+                keyPassword MCSR_RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+}
+```
+
+#### Apple App Store Submission
+
+**Requirements**:
+1. Apple Developer Account ($99/year)
+2. App screenshots (various iPhone sizes)
+3. App preview videos (optional but recommended)
+4. App description and keywords
+5. Privacy policy URL
+
+**Checklist**:
+- [ ] Create app ID in App Store Connect
+- [ ] Configure app information
+- [ ] Upload build via Xcode
+- [ ] Add screenshots and metadata
+- [ ] Submit for App Review
+- [ ] Respond to any feedback
+
+---
+
+### Step 4.11: Testing Checklist
+
+**Functionality Testing**:
+- [ ] Player search works correctly
+- [ ] Leaderboard loads and paginates
+- [ ] Live matches update in real-time
+- [ ] Match details display correctly
+- [ ] Player profiles show all stats
+- [ ] Favorites can be added/removed
+- [ ] Share functionality works
+- [ ] Deep links open correctly
+- [ ] Offline mode shows cached data
+
+**Platform-Specific Testing**:
+
+**Android**:
+- [ ] Test on Android 8+ devices
+- [ ] Back button navigation works
+- [ ] Status bar color changes with theme
+- [ ] Haptic feedback works
+- [ ] Share sheet appears correctly
+- [ ] Deep links work from browser
+- [ ] App doesn't crash on rotation
+- [ ] Network state changes handled
+
+**iOS**:
+- [ ] Test on iOS 13+ devices
+- [ ] Safe area insets respected
+- [ ] Status bar style changes correctly
+- [ ] Haptic feedback works (Taptic Engine)
+- [ ] Share sheet appears correctly
+- [ ] Deep links work from Safari
+- [ ] Pull-to-refresh works smoothly
+- [ ] Dark mode switches correctly
+
+**Performance Testing**:
+- [ ] App launches in < 3 seconds
+- [ ] Smooth scrolling (60 FPS)
+- [ ] No memory leaks
+- [ ] Images load efficiently
+- [ ] API calls are cached appropriately
+- [ ] Battery usage is reasonable
+
+---
+
+### Step 4.12: Mobile-Specific Features (MCSR API Integration)
+
+**Favorites Management**:
+
+**src/lib/mobile/favorites.ts**:
+
+```typescript
+import { FavoritesStorage } from './storage';
+import { ToastNotification, HapticFeedback } from './features';
+
+export class FavoritesManager {
+  /**
+   * Add player to favorites
+   */
+  static async addFavorite(username: string) {
+    const favorites = await FavoritesStorage.get('players') || [];
+
+    if (!favorites.includes(username)) {
+      favorites.push(username);
+      await FavoritesStorage.set('players', favorites);
+      await ToastNotification.success(`${username} added to favorites`);
+      await HapticFeedback.light();
+    }
+  }
+
+  /**
+   * Remove player from favorites
+   */
+  static async removeFavorite(username: string) {
+    const favorites = await FavoritesStorage.get('players') || [];
+    const updated = favorites.filter(u => u !== username);
+
+    await FavoritesStorage.set('players', updated);
+    await ToastNotification.show(`${username} removed from favorites`);
+    await HapticFeedback.light();
+  }
+
+  /**
+   * Check if player is favorited
+   */
+  static async isFavorite(username: string): Promise<boolean> {
+    const favorites = await FavoritesStorage.get('players') || [];
+    return favorites.includes(username);
+  }
+
+  /**
+   * Get all favorites
+   */
+  static async getAllFavorites(): Promise<string[]> {
+    return await FavoritesStorage.get('players') || [];
+  }
+}
+```
+
+**Quick Actions (Home Screen Shortcuts)**:
+
+For iOS 13+ and Android 7.1+, add home screen quick actions:
+
+**Add to capacitor.config.ts**:
+
+```typescript
+plugins: {
+  // ... other plugins
+
+  // iOS Quick Actions
+  QuickActions: {
+    items: [
+      {
+        type: 'search',
+        title: 'Search Player',
+        subtitle: 'Find player statistics',
+        icon: 'search',
+      },
+      {
+        type: 'leaderboard',
+        title: 'Leaderboard',
+        subtitle: 'View global rankings',
+        icon: 'trophy',
+      },
+      {
+        type: 'live',
+        title: 'Live Matches',
+        subtitle: 'Watch ongoing matches',
+        icon: 'play',
+      },
+    ],
+  },
+},
+```
+
+---
+
+### Step 4.13: Performance Optimizations
+
+**Image Optimization**:
+
+```typescript
+// Use optimized images for mobile
+export function getOptimizedImageUrl(uuid: string, size: number = 128) {
+  // Use smaller sizes on mobile
+  const mobileSize = Platform.isNative() && size > 128 ? 128 : size;
+  return `https://crafatar.com/avatars/${uuid}?size=${mobileSize}&overlay`;
+}
+
+// Lazy load images
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+
+<LazyLoadImage
+  src={getOptimizedImageUrl(uuid)}
+  alt={nickname}
+  effect="blur"
+  threshold={100}
+/>
+```
+
+**API Request Batching**:
+
+```typescript
+// Batch multiple player requests
+async function batchFetchPlayers(usernames: string[]) {
+  const results = await Promise.all(
+    usernames.map(username =>
+      fetch(`https://api.mcsrranked.com/users/${username}`)
+        .then(r => r.json())
+        .catch(() => null)
+    )
+  );
+
+  return results.filter(Boolean);
+}
+```
+
+**Virtual Scrolling for Long Lists**:
+
+```typescript
+import { useVirtualizer } from '@tanstack/react-virtual';
+
+function LeaderboardVirtualized({ players }) {
+  const parentRef = useRef();
+
+  const rowVirtualizer = useVirtualizer({
+    count: players.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 80, // Row height
+    overscan: 5,
+  });
+
+  return (
+    <div ref={parentRef} style={{ height: '100vh', overflow: 'auto' }}>
+      <div style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
+        {rowVirtualizer.getVirtualItems().map(virtualRow => (
+          <div
+            key={virtualRow.index}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start}px)`,
+            }}
+          >
+            <PlayerRow player={players[virtualRow.index]} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### Phase 4 Summary
+
+**What We've Built**:
+- ✅ Complete Capacitor setup for iOS and Android
+- ✅ Mobile-optimized storage with native Preferences API
+- ✅ Native features (haptics, toast, share, clipboard)
+- ✅ Platform detection and responsive utilities
+- ✅ Mobile-specific components (bottom nav, pull-to-refresh)
+- ✅ Offline support with service workers
+- ✅ App icons and splash screens
+- ✅ Deep linking configuration
+- ✅ Build and deployment workflows
+- ✅ Performance optimizations
+
+**Code Reuse**:
+- 95%+ of the web app code works on mobile
+- Only mobile-specific additions:
+  - Native plugin integrations
+  - Platform-specific UI components
+  - Mobile navigation patterns
+  - Touch interactions
+
+**Next Steps**:
+1. Test on real devices
+2. Optimize for different screen sizes
+3. Add push notifications (optional)
+4. Submit to app stores
+5. Move to Phase 5 (Desktop with Tauri)
 
 ---
 

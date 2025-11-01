@@ -11,6 +11,7 @@ import { ErrorState } from '@/components/features/ErrorState';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
 import { Swords, Trophy, Target, TrendingUp, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { RankBadge } from '@/components/features/RankBadge';
 
 export default function VersusPage() {
   const params = useParams();
@@ -174,6 +175,11 @@ export default function VersusPage() {
                 player1Name={player1Data.nickname}
                 player2Name={player2Data.nickname}
                 format={(val) => val.toLocaleString()}
+                renderValue={(val) => (
+                  <span className="inline-flex items-center gap-1">
+                    <RankBadge elo={val} showText={false} showElo />
+                  </span>
+                )}
               />
               <ComparisonBar
                 label="Total Wins"
@@ -245,6 +251,7 @@ interface ComparisonBarProps {
   player2Name: string;
   format: (value: number) => string;
   lowerIsBetter?: boolean;
+  renderValue?: (value: number) => React.ReactNode;
 }
 
 function ComparisonBar({
@@ -255,6 +262,7 @@ function ComparisonBar({
   player2Name,
   format,
   lowerIsBetter = false,
+  renderValue,
 }: ComparisonBarProps) {
   const maxValue = Math.max(player1Value, player2Value);
   const player1Percentage = maxValue > 0 ? (player1Value / maxValue) * 100 : 0;
@@ -280,7 +288,7 @@ function ComparisonBar({
               {player1Name}
             </span>
             <span className={`text-sm font-semibold ${player1Better ? 'text-green-500' : ''}`}>
-              {format(player1Value)}
+              {renderValue ? renderValue(player1Value) : format(player1Value)}
             </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -300,7 +308,7 @@ function ComparisonBar({
               {player2Name}
             </span>
             <span className={`text-sm font-semibold ${player2Better ? 'text-green-500' : ''}`}>
-              {format(player2Value)}
+              {renderValue ? renderValue(player2Value) : format(player2Value)}
             </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">

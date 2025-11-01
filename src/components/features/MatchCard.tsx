@@ -13,6 +13,7 @@ import {
 import { getEloChangeColor, getMatchTypeColor } from '@/lib/utils/colors';
 import type { MatchInfo } from '@/types/api';
 import { MatchType } from '@/types/api';
+import { useRouter } from 'next/navigation';
 import {
   Trophy,
   Clock,
@@ -38,6 +39,7 @@ export function MatchCard({
   highlightPlayer,
 }: MatchCardProps) {
   const { id, type, result, date, seed, players, changes } = match;
+  const router = useRouter();
 
   const winner = result.uuid; // Can be null for forfeited matches
   const matchTypeColor = getMatchTypeColor(type);
@@ -65,6 +67,15 @@ export function MatchCard({
     >
       <Card
         className={cn('hover:shadow-lg transition-shadow cursor-pointer', className)}
+        onClick={() => router.push(`/match/${id}`)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            router.push(`/match/${id}`);
+          }
+        }}
       >
         <CardContent className="p-4">
           {/* Header: Match type and date */}

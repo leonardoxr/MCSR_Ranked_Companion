@@ -131,7 +131,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
             </div>
           </div>
           <div className="text-right">
-            <div className="text-2xl font-mono font-bold text-red-500">
+            <div className="text-2xl font-mono font-bold text-red-500 pulse-glow">
               {formatElapsedTime(currentTime)}
             </div>
             <p className="text-xs text-muted-foreground">Match Time</p>
@@ -178,10 +178,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
                     <p className="font-semibold truncate">{player.nickname}</p>
                     {player.eloRate && (
                       <div className="flex items-center gap-2 mt-1">
-                        <RankBadge elo={player.eloRate} />
-                        <span className="text-xs text-muted-foreground">
-                          {player.eloRate} ELO
-                        </span>
+                        <RankBadge elo={player.eloRate} showElo />
                       </div>
                     )}
                     {playerData?.timeline && (

@@ -8,7 +8,7 @@ import type { UUID } from '@/types/api';
 export interface PlayerAvatarProps {
   uuid?: UUID;
   username?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
   showOverlay?: boolean;
 }

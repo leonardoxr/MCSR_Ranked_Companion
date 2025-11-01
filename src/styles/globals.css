@@ -125,6 +125,16 @@
     -webkit-mask-composite: xor; mask-composite: exclude;
   }
 
+  /* Shimmer sweep on hover */
+  .mc-card::after {
+    content: "";
+    position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.10) 12%, transparent 24%);
+    transform: translateX(-130%);
+    transition: transform 800ms ease;
+  }
+  .mc-card:hover::after { transform: translateX(130%); }
+
   /* Pixel frame for icons */
   .pixel-frame {
     border: 2px solid rgba(255,255,255,0.08);
@@ -142,9 +152,66 @@
   .glow-gold { filter: drop-shadow(0 0 10px rgba(244,208,63,0.45)); }
   .glow-redstone { filter: drop-shadow(0 0 10px rgba(231,76,60,0.5)); }
 
+  /* Pace colors for ahead/behind */
+  .pace-ahead { color: rgba(46,204,113,1); }
+  .pace-behind { color: rgba(231,76,60,1); }
+  .pace-even { color: rgba(255,255,255,0.85); }
+
+  .pulse-glow {
+    animation: pulseGlow 2.2s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(79,195,247,0.35);
+  }
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 1; text-shadow: 0 0 16px rgba(46,204,113,0.45); }
+  }
+
+  /* Progress track used in split rows */
+  .progress-track { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, rgba(46,204,113,.65), rgba(79,195,247,.75)); }
+
   @keyframes sparkle {
     0%, 100% { opacity: 0.6; transform: translateY(0) scale(1); }
     50% { opacity: 1; transform: translateY(-3px) scale(1.03); }
   }
   .badge-sparkle { animation: sparkle 2.8s ease-in-out infinite; }
+
+  /* PaceWidget-like walk animation for tiny avatars */
+  @keyframes mcsr-walk {
+    0% { transform: translate3D(-50%, -50%, 0); }
+    100% { transform: translate3D(-50%, -62.5%, 0); }
+  }
+  .mcsr-walk { animation: 1s steps(2, end) 0s infinite mcsr-walk; }
+
+  /* Texture-like tracks (PaceWidget inspired). Pure CSS approximations. */
+  .tex-overworld {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(60,120,60,0.35) 0 8px, rgba(40,60,40,0.35) 8px 16px),
+      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
+    background-size: 60px 60px, auto;
+  }
+  .tex-netherrack {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(120,40,40,0.5) 0 8px, rgba(70,20,20,0.5) 8px 16px),
+      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
+    background-size: 60px 60px, auto;
+  }
+  .tex-netherbrick {
+    background-image:
+      repeating-linear-gradient(0deg, rgba(60,20,30,0.6) 0 6px, rgba(40,15,25,0.6) 6px 12px),
+      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
+    background-size: 60px 60px, auto;
+  }
+  .tex-stone {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(90,90,90,0.45) 0 8px, rgba(55,55,55,0.45) 8px 16px),
+      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
+    background-size: 60px 60px, auto;
+  }
+  .tex-endstone {
+    background-image:
+      repeating-linear-gradient(45deg, rgba(210,210,120,0.35) 0 8px, rgba(170,170,90,0.35) 8px 16px),
+      linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
+    background-size: 60px 60px, auto;
+  }
 }

@@ -96,9 +96,11 @@ export function LeaderboardTable({
 
                 {/* ELO */}
                 <div className="col-span-3 flex items-center relative z-10">
-                  <span className="font-semibold text-lg">
-                    {player.eloRate?.toLocaleString() || 'Unranked'}
-                  </span>
+                  {player.eloRate ? (
+                    <RankBadge elo={player.eloRate} showText={false} showElo />
+                  ) : (
+                    <span className="font-semibold text-lg">Unranked</span>
+                  )}
                 </div>
               </motion.div>
             );

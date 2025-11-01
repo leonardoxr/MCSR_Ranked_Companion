@@ -1,3 +1,4 @@
+import '../../styles/globals.css';
 import type { Viewport } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
@@ -68,7 +69,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={cn('font-mono antialiased bg-cave')}>
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={locale}>
           <Providers>
             <div className="relative min-h-screen bg-background">
               <div className="fixed top-4 right-4 z-50">

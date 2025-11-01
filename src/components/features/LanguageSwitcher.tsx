@@ -15,17 +15,22 @@ export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
+  const currentLocale = (params.locale as Locale) || 'en';
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
-
-  const currentLocale = (params.locale as Locale) || 'en';
 
   const switchLocale = (newLocale: Locale) => {
     if (newLocale === currentLocale) return;
 
     startTransition(() => {
       // Replace the locale in the pathname
-      const newPathname = pathname.replace(`/${currentLocale}`, `/${newLocale}`);
+      // Handle root path and paths with locale prefix
+      let newPathname: string;
+      if (pathname === `/${currentLocale}` || pathname === `/${currentLocale}/`) {
+        newPathname = `/${newLocale}`;
+      } else {
+        newPathname = pathname.replace(`/${currentLocale}/`, `/${newLocale}/`).replace(`/${currentLocale}`, `/${newLocale}`);
+      }
       router.push(newPathname);
       setIsOpen(false);
     });

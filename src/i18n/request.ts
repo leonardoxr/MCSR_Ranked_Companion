@@ -4,15 +4,25 @@ import { locales, defaultLocale, type Locale } from './config';
 
 export default getRequestConfig(async ({ locale }) => {
   // Validate that the incoming `locale` parameter is valid
-  // Use defaultLocale if locale is not set (initial request before middleware)
-  const requestLocale = locale || defaultLocale;
+  // locale is provided by the middleware, but fallback to defaultLocale for safety
+  const resolvedLocale = (locale || defaultLocale) as Locale;
 
-  if (!locales.includes(requestLocale as Locale)) {
+  if (!locales.includes(resolvedLocale)) {
     notFound();
   }
 
+  // Dynamic import with error handling
+  let messages;
+  try {
+    messages = (await import(`../../messages/${resolvedLocale}.json`)).default;
+  } catch (error) {
+    console.error(`Failed to load messages for locale ${resolvedLocale}:`, error);
+    // Fallback to default locale messages if loading fails
+    messages = (await import(`../../messages/${defaultLocale}.json`)).default;
+  }
+
   return {
-    locale: requestLocale as string,
-    messages: (await import(`../../messages/${requestLocale}.json`)).default,
+    locale: resolvedLocale,
+    messages,
   };
 });

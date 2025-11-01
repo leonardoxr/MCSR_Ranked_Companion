@@ -24,6 +24,8 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
+    /* App-wide monospace stack */
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .dark {
@@ -60,6 +62,24 @@
 }
 
 @layer utilities {
+  /* Subtle textured background inspired by Minecraft caves */
+  .bg-cave {
+    background:
+      radial-gradient(1200px 600px at 10% -10%, rgba(79, 195, 247, 0.08), transparent 60%),
+      radial-gradient(900px 500px at 90% -20%, rgba(46, 204, 113, 0.08), transparent 60%),
+      radial-gradient(1000px 600px at 50% 120%, rgba(231, 76, 60, 0.06), transparent 60%),
+      linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 6px);
+  }
+
+  /* Neon title glow */
+  .mc-title {
+    text-shadow:
+      0 0 6px rgba(79, 195, 247, 0.6),
+      0 0 18px rgba(46, 204, 113, 0.4);
+  }
+
+  /* Pixel-art rendering helper */
   .image-pixelated {
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
@@ -77,4 +97,54 @@
     -webkit-backface-visibility: hidden;
     will-change: transform;
   }
+
+  /* Minecraft-style panel with inner/outer glow */
+  .mc-card {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+      var(--tw-gradient-to, rgba(14, 18, 28, 0.9));
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.06),
+      0 10px 30px rgba(0,0,0,0.35),
+      0 0 0 1px rgba(79, 195, 247, 0.08),
+      0 0 24px rgba(46, 204, 113, 0.08);
+    border-radius: 12px;
+    position: relative;
+  }
+
+  .mc-card:before {
+    content: "";
+    position: absolute; inset: 0; border-radius: 12px; pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(79,195,247,0.25), rgba(46,204,113,0.15));
+    mask:
+      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    padding: 1px;
+    -webkit-mask-composite: xor; mask-composite: exclude;
+  }
+
+  /* Pixel frame for icons */
+  .pixel-frame {
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06) inset,
+      0 0 0 2px rgba(0,0,0,0.35) inset,
+      0 6px 16px rgba(0,0,0,0.4);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  }
+
+  .glow-emerald { filter: drop-shadow(0 0 10px rgba(46,204,113,0.45)); }
+  .glow-diamond { filter: drop-shadow(0 0 10px rgba(79,195,247,0.45)); }
+  .glow-gold { filter: drop-shadow(0 0 10px rgba(244,208,63,0.45)); }
+  .glow-redstone { filter: drop-shadow(0 0 10px rgba(231,76,60,0.5)); }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0.6; transform: translateY(0) scale(1); }
+    50% { opacity: 1; transform: translateY(-3px) scale(1.03); }
+  }
+  .badge-sparkle { animation: sparkle 2.8s ease-in-out infinite; }
 }

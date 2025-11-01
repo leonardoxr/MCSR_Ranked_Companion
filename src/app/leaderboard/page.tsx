@@ -73,7 +73,7 @@ export default function LeaderboardPage() {
 
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
+        <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Current Page
@@ -87,7 +87,7 @@ export default function LeaderboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Players Shown
@@ -100,7 +100,7 @@ export default function LeaderboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card variant="mc">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Season
@@ -148,7 +148,7 @@ export default function LeaderboardPage() {
           </div>
         </>
       ) : (
-        <Card>
+        <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">
             No players found on this page
           </CardContent>

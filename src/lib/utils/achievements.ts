@@ -4,32 +4,32 @@
  */
 export const ACHIEVEMENT_IMAGES: Record<string, string> = {
   // Progression Achievements
-  BestTime: '/achievements/best-time.png',
-  HighestWinStreak: '/achievements/win-streak.png',
-  PlayedMatches: '/achievements/matches-played.png',
-  Playtime: '/achievements/playtime.png',
-  Wins: '/achievements/wins.png',
+  BestTime: '/achievements/best-time.svg',
+  HighestWinStreak: '/achievements/win-streak.svg',
+  PlayedMatches: '/achievements/matches-played.svg',
+  Playtime: '/achievements/playtime.svg',
+  Wins: '/achievements/wins.svg',
   
   // Competitive Achievements
-  SeasonOutcome: '/achievements/season-result.png',
-  PlayoffsOutcome: '/achievements/playoffs-result.png',
+  SeasonOutcome: '/achievements/season-result.svg',
+  PlayoffsOutcome: '/achievements/playoffs-result.svg',
   
   // Special Challenge Achievements
-  SummonWither: '/achievements/summon-wither.png',
-  IronPickless: '/achievements/iron-pickless.png',
-  Oneshot: '/achievements/oneshot.png',
-  Overtake: '/achievements/overtake.png',
-  Foodless: '/achievements/foodless.png',
-  ClassicRun: '/achievements/classic-run.png',
-  Netherite: '/achievements/netherite.png',
-  Armorless: '/achievements/armorless.png',
-  HighLevel: '/achievements/high-level.png',
-  EgapHolder: '/achievements/egap-holder.png',
-  IronHoe: '/achievements/iron-hoe.png',
+  SummonWither: '/achievements/summon-wither.svg',
+  IronPickless: '/achievements/iron-pickless.svg',
+  Oneshot: '/achievements/oneshot.svg',
+  Overtake: '/achievements/overtake.svg',
+  Foodless: '/achievements/foodless.svg',
+  ClassicRun: '/achievements/classic-run.svg',
+  Netherite: '/achievements/netherite.svg',
+  Armorless: '/achievements/armorless.svg',
+  HighLevel: '/achievements/high-level.svg',
+  EgapHolder: '/achievements/egap-holder.svg',
+  IronHoe: '/achievements/iron-hoe.svg',
   
   // Community Achievements
-  WeeklyRace: '/achievements/weekly-race.png',
-  Secret: '/achievements/secret.png',
+  WeeklyRace: '/achievements/weekly-race.svg',
+  Secret: '/achievements/secret.svg',
 };
 
 /**

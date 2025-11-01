@@ -67,7 +67,7 @@ export function MatchTimeline({ events, className }: MatchTimelineProps) {
   const sortedEvents = [...events].sort((a, b) => a.time - b.time);
 
   return (
-    <Card className={className}>
+    <Card variant="mc" className={className}>
       <CardHeader>
         <CardTitle>Match Timeline</CardTitle>
       </CardHeader>

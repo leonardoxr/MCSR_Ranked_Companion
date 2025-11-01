@@ -50,7 +50,7 @@ export default function VersusPage() {
           title={t('common.error')}
           message={
             statsError?.message ||
-            `Could not load head-to-head stats for ${player1Name} vs ${player2Name}`
+            t('versus.loadError', { player1: player1Name, player2: player2Name })
           }
         />
       </div>
@@ -173,7 +173,7 @@ export default function VersusPage() {
           <CardContent>
             <div className="space-y-4">
               <ComparisonBar
-                label="ELO Rating"
+                label={t('versus.eloRating')}
                 player1Value={player1Data.eloRate || 0}
                 player2Value={player2Data.eloRate || 0}
                 player1Name={player1Data.nickname}
@@ -207,7 +207,13 @@ export default function VersusPage() {
                 player2Value={player2Data.statistics.total.bestTime.ranked || 0}
                 player1Name={player1Data.nickname}
                 player2Name={player2Data.nickname}
-                format={formatTime}
+                format={(milliseconds) => {
+                  if (milliseconds === 0) return t('common.notAvailable');
+                  const totalSeconds = Math.floor(milliseconds / 1000);
+                  const minutes = Math.floor(totalSeconds / 60);
+                  const seconds = totalSeconds % 60;
+                  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }}
                 lowerIsBetter
               />
             </div>

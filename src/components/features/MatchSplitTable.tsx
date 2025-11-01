@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { MatchInfo, TimelineEvent, UUID, CountryCode } from '@/types/api';
 import { cn } from '@/lib/utils';
@@ -34,15 +35,6 @@ const ORDER: string[] = [
   'finish',
 ];
 
-const LABEL: Record<string, string> = {
-  enter_nether: 'Entered Nether',
-  enter_bastion: 'Entered Bastion',
-  enter_fortress: 'Entered Fortress',
-  enter_stronghold: 'Found Stronghold',
-  enter_end: 'Entered The End',
-  finish: 'Finish',
-};
-
 function normalizeType(raw: string): string {
   const t = raw.toLowerCase().replace(/\s+/g, '_').replace(/\./g, '_');
   if (t.includes('nether')) return 'enter_nether';
@@ -71,6 +63,7 @@ function completionTime(match: MatchInfo, uuid: UUID): number | null {
 }
 
 export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
+  const t = useTranslations();
   const players = match.players.slice(0, 2); // show first two players
   if (players.length === 0) return null;
 
@@ -88,7 +81,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle className="text-xl">Milestones</CardTitle>
+        <CardTitle className="text-xl">{t('timeline.milestones.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 text-sm rounded-md overflow-hidden">
@@ -97,7 +90,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
             <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
             <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} country={left.country} side="left" /></span>
           </div>
-          <div className="px-3 py-2 bg-muted/40 text-center font-semibold">Event</div>
+          <div className="px-3 py-2 bg-muted/40 text-center font-semibold">{t('timeline.milestones.event')}</div>
           <div className="px-3 py-2 bg-muted/40 text-right font-semibold truncate flex items-center justify-end gap-2">
             {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} country={right.country} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
           </div>
@@ -144,7 +137,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
 
                 {/* Label */}
                 <div className={cn('px-3 py-3 text-center font-semibold', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {LABEL[type] || type}
+                  {t(`timeline.milestones.${type}`)}
                 </div>
 
                 {/* Right time */}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import styles from './RankBadge.module.css';
 import { getRankTier } from '@/utils/ranks';
 import { RANK_SPRITE_BASE64 } from '@/constants/rankSprite';
@@ -18,6 +19,7 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
   showElo = true,
   className,
 }) => {
+  const t = useTranslations();
   const rankTier = getRankTier(elo);
 
   // CSS custom properties for sprite URL and index
@@ -36,7 +38,7 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
         </span>
       )}
       {showElo && (
-        <span>({typeof elo === 'number' ? elo : 'N/A'} elo)</span>
+        <span>({typeof elo === 'number' ? elo : t('common.notAvailable')} {t('common.elo')})</span>
       )}
     </span>
   );

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getAchievementImage, getAchievementName } from '@/lib/utils/achievements';
@@ -67,18 +68,19 @@ interface AchievementCardProps {
  * AchievementCard component for displaying individual achievements
  */
 export function AchievementCard({ achievement, className = '' }: AchievementCardProps) {
+  const t = useTranslations();
   const achievementName = getAchievementName(achievement.id);
 
   return (
     <div
       className={cn('mc-card flex flex-col items-center p-4 rounded-lg hover:bg-accent/40 transition-colors', className)}
-      title={`${achievementName} - Level ${achievement.level}`}
+      title={`${achievementName} - ${t('achievements.level')} ${achievement.level}`}
     >
       <AchievementIcon achievement={achievement} size={64} className="mb-3" />
       <span className="text-sm font-semibold text-center mc-title">
         {achievementName}
       </span>
-      <span className="text-xs text-muted-foreground">Level {achievement.level}</span>
+      <span className="text-xs text-muted-foreground">{t('achievements.level')} {achievement.level}</span>
       {achievement.value !== null && achievement.goal !== null && (
         <div className="w-full mt-3">
           <div className="h-1.5 bg-muted rounded-full overflow-hidden">

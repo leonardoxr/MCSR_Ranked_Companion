@@ -116,7 +116,7 @@ export default function PlayerPage() {
               value={
                 seasonStats.playedMatches > 0
                   ? `${((seasonStats.wins / seasonStats.playedMatches) * 100).toFixed(1)}%`
-                  : 'N/A'
+                  : t('common.notAvailable')
               }
             />
             <StatRow label={t('player.stats.currentStreak')} value={seasonStats.currentWinStreak} />
@@ -151,14 +151,14 @@ export default function PlayerPage() {
           <CardContent className="space-y-4">
             <StatRow
               label={t('player.stats.bestTime')}
-              value={totalStats.bestTime ? formatTime(totalStats.bestTime) : 'N/A'}
+              value={totalStats.bestTime ? formatTime(totalStats.bestTime) : t('common.notAvailable')}
             />
             <StatRow
               label={t('player.stats.avgCompletion')}
               value={
                 totalStats.completions > 0
                   ? formatTime(totalStats.completionTime / totalStats.completions)
-                  : 'N/A'
+                  : t('common.notAvailable')
               }
             />
             <StatRow label={t('player.stats.totalPlaytime')} value={formatPlaytime(totalStats.playtime)} />

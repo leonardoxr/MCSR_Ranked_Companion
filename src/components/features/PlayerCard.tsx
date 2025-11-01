@@ -141,7 +141,7 @@ export function PlayerCard({
               <StatItem
                 icon={<Target className="h-4 w-4" />}
                 label={t('player.stats.winRate')}
-                value={winRate ? `${winRate}%` : 'N/A'}
+                value={winRate ? `${winRate}%` : t('common.notAvailable')}
               />
               <StatItem
                 icon={<TrendingUp className="h-4 w-4" />}

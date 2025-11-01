@@ -22,12 +22,13 @@ export interface SearchBarProps {
 export function SearchBar({
   value,
   onChange,
-  placeholder = 'Search players...',
+  placeholder,
   className,
   onSearch,
   autoFocus = false,
 }: SearchBarProps) {
   const t = useTranslations();
+  const defaultPlaceholder = t('search.placeholder');
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
@@ -50,7 +51,7 @@ export function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder={placeholder}
+        placeholder={placeholder || defaultPlaceholder}
         autoFocus={autoFocus}
         className="pl-10 pr-10"
       />

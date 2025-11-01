@@ -1,0 +1,12 @@
+.rankIcon {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  background-image: var(--rank-sprite-url);
+  background-position: calc(var(--sprite-index) * -13px) 0;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+

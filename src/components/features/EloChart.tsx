@@ -13,6 +13,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { RankBadge } from '@/components/features/RankBadge';
 import { formatDate } from '@/lib/utils/formatters';
 import { getRankTier } from '@/lib/utils/colors';
 import type { EloRate } from '@/types/api';
@@ -134,8 +135,9 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
       <p className="text-sm font-semibold mb-1">
         {formatDate(new Date(data.date), 'PPP')}
       </p>
-      <p className="text-lg font-bold text-primary">{data.elo} {t('common.elo')}</p>
-      <p className="text-xs text-muted-foreground">{rank.name} {t('common.tier')}</p>
+      <div className="flex items-center gap-2">
+        <RankBadge elo={data.elo} showElo />
+      </div>
     </div>
   );
 }

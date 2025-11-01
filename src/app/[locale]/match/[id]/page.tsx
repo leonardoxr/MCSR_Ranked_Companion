@@ -7,6 +7,7 @@ import type { Locale } from '@/i18n/config';
 import { useMatch } from '@/lib/api/hooks/useMatches';
 import { MatchCard } from '@/components/features/MatchCard';
 import { MatchTimeline } from '@/components/features/MatchTimeline';
+import { MatchSplitTable } from '@/components/features/MatchSplitTable';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
@@ -23,6 +24,7 @@ import {
   TrendingDown
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils/formatters';
+import { RankBadge } from '@/components/features/RankBadge';
 import { getRankTier } from '@/lib/utils/colors';
 
 export default function MatchDetailsPage() {
@@ -179,10 +181,16 @@ export default function MatchDetailsPage() {
                     )}
                     <div>
                       <p className="font-semibold text-lg">{player.nickname}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {player.eloRate ? `${player.eloRate} ELO` : t('common.unranked')}
-                        {player.eloRank ? ` • #${player.eloRank.toLocaleString()}` : ''}
-                      </p>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        {typeof player.eloRate === 'number' ? (
+                          <RankBadge elo={player.eloRate} showElo />
+                        ) : (
+                          <span>{t('common.unranked')}</span>
+                        )}
+                        {player.eloRank ? (
+                          <span className="ml-1">#{player.eloRank.toLocaleString()}</span>
+                        ) : null}
+                      </div>
                     </div>
                   </div>
                   {eloChange && (
@@ -256,9 +264,14 @@ export default function MatchDetailsPage() {
         </CardContent>
       </Card>
 
+      {/* Per-event split table (2-player view) */}
+      {match.timelines && match.timelines.length > 0 && (
+        <MatchSplitTable match={match} />
+      )}
+
       {/* Timeline */}
       {match.timelines && match.timelines.length > 0 && (
-        <MatchTimeline events={match.timelines} />
+        <MatchTimeline events={match.timelines} players={match.players} />
       )}
 
       {/* Completions */}

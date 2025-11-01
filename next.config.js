@@ -20,6 +20,11 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'crafatar.com',
+        pathname: '/skins/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'flagcdn.com',
         pathname: '/**',
       },

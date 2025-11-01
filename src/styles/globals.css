@@ -65,4 +65,16 @@
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
   }
+
+  /* 3D head rotation styles */
+  .head-3d-container {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .head-3d-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+  }
 }

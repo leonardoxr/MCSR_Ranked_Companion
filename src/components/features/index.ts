@@ -1,5 +1,7 @@
 // Player components
 export { PlayerAvatar } from './PlayerAvatar';
+export { PlayerHead3D } from './PlayerHead3D';
+export { PlayerStatsBar } from './PlayerStatsBar';
 export { RankBadge } from './RankBadge';
 export { PlayerCard } from './PlayerCard';
 

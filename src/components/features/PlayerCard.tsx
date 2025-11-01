@@ -10,6 +10,8 @@ import {
   CardTitle,
 } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
+import { PlayerHead3D } from './PlayerHead3D';
+import { PlayerStatsBar } from './PlayerStatsBar';
 import { RankBadge } from './RankBadge';
 import { cn } from '@/lib/utils';
 import { formatWinRate } from '@/lib/utils/formatters';
@@ -94,11 +96,10 @@ export function PlayerCard({
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
-              <PlayerAvatar
+              <PlayerHead3D
                 uuid={uuid}
                 username={nickname}
-                size="lg"
-                showOverlay
+                size={128}
               />
               <div>
                 <CardTitle className="text-2xl mb-2">{nickname}</CardTitle>
@@ -114,6 +115,13 @@ export function PlayerCard({
             </div>
           </div>
         </CardHeader>
+
+        {/* Stats Bar */}
+        {isUserInfo && (
+          <CardContent className="pt-0 pb-4">
+            <PlayerStatsBar player={player as UserInfo} variant="both" />
+          </CardContent>
+        )}
 
         {statistics && (
           <CardContent>

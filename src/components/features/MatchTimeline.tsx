@@ -8,15 +8,9 @@ import { cn } from '@/lib/utils';
 import { formatTime } from '@/lib/utils/formatters';
 import type { TimelineEvent, UserProfile } from '@/types/api';
 import { PlayerAvatar } from '@/components/features/PlayerAvatar';
+import { MinecraftIcon } from '@/components/features/MinecraftIcon';
 import {
-  Eye,
-  Pickaxe,
-  Flame,
-  Target,
-  Swords,
-  Sparkles,
   Crown,
-  MapPin,
 } from 'lucide-react';
 
 export interface MatchTimelineProps {
@@ -26,16 +20,16 @@ export interface MatchTimelineProps {
 }
 
 const eventIcons: Record<string, React.ReactNode> = {
-  enter_nether: <Sparkles className="h-4 w-4" />,
-  enter_bastion: <Target className="h-4 w-4" />,
-  enter_fortress: <Flame className="h-4 w-4" />,
-  first_portal: <Eye className="h-4 w-4" />,
-  second_portal: <Eye className="h-4 w-4" />,
-  enter_stronghold: <MapPin className="h-4 w-4" />,
-  enter_end: <Sparkles className="h-4 w-4" />,
+  enter_nether: <MinecraftIcon name="nether-portal" size="sm" />,
+  enter_bastion: <MinecraftIcon name="gilded-blackstone" size="sm" />,
+  enter_fortress: <MinecraftIcon name="nether-bricks" size="sm" />,
+  first_portal: <MinecraftIcon name="ender-eye" size="sm" />,
+  second_portal: <MinecraftIcon name="ender-eye" size="sm" />,
+  enter_stronghold: <MinecraftIcon name="stone-bricks" size="sm" />,
+  enter_end: <MinecraftIcon name="end-portal" size="sm" />,
   finish: <Crown className="h-4 w-4" />,
-  died: <Swords className="h-4 w-4" />,
-  default: <Pickaxe className="h-4 w-4" />,
+  died: <MinecraftIcon name="bed" size="sm" />,
+  default: <MinecraftIcon name="grass-block" size="sm" />,
 };
 
 function normalizeType(t: string): string {

@@ -21,6 +21,10 @@ export { PerformanceChart } from './PerformanceChart';
 // Achievement components
 export { AchievementIcon, AchievementCard } from './AchievementIcon';
 
+// Minecraft icon component
+export { MinecraftIcon } from './MinecraftIcon';
+export type { MinecraftIconName, MinecraftIconProps } from './MinecraftIcon';
+
 // Utility components
 export { SearchBar } from './SearchBar';
 export {

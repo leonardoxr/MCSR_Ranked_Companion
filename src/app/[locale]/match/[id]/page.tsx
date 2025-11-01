@@ -11,6 +11,7 @@ import { MatchSplitTable } from '@/components/features/MatchSplitTable';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
+import { MinecraftIcon } from '@/components/features/MinecraftIcon';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
 import {
   ArrowLeft,
@@ -232,15 +233,24 @@ export default function MatchDetailsPage() {
               <p className="font-mono font-semibold">{match.seed.id}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">{t('match.overworldType')}</p>
+              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                <MinecraftIcon name="grass-block" size="sm" />
+                {t('match.overworldType')}
+              </p>
               <p className="font-semibold capitalize">{match.seed.overworld}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">{t('match.bastionType')}</p>
+              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                <MinecraftIcon name="gilded-blackstone" size="sm" />
+                {t('match.bastionType')}
+              </p>
               <p className="font-semibold capitalize">{match.seed.nether}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">{t('match.endTowerHeights')}</p>
+              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
+                <MinecraftIcon name="end-stone" size="sm" />
+                {t('match.endTowerHeights')}
+              </p>
               <p className="font-mono text-sm">
                 {match.seed.endTowers.join(', ')}
               </p>

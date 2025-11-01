@@ -17,6 +17,7 @@ import {
   Star,
 } from 'lucide-react';
 import { RankBadge } from './RankBadge';
+import { CountryFlag } from './CountryFlag';
 import type { UserInfo } from '@/types/api';
 
 export interface PlayerStatsBarProps {
@@ -109,6 +110,7 @@ export function PlayerStatsBar({
             )}
 
             {/* Player Name */}
+            <CountryFlag country={player.country} size="sm" />
             <span className="font-semibold">{player.nickname}</span>
 
             {/* Season Label */}

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
 import { RankBadge } from './RankBadge';
+import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import { formatWinRate } from '@/lib/utils/formatters';
 import type { LeaderboardUser } from '@/types/api';
@@ -84,6 +85,7 @@ export function LeaderboardTable({
                           #{player.eloRank.toLocaleString()}
                         </span>
                       )}
+                      <CountryFlag country={player.country} size="sm" />
                       <span className="font-semibold truncate">{player.nickname}</span>
                     </div>
                     {showRankChange && player.eloRank && (

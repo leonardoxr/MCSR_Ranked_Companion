@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui';
@@ -28,15 +29,17 @@ export function LeaderboardTable({
   highlightPlayer,
   showRankChange = false,
 }: LeaderboardTableProps) {
+  const t = useTranslations();
+
   return (
     <Card variant="mc" className={className}>
       <CardContent className="p-0">
         {/* Table Header */}
         <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 text-sm font-semibold text-muted-foreground">
-          <div className="col-span-1">Rank</div>
-          <div className="col-span-5">Player</div>
-          <div className="col-span-3">Tier</div>
-          <div className="col-span-3">ELO</div>
+          <div className="col-span-1">{t('leaderboard.table.rank')}</div>
+          <div className="col-span-5">{t('leaderboard.table.player')}</div>
+          <div className="col-span-3">{t('leaderboard.table.tier')}</div>
+          <div className="col-span-3">{t('leaderboard.table.elo')}</div>
         </div>
 
         {/* Table Body */}
@@ -97,7 +100,7 @@ export function LeaderboardTable({
                 {/* ELO */}
                 <div className="col-span-3 flex items-center relative z-10">
                   <span className="font-semibold text-lg">
-                    {player.eloRate?.toLocaleString() || 'Unranked'}
+                    {player.eloRate?.toLocaleString() || t('common.unranked')}
                   </span>
                 </div>
               </motion.div>
@@ -107,7 +110,7 @@ export function LeaderboardTable({
 
         {players.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No players found
+            {t('leaderboard.noPlayersFound')}
           </div>
         )}
       </CardContent>

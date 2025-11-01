@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -35,18 +36,6 @@ const eventIcons: Record<string, React.ReactNode> = {
   default: <Pickaxe className="h-4 w-4" />,
 };
 
-const eventLabels: Record<string, string> = {
-  enter_nether: 'Entered Nether',
-  enter_bastion: 'Entered Bastion',
-  enter_fortress: 'Entered Fortress',
-  first_portal: 'First Portal',
-  second_portal: 'Second Portal',
-  enter_stronghold: 'Entered Stronghold',
-  enter_end: 'Entered End',
-  finish: 'Finished',
-  died: 'Died',
-};
-
 const eventColors: Record<string, string> = {
   enter_nether: 'text-redstone',
   enter_bastion: 'text-gold',
@@ -64,12 +53,18 @@ const eventColors: Record<string, string> = {
  * Shows key milestones with icons and timestamps
  */
 export function MatchTimeline({ events, className }: MatchTimelineProps) {
+  const t = useTranslations();
   const sortedEvents = [...events].sort((a, b) => a.time - b.time);
+
+  const getEventLabel = (type: string): string => {
+    const labelKey = `timeline.events.${type}`;
+    return t(labelKey);
+  };
 
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle>Match Timeline</CardTitle>
+        <CardTitle>{t('timeline.title')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="relative">
@@ -80,7 +75,7 @@ export function MatchTimeline({ events, className }: MatchTimelineProps) {
           <div className="space-y-4">
             {sortedEvents.map((evt, index) => {
               const icon = eventIcons[evt.type] || eventIcons.default;
-              const label = eventLabels[evt.type] || evt.type;
+              const label = getEventLabel(evt.type);
               const color = eventColors[evt.type] || 'text-muted-foreground';
 
               return (
@@ -117,7 +112,7 @@ export function MatchTimeline({ events, className }: MatchTimelineProps) {
 
           {sortedEvents.length === 0 && (
             <p className="text-center text-muted-foreground py-8">
-              No timeline events available
+              {t('timeline.noEvents')}
             </p>
           )}
         </div>

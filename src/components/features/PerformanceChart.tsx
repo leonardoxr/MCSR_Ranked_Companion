@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   BarChart,
   Bar,
@@ -31,10 +32,12 @@ export interface PerformanceChartProps {
  * Shows bar chart comparing average vs best times across categories
  */
 export function PerformanceChart({ data, className }: PerformanceChartProps) {
+  const t = useTranslations();
+
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>Performance Overview</CardTitle>
+        <CardTitle>{t('charts.performanceOverview')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -60,13 +63,13 @@ export function PerformanceChart({ data, className }: PerformanceChartProps) {
             <Bar
               dataKey="averageTime"
               fill="hsl(var(--diamond))"
-              name="Average Time"
+              name={t('charts.averageTime')}
               radius={[4, 4, 0, 0]}
             />
             <Bar
               dataKey="bestTime"
               fill="hsl(var(--emerald))"
-              name="Best Time"
+              name={t('charts.bestTime')}
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
@@ -88,6 +91,8 @@ interface CustomTooltipProps {
 }
 
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+  const t = useTranslations();
+
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -100,14 +105,14 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       <div className="space-y-1 text-xs">
         <p className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[hsl(var(--diamond))]" />
-          <span>Average: {formatTime(data.averageTime)}</span>
+          <span>{t('charts.average')}: {formatTime(data.averageTime)}</span>
         </p>
         <p className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-sm bg-[hsl(var(--emerald))]" />
-          <span>Best: {formatTime(data.bestTime)}</span>
+          <span>{t('charts.best')}: {formatTime(data.bestTime)}</span>
         </p>
         <p className="text-muted-foreground mt-1">
-          {data.matches} matches
+          {data.matches} {t('charts.matches')}
         </p>
       </div>
     </div>

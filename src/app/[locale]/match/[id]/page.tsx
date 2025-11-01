@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import type { Locale } from '@/i18n/config';
 import { useMatch } from '@/lib/api/hooks/useMatches';
 import { MatchCard } from '@/components/features/MatchCard';
 import { MatchTimeline } from '@/components/features/MatchTimeline';
@@ -25,6 +27,8 @@ import { getRankTier } from '@/lib/utils/colors';
 
 export default function MatchDetailsPage() {
   const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const router = useRouter();
   const matchId = params?.id as string;
 
@@ -33,7 +37,7 @@ export default function MatchDetailsPage() {
   if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <LoadingState message="Loading match details..." />
+        <LoadingState message={t('match.loading')} />
       </div>
     );
   }
@@ -42,8 +46,8 @@ export default function MatchDetailsPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
-          title="Match Not Found"
-          message={error?.message || `Could not find match "${matchId}"`}
+          title={t('match.notFound')}
+          message={error?.message || t('match.notFoundMessage', { matchId })}
         />
       </div>
     );
@@ -61,7 +65,7 @@ export default function MatchDetailsPage() {
         className="mb-4"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
+        {t('common.back')}
       </Button>
 
       {/* Match Header */}
@@ -71,7 +75,7 @@ export default function MatchDetailsPage() {
             <Trophy className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Match Details</h1>
+            <h1 className="text-3xl font-bold">{t('match.title')}</h1>
             <p className="text-muted-foreground">
               {formatDate(new Date(match.date * 1000), 'PPP')}
             </p>
@@ -85,12 +89,12 @@ export default function MatchDetailsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Trophy className="h-4 w-4" />
-              Winner
+              {t('match.winner')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold">
-              {winnerProfile?.nickname || (match.forfeited ? 'Forfeited' : 'No Winner')}
+              {winnerProfile?.nickname || (match.forfeited ? t('match.forfeited') : t('match.noWinner'))}
             </p>
             {winner.time && (
               <p className="text-sm text-muted-foreground">
@@ -104,7 +108,7 @@ export default function MatchDetailsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Players
+              {t('match.players')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -119,13 +123,13 @@ export default function MatchDetailsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <Crown className="h-4 w-4" />
-              Season
+              {t('common.season')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-xl font-bold">Season {match.season}</p>
+            <p className="text-xl font-bold">{t('common.season')} {match.season}</p>
             <p className="text-sm text-muted-foreground">
-              {match.rank?.season ? `Rank #${match.rank.season.toLocaleString()}` : 'Unranked'}
+              {match.rank?.season ? t('common.rank', { rank: match.rank.season.toLocaleString() }) : t('common.unranked')}
             </p>
           </CardContent>
         </Card>
@@ -134,13 +138,13 @@ export default function MatchDetailsPage() {
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Category
+              {t('match.category')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-xl font-bold capitalize">{match.category}</p>
             <p className="text-sm text-muted-foreground">
-              {match.forfeited ? 'Forfeited' : match.decayed ? 'Decayed' : 'Completed'}
+              {match.forfeited ? t('match.status.forfeited') : match.decayed ? t('match.status.decayed') : t('match.status.completed')}
             </p>
           </CardContent>
         </Card>
@@ -154,7 +158,7 @@ export default function MatchDetailsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Players & ELO Changes
+            {t('match.playersEloChanges')}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -167,7 +171,7 @@ export default function MatchDetailsPage() {
                 <div
                   key={player.uuid}
                   className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => router.push(`/player/${player.nickname}`)}
+                  onClick={() => router.push(`/${locale}/player/${player.nickname}`)}
                 >
                   <div className="flex items-center gap-4">
                     {isWinner && (
@@ -176,7 +180,7 @@ export default function MatchDetailsPage() {
                     <div>
                       <p className="font-semibold text-lg">{player.nickname}</p>
                       <p className="text-sm text-muted-foreground">
-                        {player.eloRate ? `${player.eloRate} ELO` : 'Unranked'}
+                        {player.eloRate ? `${player.eloRate} ELO` : t('common.unranked')}
                         {player.eloRank ? ` • #${player.eloRank.toLocaleString()}` : ''}
                       </p>
                     </div>
@@ -210,25 +214,25 @@ export default function MatchDetailsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MapPin className="h-5 w-5" />
-            Seed Information
+            {t('match.seedInformation')}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Seed ID</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('match.seedId')}</p>
               <p className="font-mono font-semibold">{match.seed.id}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Overworld Type</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('match.overworldType')}</p>
               <p className="font-semibold capitalize">{match.seed.overworld}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">Bastion Type</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('match.bastionType')}</p>
               <p className="font-semibold capitalize">{match.seed.nether}</p>
             </div>
             <div>
-              <p className="text-sm text-muted-foreground mb-1">End Tower Heights</p>
+              <p className="text-sm text-muted-foreground mb-1">{t('match.endTowerHeights')}</p>
               <p className="font-mono text-sm">
                 {match.seed.endTowers.join(', ')}
               </p>
@@ -236,7 +240,7 @@ export default function MatchDetailsPage() {
           </div>
           {match.seed.variations && match.seed.variations.length > 0 && (
             <div>
-              <p className="text-sm text-muted-foreground mb-2">Variations</p>
+              <p className="text-sm text-muted-foreground mb-2">{t('match.variations')}</p>
               <div className="flex flex-wrap gap-2">
                 {match.seed.variations.map((variation, idx) => (
                   <span
@@ -263,7 +267,7 @@ export default function MatchDetailsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Crown className="h-5 w-5" />
-              Completions
+              {t('match.completions')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -295,7 +299,7 @@ export default function MatchDetailsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5" />
-              Watch VOD
+              {t('match.watchVod')}
             </CardTitle>
           </CardHeader>
           <CardContent>

@@ -2,13 +2,14 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { SearchBar } from '@/components/features/SearchBar';
-import { useRouter } from 'next/navigation';
+import type { Locale } from '@/i18n/config';
 import {
   Trophy,
   Radio,
-  Users,
   Swords,
   User,
   ArrowRight,
@@ -19,11 +20,14 @@ import {
 
 export default function HomePage() {
   const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as Locale;
+  const t = useTranslations();
   const [searchValue, setSearchValue] = React.useState('');
 
   const handleSearch = (query: string) => {
     if (query) {
-      router.push(`/player/${encodeURIComponent(query)}`);
+      router.push(`/${locale}/player/${encodeURIComponent(query)}`);
     }
   };
 
@@ -32,10 +36,10 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="text-center py-12">
         <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-minecraft-diamond to-minecraft-emerald bg-clip-text text-transparent mc-title">
-          MCSR Ranked Companion
+          {t('home.title')}
         </h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Track your speedrun statistics, analyze matches, and climb the leaderboard
+          {t('home.subtitle')}
         </p>
 
         {/* Search Bar */}
@@ -44,30 +48,30 @@ export default function HomePage() {
             value={searchValue}
             onChange={setSearchValue}
             onSearch={handleSearch}
-            placeholder="Search for a player..."
+            placeholder={t('home.searchPlaceholder')}
           />
         </div>
       </section>
 
       {/* Quick Navigation */}
       <section>
-        <h2 className="text-3xl font-bold text-center mb-8">Explore</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">{t('nav.home')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Leaderboard */}
-          <Link href="/leaderboard">
+          <Link href={`/${locale}/leaderboard`}>
             <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-yellow-500/10 rounded-lg w-fit mb-2">
                   <Trophy className="h-8 w-8 text-yellow-500" />
                 </div>
-                <CardTitle>Leaderboard</CardTitle>
+                <CardTitle>{t('home.leaderboard.title')}</CardTitle>
                 <CardDescription>
-                  View global rankings and top players
+                  {t('home.leaderboard.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="ghost" className="w-full justify-between">
-                  View Rankings
+                  {t('home.leaderboard.button')}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </CardContent>
@@ -75,7 +79,7 @@ export default function HomePage() {
           </Link>
 
           {/* Live Matches */}
-          <Link href="/live">
+          <Link href={`/${locale}/live`}>
             <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-red-500/10 rounded-lg w-fit mb-2 relative">
@@ -85,14 +89,14 @@ export default function HomePage() {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                   </span>
                 </div>
-                <CardTitle>Live Matches</CardTitle>
+                <CardTitle>{t('home.liveMatches.title')}</CardTitle>
                 <CardDescription>
-                  Watch ongoing matches in real-time
+                  {t('home.liveMatches.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button variant="ghost" className="w-full justify-between">
-                  Watch Live
+                  {t('home.liveMatches.button')}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </CardContent>
@@ -105,14 +109,14 @@ export default function HomePage() {
               <div className="p-3 bg-purple-500/10 rounded-lg w-fit mb-2">
                 <Swords className="h-8 w-8 text-purple-500" />
               </div>
-              <CardTitle>Player Comparison</CardTitle>
+              <CardTitle>{t('home.playerComparison.title')}</CardTitle>
               <CardDescription>
-                Compare head-to-head statistics
+                {t('home.playerComparison.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Search for two players to compare their stats
+                {t('home.playerComparison.searchPrompt')}
               </p>
             </CardContent>
           </Card>
@@ -121,37 +125,37 @@ export default function HomePage() {
 
       {/* Features Section */}
       <section className="max-w-4xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Features</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">{t('home.features.title')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FeatureCard
             icon={<User className="h-6 w-6" />}
-            title="Player Profiles"
-            description="View detailed player statistics, match history, achievements, and ELO progression"
+            title={t('home.features.playerProfiles.title')}
+            description={t('home.features.playerProfiles.description')}
           />
           <FeatureCard
             icon={<Trophy className="h-6 w-6" />}
-            title="Leaderboard Rankings"
-            description="Browse global rankings with pagination and search functionality"
+            title={t('home.features.leaderboardRankings.title')}
+            description={t('home.features.leaderboardRankings.description')}
           />
           <FeatureCard
             icon={<Target className="h-6 w-6" />}
-            title="Match Details"
-            description="Analyze individual matches with timelines, seed info, and player performance"
+            title={t('home.features.matchDetails.title')}
+            description={t('home.features.matchDetails.description')}
           />
           <FeatureCard
             icon={<Radio className="h-6 w-6" />}
-            title="Live Matches"
-            description="Real-time updates of ongoing matches with auto-refresh"
+            title={t('home.features.liveMatches.title')}
+            description={t('home.features.liveMatches.description')}
           />
           <FeatureCard
             icon={<Swords className="h-6 w-6" />}
-            title="Head-to-Head"
-            description="Compare two players directly with detailed statistics and match history"
+            title={t('home.features.headToHead.title')}
+            description={t('home.features.headToHead.description')}
           />
           <FeatureCard
             icon={<TrendingUp className="h-6 w-6" />}
-            title="Performance Charts"
-            description="Visualize ELO progression, win rates, and performance trends"
+            title={t('home.features.performanceCharts.title')}
+            description={t('home.features.performanceCharts.description')}
           />
         </div>
       </section>
@@ -162,7 +166,7 @@ export default function HomePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
-              Built With
+              {t('home.builtWith')}
             </CardTitle>
           </CardHeader>
           <CardContent>

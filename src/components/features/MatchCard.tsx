@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
@@ -37,6 +38,7 @@ export function MatchCard({
   className,
   highlightPlayer,
 }: MatchCardProps) {
+  const t = useTranslations();
   const { id, type, result, date, seed, players, changes } = match;
 
   const winner = result.uuid; // Can be null for forfeited matches
@@ -45,15 +47,15 @@ export function MatchCard({
   const getMatchTypeName = (type: MatchType): string => {
     switch (type) {
       case MatchType.Ranked:
-        return 'RANKED';
+        return t('match.types.ranked');
       case MatchType.Casual:
-        return 'CASUAL';
+        return t('match.types.casual');
       case MatchType.Private:
-        return 'PRIVATE';
+        return t('match.types.private');
       case MatchType.Event:
-        return 'EVENT';
+        return t('match.types.event');
       default:
-        return 'UNKNOWN';
+        return t('match.types.unknown');
     }
   };
 
@@ -158,7 +160,7 @@ export function MatchCard({
           {seed && (
             <div className="mt-3 pt-3 border-t border-border">
               <p className="text-xs text-muted-foreground">
-                Seed: {seed.overworld} • Bastion: {seed.nether}
+                {t('match.seed')}: {seed.overworld} • {t('match.bastion')}: {seed.nether}
               </p>
             </div>
           )}

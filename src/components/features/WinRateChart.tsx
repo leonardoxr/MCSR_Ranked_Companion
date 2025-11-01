@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   PieChart,
   Pie,
@@ -23,9 +24,11 @@ export interface WinRateChartProps {
  * Shows pie chart with win rate percentage
  */
 export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
+  const t = useTranslations();
+
   const data = [
-    { name: 'Wins', value: wins, color: 'hsl(var(--emerald))' },
-    { name: 'Losses', value: losses, color: 'hsl(var(--redstone))' },
+    { name: t('charts.wins'), value: wins, color: 'hsl(var(--emerald))' },
+    { name: t('charts.losses'), value: losses, color: 'hsl(var(--redstone))' },
   ];
 
   const winRate = formatWinRate(wins, losses);
@@ -34,7 +37,7 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle>Win Rate</CardTitle>
+        <CardTitle>{t('charts.winRate')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center">
@@ -66,7 +69,7 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
           <div className="text-center mt-4">
             <p className="text-4xl font-bold text-primary">{winRate}%</p>
             <p className="text-sm text-muted-foreground mt-1">
-              {wins}W - {losses}L ({total} total)
+              {wins}{t('charts.winsShort')} - {losses}{t('charts.lossesShort')} ({total} {t('charts.total')})
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   LineChart,
   Line,
@@ -37,19 +38,21 @@ export function EloChart({
   className,
   showRankLines = true,
 }: EloChartProps) {
+  const t = useTranslations();
+
   const rankTiers = [
-    { name: 'Netherite', elo: 2000, color: '#4A5568' },
-    { name: 'Diamond', elo: 1600, color: '#4299E1' },
-    { name: 'Emerald', elo: 1250, color: '#48BB78' },
-    { name: 'Gold', elo: 950, color: '#ECC94B' },
-    { name: 'Iron', elo: 700, color: '#A0AEC0' },
-    { name: 'Coal', elo: 0, color: '#2D3748' },
+    { name: t('ranks.netherite'), elo: 2000, color: '#4A5568' },
+    { name: t('ranks.diamond'), elo: 1600, color: '#4299E1' },
+    { name: t('ranks.emerald'), elo: 1250, color: '#48BB78' },
+    { name: t('ranks.gold'), elo: 950, color: '#ECC94B' },
+    { name: t('ranks.iron'), elo: 700, color: '#A0AEC0' },
+    { name: t('ranks.coal'), elo: 0, color: '#2D3748' },
   ];
 
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>ELO Progression</CardTitle>
+        <CardTitle>{t('charts.eloProgression')}</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
@@ -117,6 +120,8 @@ interface CustomTooltipProps {
 }
 
 function CustomTooltip({ active, payload }: CustomTooltipProps) {
+  const t = useTranslations();
+
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -129,8 +134,8 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
       <p className="text-sm font-semibold mb-1">
         {formatDate(new Date(data.date), 'PPP')}
       </p>
-      <p className="text-lg font-bold text-primary">{data.elo} ELO</p>
-      <p className="text-xs text-muted-foreground">{rank.name} Tier</p>
+      <p className="text-lg font-bold text-primary">{data.elo} {t('common.elo')}</p>
+      <p className="text-xs text-muted-foreground">{rank.name} {t('common.tier')}</p>
     </div>
   );
 }

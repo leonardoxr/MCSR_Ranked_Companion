@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,8 @@ export function SearchBar({
   onSearch,
   autoFocus = false,
 }: SearchBarProps) {
+  const t = useTranslations();
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && onSearch) {
       onSearch(value);
@@ -55,7 +58,7 @@ export function SearchBar({
         <button
           onClick={handleClear}
           className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Clear search"
+          aria-label={t('common.clearSearch')}
         >
           <X className="h-4 w-4" />
         </button>

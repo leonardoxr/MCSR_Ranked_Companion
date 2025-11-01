@@ -1,0 +1,279 @@
+{
+  "app": {
+    "title": "MCSR Ranked Companion",
+    "description": "Rastrea tus estadísticas, partidas y rendimiento en Minecraft Speedrun Ranked",
+    "keywords": "minecraft, speedrun, mcsr, ranked, estadísticas"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "tryAgain": "Intentar de nuevo",
+    "back": "Volver",
+    "search": "Buscar",
+    "clear": "Limpiar",
+    "clearSearch": "Limpiar búsqueda",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "page": "Página {page}",
+    "vs": "VS",
+    "live": "EN VIVO",
+    "unranked": "Sin rango",
+    "season": "Temporada",
+    "current": "Actual",
+    "rank": "Rango #{rank}",
+    "noData": "No hay datos disponibles",
+    "noDataMessage": "No hay datos para mostrar en este momento",
+    "elo": "ELO",
+    "tier": "Nivel"
+  },
+  "nav": {
+    "home": "Inicio",
+    "leaderboard": "Tabla de clasificación",
+    "liveMatches": "Partidas en Vivo",
+    "playerComparison": "Comparación de Jugadores"
+  },
+  "home": {
+    "title": "MCSR Ranked Companion",
+    "subtitle": "Rastrea tus estadísticas de speedrun, analiza partidas y sube en la clasificación",
+    "searchPlaceholder": "Buscar un jugador...",
+    "leaderboard": {
+      "title": "Tabla de clasificación",
+      "description": "Ver clasificaciones globales y mejores jugadores",
+      "button": "Ver Clasificaciones"
+    },
+    "liveMatches": {
+      "title": "Partidas en Vivo",
+      "description": "Observa partidas en curso en tiempo real",
+      "button": "Ver en Vivo"
+    },
+    "playerComparison": {
+      "title": "Comparación de Jugadores",
+      "description": "Compara estadísticas directas entre jugadores",
+      "searchPrompt": "Busca dos jugadores para comparar sus estadísticas"
+    },
+    "features": {
+      "title": "Características",
+      "playerProfiles": {
+        "title": "Perfiles de Jugadores",
+        "description": "Ver estadísticas detalladas, historial de partidas, logros y progresión de ELO"
+      },
+      "leaderboardRankings": {
+        "title": "Rankings de Clasificación",
+        "description": "Navega por las clasificaciones globales con paginación y funcionalidad de búsqueda"
+      },
+      "matchDetails": {
+        "title": "Detalles de la Partida",
+        "description": "Analiza partidas individuales con cronología, información de semilla y rendimiento de jugadores"
+      },
+      "liveMatches": {
+        "title": "Partidas en Vivo",
+        "description": "Actualizaciones en tiempo real de partidas en curso con actualización automática"
+      },
+      "headToHead": {
+        "title": "Cara a Cara",
+        "description": "Compara dos jugadores directamente con estadísticas detalladas e historial de partidas"
+      },
+      "performanceCharts": {
+        "title": "Gráficos de Rendimiento",
+        "description": "Visualiza la progresión de ELO, tasas de victoria y tendencias de rendimiento"
+      }
+    },
+    "builtWith": "Construido Con"
+  },
+  "leaderboard": {
+    "title": "Tabla de clasificación",
+    "description": "Mejores jugadores MCSR ranqueados mundialmente",
+    "searchPlaceholder": "Buscar un jugador...",
+    "currentPage": "Página Actual",
+    "playersShown": "Jugadores Mostrados",
+    "loading": "Cargando tabla de clasificación...",
+    "error": "Error al Cargar Tabla de Clasificación",
+    "errorMessage": "Ocurrió un error al obtener la tabla de clasificación",
+    "noPlayers": "No se encontraron jugadores en esta página",
+    "noPlayersFound": "No se encontraron jugadores",
+    "table": {
+      "rank": "Rango",
+      "player": "Jugador",
+      "tier": "Nivel",
+      "elo": "ELO"
+    }
+  },
+  "live": {
+    "title": "Partidas en Vivo",
+    "description": "Observa partidas en curso en tiempo real",
+    "count": "{count} En Vivo",
+    "loading": "Cargando partidas en vivo...",
+    "error": "Error al Cargar Partidas en Vivo",
+    "errorMessage": "Ocurrió un error al obtener partidas en vivo",
+    "noMatches": "Sin Partidas en Vivo",
+    "noMatchesMessage": "No hay partidas en curso en este momento. ¡Vuelve más tarde!",
+    "autoRefresh": "Actualización automática cada 30 segundos",
+    "liveMatch": "Partida en Vivo",
+    "inProgress": "En curso",
+    "matchTime": "Tiempo de Partida",
+    "players": "Jugadores",
+    "watchStream": "Ver Transmisión"
+  },
+  "player": {
+    "loading": "Cargando perfil del jugador...",
+    "notFound": "Jugador No Encontrado",
+    "notFoundMessage": "No se pudo encontrar el jugador \"{username}\"",
+    "invalidData": "Datos del Jugador Inválidos",
+    "invalidDataMessage": "Los datos del jugador recibidos de la API están incompletos. Por favor, intenta de nuevo más tarde.",
+    "seasonStats": "Estadísticas de la Temporada",
+    "allTimeStats": "Estadísticas de Todos los Tiempos",
+    "performance": "Rendimiento",
+    "recentMatches": "Partidas Recientes",
+    "achievements": "Logros",
+    "noMatches": "No se encontraron partidas",
+    "rank": "Rango",
+    "stats": {
+      "matchesPlayed": "Partidas Jugadas",
+      "wins": "Victorias",
+      "losses": "Derrotas",
+      "winRate": "Tasa de Victoria",
+      "wrShort": "TV",
+      "currentStreak": "Racha Actual",
+      "totalMatches": "Total de Partidas",
+      "totalWins": "Total de Victorias",
+      "highestStreak": "Mayor Racha",
+      "completions": "Completaciones",
+      "forfeits": "Abandonos",
+      "bestTime": "Mejor Tiempo",
+      "avgCompletion": "Promedio de Completación",
+      "totalPlaytime": "Tiempo Total de Juego",
+      "lastOnline": "Última Vez en Línea",
+      "peakElo": "pico de elo",
+      "winrate": "tasa de victoria",
+      "pb": "récord personal",
+      "bestWinstreak": "mejor racha",
+      "average": "promedio",
+      "forfeitRate": "tasa de abandono",
+      "points": "puntos",
+      "highestWinStreak": "Mayor Racha de Victorias",
+      "bestTimeRanked": "Mejor Tiempo (Ranqueado)",
+      "season": "TEMPORADA",
+      "allTime": "TODOS LOS TIEMPOS"
+    },
+    "tabs": {
+      "season": "TEMPORADA",
+      "allTime": "TODOS LOS TIEMPOS"
+    }
+  },
+  "match": {
+    "loading": "Cargando detalles de la partida...",
+    "notFound": "Partida No Encontrada",
+    "notFoundMessage": "No se pudo encontrar la partida \"{matchId}\"",
+    "title": "Detalles de la Partida",
+    "winner": "Ganador",
+    "forfeited": "Abandonó",
+    "noWinner": "Sin Ganador",
+    "players": "Jugadores",
+    "category": "Categoría",
+    "playersEloChanges": "Jugadores y Cambios de ELO",
+    "seedInformation": "Información de la Semilla",
+    "seedId": "ID de Semilla",
+    "overworldType": "Tipo de Overworld",
+    "bastionType": "Tipo de Bastión",
+    "endTowerHeights": "Alturas de las Torres del End",
+    "variations": "Variaciones",
+    "matchTimeline": "Cronología de la Partida",
+    "completions": "Completaciones",
+    "watchVod": "Ver VOD",
+    "status": {
+      "forfeited": "Abandonado",
+      "decayed": "Caducado",
+      "completed": "Completado"
+    },
+    "types": {
+      "ranked": "RANQUEADO",
+      "casual": "CASUAL",
+      "private": "PRIVADO",
+      "event": "EVENTO",
+      "unknown": "DESCONOCIDO"
+    },
+    "seed": "Semilla:",
+    "bastion": "Bastión:"
+  },
+  "versus": {
+    "title": "Cara a Cara",
+    "subtitle": "{player1} vs {player2}",
+    "totalMatches": "{count} Partidas Totales",
+    "winRate": "% Tasa de Victoria",
+    "statisticsComparison": "Comparación de Estadísticas",
+    "recentMatches": "Partidas Cara a Cara Recientes",
+    "noMatches": "No se encontraron partidas cara a cara"
+  },
+  "timeline": {
+    "title": "Cronología de la Partida",
+    "noEvents": "No hay eventos de cronología disponibles",
+    "events": {
+      "enter_nether": "Entró al Nether",
+      "enter_bastion": "Entró al Bastión",
+      "enter_fortress": "Entró a la Fortaleza",
+      "first_portal": "Primer Portal",
+      "second_portal": "Segundo Portal",
+      "enter_stronghold": "Entró a la Fortaleza (Stronghold)",
+      "enter_end": "Entró al End",
+      "finish": "Terminó",
+      "died": "Murió"
+    }
+  },
+  "charts": {
+    "eloProgression": "Progresión de ELO",
+    "winRate": "Tasa de Victoria",
+    "wins": "Victorias",
+    "winsShort": "V",
+    "losses": "Derrotas",
+    "lossesShort": "D",
+    "total": "{count} total",
+    "performanceOverview": "Vista General del Rendimiento",
+    "averageTime": "Tiempo Promedio",
+    "bestTime": "Mejor Tiempo",
+    "average": "Promedio:",
+    "best": "Mejor:",
+    "matches": "partidas",
+    "tier": "Nivel"
+  },
+  "ranks": {
+    "coal": "Carbón",
+    "iron": "Hierro",
+    "gold": "Oro",
+    "emerald": "Esmeralda",
+    "diamond": "Diamante",
+    "netherite": "Netherite"
+  },
+  "achievements": {
+    "BestTime": "Mejor Tiempo",
+    "HighestWinStreak": "Mayor Racha de Victorias",
+    "PlayedMatches": "Partidas Jugadas",
+    "Playtime": "Tiempo de Juego",
+    "Wins": "Victorias",
+    "SeasonOutcome": "Resultado de la Temporada",
+    "PlayoffsOutcome": "Resultado de los Playoffs",
+    "SummonWither": "Invocar Wither",
+    "IronPickless": "Sin Pico de Hierro",
+    "Oneshot": "Un Disparo",
+    "Overtake": "Adelantar",
+    "Foodless": "Sin Comida",
+    "ClassicRun": "Carrera Clásica",
+    "Netherite": "Netherite",
+    "Armorless": "Sin Armadura",
+    "HighLevel": "Alto Nivel",
+    "EgapHolder": "Poseedor de Egap",
+    "IronHoe": "Azada de Hierro",
+    "WeeklyRace": "Carrera Semanal",
+    "Secret": "Secreto"
+  },
+  "errors": {
+    "default": "Ocurrió un error al cargar los datos.",
+    "noResponse": "Sin respuesta del servidor. Por favor, verifica tu conexión.",
+    "unknown": "Ocurrió un error desconocido",
+    "somethingWentWrong": "Algo salió mal",
+    "loadingError": "Ocurrió un error al cargar los datos."
+  },
+  "search": {
+    "placeholder": "Buscar jugadores...",
+    "clearLabel": "Limpiar búsqueda"
+  }
+}

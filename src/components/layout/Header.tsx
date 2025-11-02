@@ -9,6 +9,8 @@ import LanguageSwitcher from "@/components/features/LanguageSwitcher";
 import { useLeaderboardCachedFilter } from '@/lib/api/hooks/useLeaderboard';
 import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '@/lib/api/endpoints';
+import { useAuthStore } from '@/lib/store/useAuthStore';
+import { LogOut, User } from 'lucide-react';
 
 const NavLink = ({ href, label }: { href: string; label: string }) => {
   const pathname = usePathname();
@@ -32,6 +34,7 @@ export default function Header() {
   const router = useRouter();
   const [query, setQuery] = React.useState("");
   const queryClient = useQueryClient();
+  const { username, isAuthenticated, logout } = useAuthStore();
 
   // Background prefetch first 3 pages to enrich local search cache (no-ops if cached)
   React.useEffect(() => {
@@ -70,6 +73,7 @@ export default function Header() {
             <NavLink href="/" label="Home" />
             <NavLink href="/leaderboard" label="Leaderboard" />
             <NavLink href="/live" label="Live" />
+            {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
@@ -90,9 +94,36 @@ export default function Header() {
                 }
               </div>
             </div>
-            <Button size="sm" variant="ghost" className="text-white/80 hover:text-white">
-              Sign In
-            </Button>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-white/80 hidden lg:inline">
+                  <User className="inline h-4 w-4 mr-1" />
+                  {username}
+                </span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-white/80 hover:text-white"
+                  onClick={() => {
+                    logout();
+                    router.push('/');
+                  }}
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-white/80 hover:text-white"
+                onClick={() => router.push('/login')}
+              >
+                <User className="h-4 w-4 mr-1" />
+                Login
+              </Button>
+            )}
             <div className="ml-2">
               <LanguageSwitcher />
             </div>

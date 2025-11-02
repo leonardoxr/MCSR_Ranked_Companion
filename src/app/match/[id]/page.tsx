@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n/config';
 import { useMatch } from '@/lib/api/hooks/useMatches';
 import { MatchCard } from '@/components/features/MatchCard';
 import { MatchTimeline } from '@/components/features/MatchTimeline';
@@ -30,7 +29,6 @@ import { getRankTier } from '@/lib/utils/colors';
 
 export default function MatchDetailsPage() {
   const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const router = useRouter();
   const matchId = params?.id as string;
@@ -174,7 +172,7 @@ export default function MatchDetailsPage() {
                 <div
                   key={player.uuid}
                   className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => router.push(`/${locale}/player/${player.nickname}`)}
+                  onClick={() => router.push(`/player/${player.nickname}`)}
                 >
                   <div className="flex items-center gap-4">
                     {isWinner && (

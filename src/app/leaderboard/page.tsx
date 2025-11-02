@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useLeaderboard } from '@/lib/api/hooks/useLeaderboard';
 import { LeaderboardTable } from '@/components/features/LeaderboardTable';
@@ -10,14 +10,11 @@ import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
-import type { Locale } from '@/i18n/config';
 
 const PAGE_SIZE = 50;
 
 export default function LeaderboardPage() {
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const [page, setPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -31,7 +28,7 @@ export default function LeaderboardPage() {
     setSearchQuery(query);
     if (query) {
       // Navigate to player profile
-      router.push(`/${locale}/player/${encodeURIComponent(query)}`);
+      router.push(`/player/${encodeURIComponent(query)}`);
     }
   };
 

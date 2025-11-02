@@ -40,6 +40,24 @@ export function EloChart({
   showRankLines = true,
 }: EloChartProps) {
   const t = useTranslations();
+  const [chartHeight, setChartHeight] = React.useState(300);
+
+  // Set responsive chart height based on screen size
+  React.useEffect(() => {
+    const updateHeight = () => {
+      if (window.innerWidth < 640) {
+        setChartHeight(200); // Mobile: shorter height
+      } else if (window.innerWidth < 1024) {
+        setChartHeight(250); // Tablet: medium height
+      } else {
+        setChartHeight(300); // Desktop: full height
+      }
+    };
+
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
 
   const rankTiers = [
     { name: t('ranks.netherite'), elo: 2000, color: '#4A5568' },
@@ -53,10 +71,10 @@ export function EloChart({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle>{t('charts.eloProgression')}</CardTitle>
+        <CardTitle className="text-base sm:text-lg">{t('charts.eloProgression')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis

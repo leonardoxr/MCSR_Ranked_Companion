@@ -80,12 +80,12 @@ export default function VersusPage() {
 
       {/* Header */}
       <div className="flex flex-col items-center gap-4 text-center">
-        <div className="p-4 bg-primary/10 rounded-lg">
-          <Swords className="h-12 w-12 text-primary" />
+        <div className="p-3 sm:p-4 bg-primary/10 rounded-lg">
+          <Swords className="h-8 w-8 sm:h-12 sm:w-12 text-primary" />
         </div>
         <div>
-          <h1 className="text-4xl font-bold mb-2">{t('versus.title')}</h1>
-          <p className="text-xl text-muted-foreground">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">{t('versus.title')}</h1>
+          <p className="text-base sm:text-xl text-muted-foreground">
             {t('versus.subtitle', { player1: p1Name, player2: p2Name })}
           </p>
         </div>
@@ -94,11 +94,44 @@ export default function VersusPage() {
       {/* Win/Loss Comparison */}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
-          <div className="grid grid-cols-3 divide-x divide-border">
+          {/* Mobile View - Stacked */}
+          <div className="flex flex-col sm:hidden divide-y divide-border">
             {/* Player 1 */}
-            <div className="p-6 text-center bg-gradient-to-br from-blue-500/10 to-transparent">
+            <div className="p-4 text-center bg-gradient-to-br from-blue-500/10 to-transparent">
+              <p className="text-xs text-muted-foreground mb-2">{p1Name}</p>
+              <p className="text-3xl font-bold text-blue-500 mb-1">
+                {rankedP1Wins}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {rankedP1WR}{t('versus.winRate')}
+              </p>
+            </div>
+
+            {/* VS */}
+            <div className="flex flex-col items-center justify-center p-4 bg-muted/50">
+              <Swords className="h-6 w-6 text-muted-foreground mb-1" />
+              <p className="text-xs font-semibold text-muted-foreground">{t('common.vs')}</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('versus.totalMatches', { count: rankedTotal })}</p>
+            </div>
+
+            {/* Player 2 */}
+            <div className="p-4 text-center bg-gradient-to-bl from-red-500/10 to-transparent">
+              <p className="text-xs text-muted-foreground mb-2">{p2Name}</p>
+              <p className="text-3xl font-bold text-red-500 mb-1">
+                {rankedP2Wins}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {rankedP2WR}{t('versus.winRate')}
+              </p>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet View - 3 Columns */}
+          <div className="hidden sm:grid grid-cols-3 divide-x divide-border">
+            {/* Player 1 */}
+            <div className="p-4 md:p-6 text-center bg-gradient-to-br from-blue-500/10 to-transparent">
               <p className="text-sm text-muted-foreground mb-2">{p1Name}</p>
-              <p className="text-5xl font-bold text-blue-500 mb-2">
+              <p className="text-3xl md:text-5xl font-bold text-blue-500 mb-2">
                 {rankedP1Wins}
               </p>
               <p className="text-sm text-muted-foreground">
@@ -107,16 +140,16 @@ export default function VersusPage() {
             </div>
 
             {/* VS */}
-            <div className="flex flex-col items-center justify-center p-6 bg-muted/50">
-              <Swords className="h-8 w-8 text-muted-foreground mb-2" />
+            <div className="flex flex-col items-center justify-center p-4 md:p-6 bg-muted/50">
+              <Swords className="h-6 w-6 md:h-8 md:w-8 text-muted-foreground mb-2" />
               <p className="text-sm font-semibold text-muted-foreground">{t('common.vs')}</p>
               <p className="text-xs text-muted-foreground mt-2">{t('versus.totalMatches', { count: rankedTotal })}</p>
             </div>
 
             {/* Player 2 */}
-            <div className="p-6 text-center bg-gradient-to-bl from-red-500/10 to-transparent">
+            <div className="p-4 md:p-6 text-center bg-gradient-to-bl from-red-500/10 to-transparent">
               <p className="text-sm text-muted-foreground mb-2">{p2Name}</p>
-              <p className="text-5xl font-bold text-red-500 mb-2">
+              <p className="text-3xl md:text-5xl font-bold text-red-500 mb-2">
                 {rankedP2Wins}
               </p>
               <p className="text-sm text-muted-foreground">
@@ -155,14 +188,27 @@ export default function VersusPage() {
           {/* Ranked head-to-head */}
           <div>
             <div className="mb-2 text-sm font-semibold">Ranked</div>
-            <div className="grid grid-cols-3 gap-4 items-end">
+            {/* Mobile View - Stacked */}
+            <div className="flex flex-col sm:hidden gap-3">
+              <div className="text-center p-3 bg-blue-500/5 rounded-md">
+                <div className="text-2xl font-bold text-blue-500">{rankedP1Wins}</div>
+                <div className="text-xs text-muted-foreground">{p1Name} • {rankedP1WR}% WR</div>
+              </div>
+              <div className="text-center text-xs text-muted-foreground">{t('versus.totalMatches', { count: rankedTotal })}</div>
+              <div className="text-center p-3 bg-red-500/5 rounded-md">
+                <div className="text-2xl font-bold text-red-500">{rankedP2Wins}</div>
+                <div className="text-xs text-muted-foreground">{p2Name} • {rankedP2WR}% WR</div>
+              </div>
+            </div>
+            {/* Desktop View - 3 Columns */}
+            <div className="hidden sm:grid grid-cols-3 gap-4 items-end">
               <div className="text-center">
-                <div className="text-3xl font-bold text-blue-500">{rankedP1Wins}</div>
+                <div className="text-2xl md:text-3xl font-bold text-blue-500">{rankedP1Wins}</div>
                 <div className="text-xs text-muted-foreground">{p1Name} • {rankedP1WR}% WR</div>
               </div>
               <div className="text-center text-sm text-muted-foreground">{t('versus.totalMatches', { count: rankedTotal })}</div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-red-500">{rankedP2Wins}</div>
+                <div className="text-2xl md:text-3xl font-bold text-red-500">{rankedP2Wins}</div>
                 <div className="text-xs text-muted-foreground">{p2Name} • {rankedP2WR}% WR</div>
               </div>
             </div>

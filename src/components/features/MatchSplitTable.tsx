@@ -92,10 +92,91 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle className="text-xl">{t('timeline.milestones.title')}</CardTitle>
+        <CardTitle className="text-lg sm:text-xl">{t('timeline.milestones.title')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 text-sm rounded-md overflow-hidden">
+        {/* Mobile View - Stacked Cards */}
+        <div className="md:hidden space-y-3">
+          {/* Player Header */}
+          <div className="flex justify-between items-center text-xs font-semibold px-2 pb-2 border-b border-border">
+            <div className="flex items-center gap-2">
+              <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
+              <span className="truncate max-w-[120px]">{left.nickname}</span>
+            </div>
+            {right && (
+              <div className="flex items-center gap-2">
+                <span className="truncate max-w-[120px]">{right.nickname}</span>
+                <span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} />
+              </div>
+            )}
+          </div>
+
+          {ORDER.map((type, idx) => {
+            const lTime = firstEventTime(match.timelines, left.uuid, type);
+            const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
+            const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
+            const isEven = idx % 2 === 0;
+            return (
+              <div key={type} className={cn('p-3 rounded-md', isEven ? 'bg-background/40' : 'bg-background/20')}>
+                {/* Milestone Name */}
+                <div className="flex items-center justify-center gap-2 mb-3 font-semibold text-xs">
+                  {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
+                  <span>{t(`timeline.milestones.${type}`)}</span>
+                </div>
+
+                {/* Times */}
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  {/* Left Player */}
+                  <div>
+                    <div className="font-mono mb-1">
+                      {lTime !== null ? (
+                        <div className="flex items-center gap-1">
+                          <span className={cn('inline-block h-1 w-1 rounded-full', chipLeft)} />
+                          <span>{formatTime(lTime)}</span>
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </div>
+                    {delta !== null && lTime !== null && (
+                      <div className={cn('text-xs', delta > 0 ? 'pace-behind' : 'pace-ahead')}>
+                        {formatTimeDifference(delta)}
+                      </div>
+                    )}
+                    <div className="mt-2 progress-track">
+                      <div className="progress-fill" style={{ width: `${lTime && maxTime ? Math.min((lTime / maxTime) * 100, 100) : 0}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Right Player */}
+                  <div className="text-right">
+                    <div className="font-mono mb-1">
+                      {rTime !== null ? (
+                        <div className="flex items-center justify-end gap-1">
+                          <span>{formatTime(rTime)}</span>
+                          <span className={cn('inline-block h-1 w-1 rounded-full', chipRight)} />
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </div>
+                    {delta !== null && rTime !== null && (
+                      <div className={cn('text-xs', delta < 0 ? 'pace-behind' : 'pace-ahead')}>
+                        {formatTimeDifference(-delta)}
+                      </div>
+                    )}
+                    <div className="mt-2 progress-track">
+                      <div className="progress-fill" style={{ width: `${rTime && maxTime ? Math.min((rTime / maxTime) * 100, 100) : 0}%` }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop View - 3 Column Grid */}
+        <div className="hidden md:grid grid-cols-3 text-sm rounded-md overflow-hidden">
           {/* Header row */}
           <div className="px-3 py-2 bg-muted/40 font-semibold truncate flex items-center gap-2">
             <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />

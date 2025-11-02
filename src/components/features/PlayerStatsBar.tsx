@@ -75,7 +75,7 @@ export function PlayerStatsBar({
           <button
             onClick={() => setActiveTab('season')}
             className={cn(
-              'px-3 py-1 text-sm font-medium transition-colors',
+              'px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium transition-colors',
               activeTab === 'season'
                 ? 'text-foreground border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
@@ -86,7 +86,7 @@ export function PlayerStatsBar({
           <button
             onClick={() => setActiveTab('all-time')}
             className={cn(
-              'px-3 py-1 text-sm font-medium transition-colors',
+              'px-2 sm:px-3 py-1 text-xs sm:text-sm font-medium transition-colors',
               activeTab === 'all-time'
                 ? 'text-foreground border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
@@ -98,23 +98,23 @@ export function PlayerStatsBar({
       )}
 
       {/* Stats Display */}
-      <div className="flex flex-wrap items-center gap-3 p-2 pb-0 tabular-nums text-sm">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 p-2 pb-0 tabular-nums text-xs sm:text-sm">
         {activeTab === 'season' || variant === 'season' ? (
           <>
             {/* Rank */}
             {player.eloRank && (
               <StatItem
-                icon={<Trophy className="h-4 w-4" />}
+                icon={<Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`#${player.eloRank.toLocaleString()}`}
               />
             )}
 
             {/* Player Name */}
-            <CountryFlag country={player.country} size="sm" />
-            <span className="font-semibold">{player.nickname}</span>
+            <CountryFlag country={player.country} size="xs" className="sm:!h-5 sm:!w-5" />
+            <span className="font-semibold text-xs sm:text-sm">{player.nickname}</span>
 
             {/* Season Label */}
-            <span className="text-muted-foreground">{t('player.stats.season').toUpperCase()}</span>
+            <span className="text-muted-foreground text-xs">{t('player.stats.season').toUpperCase()}</span>
 
             {/* Rank Badge */}
             {player.eloRate && (
@@ -124,7 +124,7 @@ export function PlayerStatsBar({
             {/* ELO */}
             {player.eloRate && (
               <StatItem
-                icon={<Star className="h-4 w-4" />}
+                icon={<Star className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`(${player.eloRate.toLocaleString()} ${t('common.elo').toLowerCase()})`}
               />
             )}
@@ -132,21 +132,21 @@ export function PlayerStatsBar({
             {/* Peak ELO */}
             {peakElo > 0 && peakElo !== player.eloRate && (
               <StatItem
-                icon={<TrendingUp className="h-4 w-4" />}
+                icon={<TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${peakElo.toLocaleString()} ${t('player.stats.peakElo')}`}
               />
             )}
 
             {/* Win Rate */}
             <StatItem
-              icon={<Target className="h-4 w-4" />}
+              icon={<Target className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
               value={`${seasonWinRate}% ${t('player.stats.winrate')}`}
             />
 
             {/* Best Time */}
             {totalStats.bestTime.ranked && (
               <StatItem
-                icon={<Timer className="h-4 w-4" />}
+                icon={<Timer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${formatTime(totalStats.bestTime.ranked)} ${t('player.stats.pb')}`}
               />
             )}
@@ -154,7 +154,7 @@ export function PlayerStatsBar({
             {/* Win Streak */}
             {seasonStats.highestWinStreak.ranked > 0 && (
               <StatItem
-                icon={<Flame className="h-4 w-4" />}
+                icon={<Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${seasonStats.highestWinStreak.ranked} ${t('player.stats.bestWinstreak')}`}
               />
             )}
@@ -162,21 +162,21 @@ export function PlayerStatsBar({
             {/* Average Completion */}
             {avgCompletion > 0 && (
               <StatItem
-                icon={<Clock className="h-4 w-4" />}
+                icon={<Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${formatTime(avgCompletion)} ${t('player.stats.average')}`}
               />
             )}
 
             {/* Forfeit Rate */}
             <StatItem
-              icon={<XCircle className="h-4 w-4" />}
+              icon={<XCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
               value={`${forfeitRate}% ${t('player.stats.forfeitRate')}`}
             />
 
             {/* Points */}
             {points > 0 && (
               <StatItem
-                icon={<Zap className="h-4 w-4" />}
+                icon={<Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${points} ${t('player.stats.points')}`}
               />
             )}
@@ -185,23 +185,23 @@ export function PlayerStatsBar({
           <>
             {/* Wins */}
             <StatItem
-              icon={<Trophy className="h-4 w-4" />}
+              icon={<Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
               value={`${totalStats.wins.ranked.toLocaleString()} ${t('player.stats.wins')}`}
             />
 
             {/* Completions */}
             <StatItem
-              icon={<Medal className="h-4 w-4" />}
+              icon={<Medal className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
               value={`${totalStats.completions.ranked.toLocaleString()} ${t('player.stats.completions')}`}
             />
 
             {/* ALL TIME Label */}
-            <span className="text-muted-foreground">{t('player.stats.allTime').toUpperCase()}</span>
+            <span className="text-muted-foreground text-xs">{t('player.stats.allTime').toUpperCase()}</span>
 
             {/* Best Time */}
             {totalStats.bestTime.ranked && (
               <StatItem
-                icon={<Timer className="h-4 w-4" />}
+                icon={<Timer className="h-3.5 w-3.5 sm:h-4 sm:w-4" />}
                 value={`${formatTime(totalStats.bestTime.ranked)} ${t('player.stats.pb')}`}
               />
             )}
@@ -219,7 +219,7 @@ interface StatItemProps {
 
 function StatItem({ icon, value }: StatItemProps) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1 sm:gap-1.5">
       <span className="text-muted-foreground/70 flex-shrink-0 inline-flex items-center justify-center">
         {icon}
       </span>

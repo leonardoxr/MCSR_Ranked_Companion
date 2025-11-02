@@ -52,13 +52,13 @@ export default function LeaderboardPage() {
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary/10 rounded-lg">
-              <Trophy className="h-8 w-8 text-primary" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-primary/10 rounded-lg">
+              <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">{t('leaderboard.title')}</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-xl sm:text-3xl font-bold">{t('leaderboard.title')}</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 {t('leaderboard.description')}
               </p>
             </div>
@@ -76,26 +76,27 @@ export default function LeaderboardPage() {
               placeholder={t('leaderboard.searchPlaceholder')}
             />
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Season</label>
+          {/* Filters - Mobile: Full Width Stack, Desktop: Inline */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm text-muted-foreground">Season</label>
               <input
                 type="number"
                 value={season ?? ''}
                 onChange={(e) => setSeason(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder="current"
-                className="h-9 w-28 bg-white/5 border border-white/10 rounded-md px-2"
+                className="h-9 w-full sm:w-28 bg-white/5 border border-white/10 rounded-md px-2 text-sm"
               />
             </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-muted-foreground">Country</label>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm text-muted-foreground">Country</label>
               <input
                 type="text"
                 value={country}
                 onChange={(e) => setCountry(e.target.value.toLowerCase())}
                 placeholder="iso (e.g., us)"
                 maxLength={2}
-                className="h-9 w-36 bg-white/5 border border-white/10 rounded-md px-2 uppercase"
+                className="h-9 w-full sm:w-36 bg-white/5 border border-white/10 rounded-md px-2 uppercase text-sm"
               />
             </div>
           </div>

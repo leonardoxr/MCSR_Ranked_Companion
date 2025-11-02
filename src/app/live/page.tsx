@@ -1,9 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n/config';
 import { useLiveMatches } from '@/lib/api/hooks/useLiveMatches';
 import { PlayerAvatar } from '@/components/features/PlayerAvatar';
 import { RankBadge } from '@/components/features/RankBadge';
@@ -17,8 +15,6 @@ import { useRouter } from 'next/navigation';
 import type { LiveMatch } from '@/types/api';
 
 export default function LiveMatchesPage() {
-  const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const router = useRouter();
   const { data: liveMatches, isLoading, error } = useLiveMatches();
@@ -69,7 +65,6 @@ export default function LiveMatchesPage() {
               <LiveMatchCard
                 key={matchKey}
                 match={match}
-                locale={locale}
                 onClick={() => {
                   // Live matches don't have permanent IDs, so we can't navigate to a match page
                   // This would need a different implementation for live match details
@@ -101,11 +96,10 @@ export default function LiveMatchesPage() {
 
 interface LiveMatchCardProps {
   match: LiveMatch;
-  locale: Locale;
   onClick: () => void;
 }
 
-function LiveMatchCard({ match, locale, onClick }: LiveMatchCardProps) {
+function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
   const t = useTranslations();
   const router = useRouter();
   const [currentTime, setCurrentTime] = React.useState(match.currentTime);
@@ -176,7 +170,7 @@ function LiveMatchCard({ match, locale, onClick }: LiveMatchCardProps) {
                   className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors cursor-pointer"
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push(`/${locale}/player/${player.nickname}`);
+                    router.push(`/player/${player.nickname}`);
                   }}
                 >
                   <PlayerAvatar

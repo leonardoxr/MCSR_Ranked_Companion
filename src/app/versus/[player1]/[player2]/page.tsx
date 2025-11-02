@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n/config';
 import { useVersusStats, useVersusMatches } from '@/lib/api/hooks/useVersus';
 import { usePlayer } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
@@ -17,7 +16,6 @@ import { RankBadge } from '@/components/features/RankBadge';
 
 export default function VersusPage() {
   const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const router = useRouter();
   const player1Name = params?.player1 as string;

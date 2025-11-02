@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import type { Locale } from '@/i18n/config';
 import { usePlayer, usePlayerMatches } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { MatchCard } from '@/components/features/MatchCard';
@@ -19,7 +18,6 @@ import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
   const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const username = params?.username as string;
 

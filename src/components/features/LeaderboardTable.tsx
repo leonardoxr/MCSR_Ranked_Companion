@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
 import { RankBadge } from './RankBadge';
@@ -50,21 +49,14 @@ export function LeaderboardTable({
             const playerUrl = `/player/${encodeURIComponent(player.nickname)}?matches=ranked&sort=newest`;
 
             return (
-              <motion.div
+              <div
                 key={player.uuid}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.02 }}
                 className={cn(
                   'relative grid grid-cols-12 gap-4 px-6 py-4 transition-colors',
                   isHighlighted && 'bg-primary/10'
                 )}
               >
-                {/* Clickable Link Overlay */}
-                <Link
-                  href={playerUrl}
-                  className="absolute inset-0 rounded-lg hover:bg-zinc-800/50 dark:hover:bg-zinc-800 transition-colors z-0"
-                />
+                {/* Clickable area limited to Player column */}
 
                 {/* Rank */}
                 <div className="col-span-1 flex items-center relative z-10">
@@ -79,35 +71,46 @@ export function LeaderboardTable({
                     size="sm"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex h-8 items-center gap-2 text-xl">
-                      {player.eloRank && (
-                        <span className="font-semibold text-muted-foreground">
-                          #{player.eloRank.toLocaleString()}
+                    <Link href={playerUrl} className="group block rounded-md">
+                      <div className="flex h-8 items-center gap-2 text-xl">
+                        {player.eloRank && (
+                          <span className="font-semibold text-muted-foreground">
+                            #{player.eloRank.toLocaleString()}
+                          </span>
+                        )}
+                        <CountryFlag country={player.country} size="sm" />
+                        <span className="font-semibold truncate group-hover:text-primary transition-colors">
+                          {player.nickname}
                         </span>
-                      )}
-                      <CountryFlag country={player.country} size="sm" />
-                      <span className="font-semibold truncate">{player.nickname}</span>
-                    </div>
+                      </div>
+                      <div className="h-0.5 w-0 group-hover:w-full bg-primary/60 transition-all" />
+                    </Link>
                     {showRankChange && player.eloRank && (
                       <RankChangeIndicator change={0} />
                     )}
                   </div>
                 </div>
 
-                {/* Tier */}
-                <div className="col-span-3 flex items-center relative z-10">
-                  {player.eloRate && <RankBadge elo={player.eloRate} />}
+                {/* Tier: tier name only */}
+                <div className="col-span-3 flex items-center gap-2 relative z-10">
+                  {player.eloRate ? (
+                    <RankBadge elo={player.eloRate} showText showElo={false} className="!bg-transparent !p-0" />
+                  ) : (
+                    <span className="text-muted-foreground">{t('common.unranked')}</span>
+                  )}
                 </div>
 
                 {/* ELO */}
                 <div className="col-span-3 flex items-center relative z-10">
                   {player.eloRate ? (
-                    <RankBadge elo={player.eloRate} showText={false} showElo />
+                    <RankBadge elo={player.eloRate} showText={false} showElo className="!bg-transparent !p-0" />
                   ) : (
                     <span className="font-semibold text-lg">{t('common.unranked')}</span>
                   )}
                 </div>
-              </motion.div>
+                {/* Hover row emphasis (non-clickable columns) */}
+                <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 hover:opacity-100 transition-opacity"></div>
+              </div>
             );
           })}
         </div>

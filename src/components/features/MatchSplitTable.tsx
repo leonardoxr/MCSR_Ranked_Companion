@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import type { MatchInfo, TimelineEvent, UUID, CountryCode } from '@/types/api';
 import { cn } from '@/lib/utils';
 import { formatTime, formatTimeDifference } from '@/lib/utils/formatters';
-import { motion } from 'framer-motion';
 import { PlayerAvatar } from './PlayerAvatar';
 import { CountryFlag } from './CountryFlag';
 import { MinecraftIcon } from './MinecraftIcon';
@@ -115,12 +114,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
             return (
               <React.Fragment key={type}>
                 {/* Left time */}
-                <motion.div
-                  className={cn('px-3 py-3 font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
+                <div className={cn('px-3 py-3 font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}>
                   {lTime !== null ? (
                     <div className="flex items-center justify-between gap-3">
                       <span className="flex items-center gap-2">
@@ -128,15 +122,9 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                         {formatTime(lTime)}
                       </span>
                       {delta !== null && (
-                        <motion.span
-                          key={delta}
-                          initial={{ scale: 0.9, opacity: 0.6 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: 0.25 }}
-                          className={cn('text-xs', delta > 0 ? 'pace-behind' : 'pace-ahead')}
-                        >
+                        <span className={cn('text-xs', delta > 0 ? 'pace-behind' : 'pace-ahead')}>
                           ({formatTimeDifference(delta)})
-                        </motion.span>
+                        </span>
                       )}
                     </div>
                   ) : (
@@ -145,7 +133,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                   <div className="mt-2 progress-track">
                     <div className="progress-fill" style={{ width: `${lTime && maxTime ? Math.min((lTime / maxTime) * 100, 100) : 0}%` }} />
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Label */}
                 <div className={cn('px-3 py-3 text-center font-semibold flex items-center justify-center gap-2', isEven ? 'bg-background/40' : 'bg-background/20')}>
@@ -154,24 +142,13 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                 </div>
 
                 {/* Right time */}
-                <motion.div
-                  className={cn('px-3 py-3 text-right font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.05 + 0.03 }}
-                >
+                <div className={cn('px-3 py-3 text-right font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}>
                   {rTime !== null ? (
                     <div className="flex items-center justify-end gap-3">
                       {delta !== null && (
-                        <motion.span
-                          key={-delta}
-                          initial={{ scale: 0.9, opacity: 0.6 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          transition={{ duration: 0.25 }}
-                          className={cn('text-xs', delta < 0 ? 'pace-behind' : 'pace-ahead')}
-                        >
+                        <span className={cn('text-xs', delta < 0 ? 'pace-behind' : 'pace-ahead')}>
                           ({formatTimeDifference(-delta)})
-                        </motion.span>
+                        </span>
                       )}
                       <span className="flex items-center gap-2">
                         {right && <span className={cn('inline-block h-1.5 w-1.5 rounded-full', chipRight)} />}
@@ -184,7 +161,7 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                   <div className="mt-2 progress-track">
                     <div className="progress-fill" style={{ width: `${rTime && maxTime ? Math.min((rTime / maxTime) * 100, 100) : 0}%` }} />
                   </div>
-                </motion.div>
+                </div>
               </React.Fragment>
             );
           })}

@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
 import {
   Card,
   CardContent,
@@ -49,12 +48,8 @@ export function PlayerCard({
 
   if (variant === 'compact') {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-    <Card variant="mc" className={cn('transition-shadow', className)}>
+      <div>
+    <Card variant="mc" className={cn('', className)}>
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <PlayerAvatar
@@ -86,17 +81,13 @@ export function PlayerCard({
             </div>
           </CardContent>
         </Card>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-    <Card variant="mc" className={cn('transition-shadow', className)}>
+    <div>
+    <Card variant="mc" className={cn('', className)}>
         <CardHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-4">
@@ -111,7 +102,7 @@ export function PlayerCard({
                   <CardTitle className="text-2xl">{nickname}</CardTitle>
                 </div>
                 <div className="flex items-center gap-2">
-                  {eloRate && <RankBadge elo={eloRate} showElo />}
+                  {eloRate && <RankBadge elo={eloRate} showText showElo />}
                   {eloRank && (
                     <CardDescription className="text-base">
                       {t('player.rank')} #{eloRank.toLocaleString()}
@@ -180,7 +171,7 @@ export function PlayerCard({
           </CardContent>
         )}
       </Card>
-    </motion.div>
+    </div>
   );
 }
 

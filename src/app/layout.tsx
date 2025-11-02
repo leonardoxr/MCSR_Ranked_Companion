@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Providers } from '@/components/providers';
 import { cn } from '@/lib/utils';
-import LanguageSwitcher from '@/components/features/LanguageSwitcher';
+import Header from '@/components/layout/Header';
 
 export const metadata: Metadata = {
   title: {
@@ -46,10 +46,8 @@ export default function RootLayout({
       <body className={cn('font-mono antialiased bg-cave')}>
         <Providers>
           <div className="relative min-h-screen bg-background">
-            <div className="fixed top-4 right-4 z-50">
-              <LanguageSwitcher />
-            </div>
-            <main className="container mx-auto px-4 py-6">
+            <Header />
+            <main className="container mx-auto px-4 py-8">
               {children}
             </main>
           </div>

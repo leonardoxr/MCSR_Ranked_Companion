@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, useAnimationFrame } from 'framer-motion';
+// framer-motion removed
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { formatTime } from '@/lib/utils/formatters';
@@ -73,29 +73,21 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
   }, [sortedEvents, playhead]);
 
   // Advance playhead with animation frame, loop at end
-  const lastTs = React.useRef<number | null>(null);
-  useAnimationFrame((t) => {
+  React.useEffect(() => {
     if (!isPlaying || total === 0) return;
-    if (lastTs.current == null) {
-      lastTs.current = t;
-      return;
-    }
-    const dt = (t - lastTs.current) * speed; // ms
-    lastTs.current = t;
-    setPlayhead((prev) => {
-      const next = prev + dt;
-      if (next >= total) {
-        // stop at end
-        return total;
-      }
-      return next;
-    });
-  });
+    const id = setInterval(() => {
+      setPlayhead((prev) => {
+        const next = prev + 50 * speed;
+        return next >= total ? total : next;
+      });
+    }, 50);
+    return () => clearInterval(id);
+  }, [isPlaying, total, speed]);
 
   // Reset timer ref when play/pause toggles
   React.useEffect(() => {
     if (!isPlaying) return;
-    lastTs.current = null;
+    // nothing needed now
   }, [isPlaying]);
 
   // Clamp playhead when events change
@@ -284,22 +276,19 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                         <div className="absolute inset-y-0 left-0 right-0 rounded-full bg-muted/70" />
                       )}
                       {/* Lane fill follows shared playhead */}
-                      <motion.div
+                      <div
                         className={cn(
                           'absolute inset-y-1 left-1 rounded-full',
                           laneIdx === 0 ? 'bg-gradient-to-r from-emerald to-diamond' : 'bg-gradient-to-r from-indigo-400 to-purple-500'
                         )}
-                        initial={{ width: 0 }}
-                        animate={{ width: total ? `${(Math.min(playhead, total) / total) * 100}%` : '0%' }}
-                        transition={{ type: 'tween', ease: 'linear', duration: 0.05 }}
+                        style={{ width: total ? `${(Math.min(playhead, total) / total) * 100}%` : '0%' }}
                       />
                       {/* Tiny avatar playhead (widget-like) */}
-                      <motion.div
+                      <div
                         className="absolute top-1/2 -translate-y-1/2 -ml-3 z-20"
-                        animate={{ left: total ? `${(Math.min(playhead, total) / total) * 100}%` : '0%' }}
-                        transition={{ type: 'tween', ease: 'linear', duration: 0.05 }}
+                        style={{ left: total ? `${(Math.min(playhead, total) / total) * 100}%` : '0%' }}
                       >
-                        <motion.div
+                        <div
                           className="relative mcsr-walk"
                           style={{ filter: laneIdx === 0 ? 'drop-shadow(0 0 6px rgba(16,185,129,0.45))' : 'drop-shadow(0 0 6px rgba(168,85,247,0.45))' }}
                           title={`Now: ${formatTime(Math.min(playhead, total))}`}
@@ -312,8 +301,8 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                           />
                           {/* small indicator dot */}
                           <span className={cn('absolute -bottom-1 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full', laneIdx === 0 ? 'bg-emerald-400' : 'bg-purple-400')} />
-                        </motion.div>
-                      </motion.div>
+                        </div>
+                      </div>
                       {/* Lane markers: only this player's events with icons */}
                       {laneEvents.map((evt, i) => {
                         const passed = playhead >= evt.time;
@@ -322,13 +311,10 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                         const label = getEventLabel(key);
                         const isActive = sortedEvents[activeIdx]?.uuid === evt.uuid && sortedEvents[activeIdx]?.time === evt.time;
                         return (
-                          <motion.div
+                          <div
                             key={`lane-${p.uuid}-${evt.time}-${i}`}
                             className="absolute top-1/2 -translate-y-1/2"
                             style={{ left: `${pct}%` }}
-                            initial={{ opacity: 0, scale: 0.85 }}
-                            animate={{ opacity: passed ? 1 : 0.6, scale: isActive ? 1.2 : passed ? 1 : 0.95 }}
-                            transition={{ type: 'spring', stiffness: 280, damping: 20 }}
                           >
                             <div className={cn('h-7 w-7 rounded-full bg-background border-2 border-border flex items-center justify-center shadow-sm', isActive ? 'ring-2 ring-primary/40' : '')}
                                  title={`${label} • ${formatTime(evt.time)}`}>
@@ -339,7 +325,7 @@ export function MatchTimeline({ events, className, players }: MatchTimelineProps
                             <div className="absolute left-1/2 -translate-x-1/2 mt-2 text-[10px] whitespace-nowrap bg-background/90 backdrop-blur px-1.5 py-0.5 rounded border border-border">
                               {label}
                             </div>
-                          </motion.div>
+                          </div>
                         );
                       })}
                       {/* Seek by clicking lane */}

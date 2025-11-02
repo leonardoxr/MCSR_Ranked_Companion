@@ -11,7 +11,7 @@ import { ErrorState } from '@/components/features/ErrorState';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 10;
 
 export default function LeaderboardPage() {
   const router = useRouter();
@@ -19,9 +19,14 @@ export default function LeaderboardPage() {
   const [page, setPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
 
+  const [season, setSeason] = React.useState<number | undefined>(undefined);
+  const [country, setCountry] = React.useState('');
+
   const { data: players, isLoading, error } = useLeaderboard({
     page,
     count: PAGE_SIZE,
+    ...(season ? { season } : {}),
+    ...(country ? { country } : {} as any),
   });
 
   const handleSearch = (query: string) => {
@@ -60,8 +65,8 @@ export default function LeaderboardPage() {
           </div>
         </div>
 
-        {/* Search Bar */}
-        <div className="flex gap-4">
+        {/* Search + Filters */}
+        <div className="flex flex-col gap-3">
           <div className="flex-1">
             <SearchBar
               value={searchQuery}
@@ -69,6 +74,29 @@ export default function LeaderboardPage() {
               onSearch={handleSearch}
               placeholder={t('leaderboard.searchPlaceholder')}
             />
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">Season</label>
+              <input
+                type="number"
+                value={season ?? ''}
+                onChange={(e) => setSeason(e.target.value ? Number(e.target.value) : undefined)}
+                placeholder="current"
+                className="h-9 w-28 bg-white/5 border border-white/10 rounded-md px-2"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-muted-foreground">Country</label>
+              <input
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value.toLowerCase())}
+                placeholder="iso (e.g., us)"
+                maxLength={2}
+                className="h-9 w-36 bg-white/5 border border-white/10 rounded-md px-2 uppercase"
+              />
+            </div>
           </div>
         </div>
       </div>

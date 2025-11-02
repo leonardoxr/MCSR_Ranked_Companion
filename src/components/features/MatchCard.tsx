@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
 import { Card, CardContent, Badge } from '@/components/ui';
 import { PlayerAvatar } from './PlayerAvatar';
 import { CountryFlag } from './CountryFlag';
@@ -65,13 +64,9 @@ export function MatchCard({
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div>
       <Card
-        className={cn('hover:shadow-lg transition-shadow cursor-pointer', className)}
+        className={cn('cursor-pointer', className)}
         onClick={() => router.push(`/match/${id}`)}
         role="button"
         tabIndex={0}
@@ -204,6 +199,6 @@ export function MatchCard({
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

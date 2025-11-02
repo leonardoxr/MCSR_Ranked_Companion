@@ -28,7 +28,8 @@ export default function LiveMatchesPage() {
             <div className="p-3 bg-red-500/10 rounded-lg relative">
               <Radio className="h-8 w-8 text-red-500" />
               <span className="absolute top-2 right-2 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                  {/* Removed ping animation to reduce motion */}
+                  <span className="absolute inline-flex h-full w-full rounded-full bg-red-500/60"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
               </span>
             </div>
@@ -57,7 +58,7 @@ export default function LiveMatchesPage() {
           message={error.message || t('live.errorMessage')}
         />
       ) : liveMatches && liveMatches.length > 0 ? (
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {liveMatches.map((match, index) => {
             // Generate unique key from player UUIDs
             const matchKey = match.players.map(p => p.uuid).sort().join('-') || `match-${index}`;
@@ -87,7 +88,7 @@ export default function LiveMatchesPage() {
 
       {/* Auto-refresh indicator */}
       <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Activity className="h-4 w-4 animate-pulse" />
+        <Activity className="h-4 w-4" />
         {t('live.autoRefresh')}
       </div>
     </div>
@@ -123,7 +124,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
             <div className="relative">
               <Radio className="h-6 w-6 text-red-500" />
               <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                <span className="absolute inline-flex h-full w-full rounded-full bg-red-500/60"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
               </span>
             </div>
@@ -156,6 +157,30 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
           </div>
         </div>
 
+        {/* Category/Seed summary chip */}
+        {(() => {
+          const vals = Object.values(match.data || {});
+          const type = vals.map((p) => p.timeline?.type).find(Boolean);
+          const seed = vals.map((p) => p.seedId).find(Boolean);
+          if (!type && !seed) return null;
+          return (
+            <div className="flex flex-wrap gap-2 text-xs items-center">
+              {type && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 font-mono">
+                  <span className="icon-minecraft-compass text-[13px]" />
+                  Category: {String(type).replace(/_/g, ' ').replace(/\./g, ': ')}
+                </span>
+              )}
+              {seed && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 font-mono">
+                  <span className="icon-minecraft-grass text-[13px]" />
+                  Seed: {seed}
+                </span>
+              )}
+            </div>
+          );
+        })()}
+
         {/* Players */}
         <div>
           <h4 className="text-sm font-semibold text-muted-foreground mb-3">
@@ -185,7 +210,7 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
                     </div>
                     {player.eloRate && (
                       <div className="flex items-center gap-2 mt-1">
-                        <RankBadge elo={player.eloRate} showElo />
+                        <RankBadge elo={player.eloRate} showText={false} showElo />
                       </div>
                     )}
                     {playerData?.timeline && (

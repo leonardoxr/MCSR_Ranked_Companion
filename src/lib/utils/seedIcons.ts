@@ -5,8 +5,9 @@ import type { MinecraftIconName } from '@/components/features/MinecraftIcon';
  * @param overworldType - The overworld structure type (e.g., 'desert_temple', 'village')
  * @returns The appropriate Minecraft icon name
  */
-export function getOverworldIcon(overworldType: string): MinecraftIconName {
-  const normalized = overworldType.toLowerCase().replace(/[_-]/g, '_');
+export function getOverworldIcon(overworldType: string | null | undefined): MinecraftIconName {
+  if (!overworldType) return 'grass-block';
+  const normalized = String(overworldType).toLowerCase().replace(/[_-]/g, '_');
   
   // Map specific structure types to appropriate icons
   const iconMap: Record<string, MinecraftIconName> = {
@@ -44,8 +45,9 @@ export function getOverworldIcon(overworldType: string): MinecraftIconName {
  * @param bastionType - The bastion type (e.g., 'bridge', 'housing', 'treasure', 'stables')
  * @returns The appropriate Minecraft icon name
  */
-export function getBastionIcon(bastionType: string): MinecraftIconName {
-  const normalized = bastionType.toLowerCase().replace(/[_-]/g, '_');
+export function getBastionIcon(bastionType: string | null | undefined): MinecraftIconName {
+  if (!bastionType) return 'gilded-blackstone';
+  const normalized = String(bastionType).toLowerCase().replace(/[_-]/g, '_');
   
   // Map specific bastion types to appropriate icons
   const iconMap: Record<string, MinecraftIconName> = {
@@ -74,4 +76,5 @@ export function getBastionIcon(bastionType: string): MinecraftIconName {
   // Default to gilded blackstone for bastions
   return 'gilded-blackstone';
 }
+
 

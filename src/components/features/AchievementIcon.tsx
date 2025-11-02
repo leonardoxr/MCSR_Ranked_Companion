@@ -105,7 +105,7 @@ export function AchievementIcon({
     : 'glow-redstone';
 
   return (
-    <div className={cn('relative pixel-frame badge-sparkle', className)} style={{ width: size + 12, height: size + 12, padding: 6 }}>
+    <div className={cn('relative pixel-frame', className)} style={{ width: size + 12, height: size + 12, padding: 6 }}>
       <div className="relative" style={{ width: size, height: size }}>
         <Image
           src={imagePath}

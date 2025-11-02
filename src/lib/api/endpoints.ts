@@ -115,7 +115,7 @@ export async function getVersusStats(
   user1: UserIdentifier,
   user2: UserIdentifier
 ): Promise<VersusStats> {
-  return get<VersusStats>(`/versus/${user1}/${user2}`);
+  return get<VersusStats>(`/users/${user1}/versus/${user2}`);
 }
 
 /**
@@ -129,7 +129,7 @@ export async function getVersusMatches(
   user2: UserIdentifier,
   params?: MatchFilterParams
 ): Promise<MatchInfo[]> {
-  return get<MatchInfo[]>(`/versus/${user1}/${user2}/matches`, { params });
+  return get<MatchInfo[]>(`/users/${user1}/versus/${user2}/matches`, { params });
 }
 
 // ============================================================================

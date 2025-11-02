@@ -28,17 +28,21 @@ export const RankBadge: React.FC<RankBadgeProps> = ({
     ['--rank-sprite-url' as any]: `url('${RANK_SPRITE_BASE64}')`,
   } as React.CSSProperties;
 
+  const textClass = rankTier.name === 'Gold' || rankTier.name === 'Netherite'
+    ? 'text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]'
+    : 'text-white/90';
+
   return (
-    <span className={`flex items-center gap-1 ${className ?? ''}`}>
+    <span className={`inline-flex items-center gap-1 align-middle ${className ?? ''}`}>
       <span className={styles.rankIcon} style={spriteStyle} />
       {showText && (
-        <span style={{ color: rankTier.color }}>
+        <span className={`leading-none ${textClass}`}>
           {rankTier.name}
           {rankTier.level ? ` ${rankTier.level}` : ''}
         </span>
       )}
       {showElo && (
-        <span>({typeof elo === 'number' ? elo : t('common.notAvailable')} {t('common.elo')})</span>
+        <span className="text-muted-foreground">({typeof elo === 'number' ? elo : t('common.notAvailable')} {t('common.elo')})</span>
       )}
     </span>
   );

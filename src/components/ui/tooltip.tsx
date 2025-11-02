@@ -47,7 +47,8 @@ export function Tooltip({ children, content, className }: TooltipProps) {
             'absolute z-50 mb-2 px-3 py-2 text-sm rounded-md shadow-lg bg-popover border border-border text-popover-foreground pointer-events-none',
             'min-w-[200px] max-w-[300px]',
             'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
-            'animate-in fade-in-0 zoom-in-95',
+            // remove enter animations for reduced motion
+            '',
             className
           )}
           style={{
@@ -70,4 +71,5 @@ export function Tooltip({ children, content, className }: TooltipProps) {
     </div>
   );
 }
+
 

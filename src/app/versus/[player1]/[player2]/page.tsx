@@ -11,7 +11,6 @@ import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
 import { Swords, Trophy, Target, TrendingUp, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { RankBadge } from '@/components/features/RankBadge';
 
 export default function VersusPage() {
@@ -41,26 +40,31 @@ export default function VersusPage() {
     );
   }
 
-  if (statsError || !versusStats) {
+  const vsAny: any = versusStats as any;
+  const playersArr: any[] | undefined = vsAny?.players;
+  if (statsError || !versusStats || !Array.isArray(playersArr) || playersArr.length < 2) {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
           title={t('common.error')}
           message={
             statsError?.message ||
-            t('versus.loadError', { player1: player1Name, player2: player2Name })
+            t('versus.loadError', { player1: String(player1Name), player2: String(player2Name) })
           }
         />
       </div>
     );
   }
 
-  const player1WinRate = versusStats.totalMatches > 0
-    ? ((versusStats.player1Wins / versusStats.totalMatches) * 100).toFixed(1)
-    : '0';
-  const player2WinRate = versusStats.totalMatches > 0
-    ? ((versusStats.player2Wins / versusStats.totalMatches) * 100).toFixed(1)
-    : '0';
+  const [p1Info, p2Info] = playersArr as any[];
+  const p1Name = p1Info?.nickname || String(player1Name);
+  const p2Name = p2Info?.nickname || String(player2Name);
+  const ranked = vsAny?.results?.ranked ?? null;
+  const rankedTotal: number = ranked?.total ?? 0;
+  const rankedP1Wins: number = p1Info ? (ranked?.[p1Info.uuid] ?? 0) : 0;
+  const rankedP2Wins: number = p2Info ? (ranked?.[p2Info.uuid] ?? 0) : 0;
+  const rankedP1WR = rankedTotal > 0 ? ((rankedP1Wins / rankedTotal) * 100).toFixed(1) : '0';
+  const rankedP2WR = rankedTotal > 0 ? ((rankedP2Wins / rankedTotal) * 100).toFixed(1) : '0';
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
@@ -82,7 +86,7 @@ export default function VersusPage() {
         <div>
           <h1 className="text-4xl font-bold mb-2">{t('versus.title')}</h1>
           <p className="text-xl text-muted-foreground">
-            {t('versus.subtitle', { player1: versusStats.player1.nickname, player2: versusStats.player2.nickname })}
+            {t('versus.subtitle', { player1: p1Name, player2: p2Name })}
           </p>
         </div>
       </div>
@@ -92,47 +96,33 @@ export default function VersusPage() {
         <CardContent className="p-0">
           <div className="grid grid-cols-3 divide-x divide-border">
             {/* Player 1 */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="p-6 text-center bg-gradient-to-br from-blue-500/10 to-transparent"
-            >
-              <p className="text-sm text-muted-foreground mb-2">
-                {versusStats.player1.nickname}
-              </p>
+            <div className="p-6 text-center bg-gradient-to-br from-blue-500/10 to-transparent">
+              <p className="text-sm text-muted-foreground mb-2">{p1Name}</p>
               <p className="text-5xl font-bold text-blue-500 mb-2">
-                {versusStats.player1Wins}
+                {rankedP1Wins}
               </p>
               <p className="text-sm text-muted-foreground">
-                {player1WinRate}{t('versus.winRate')}
+                {rankedP1WR}{t('versus.winRate')}
               </p>
-            </motion.div>
+            </div>
 
             {/* VS */}
             <div className="flex flex-col items-center justify-center p-6 bg-muted/50">
               <Swords className="h-8 w-8 text-muted-foreground mb-2" />
               <p className="text-sm font-semibold text-muted-foreground">{t('common.vs')}</p>
-              <p className="text-xs text-muted-foreground mt-2">
-                {t('versus.totalMatches', { count: versusStats.totalMatches })}
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">{t('versus.totalMatches', { count: rankedTotal })}</p>
             </div>
 
             {/* Player 2 */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="p-6 text-center bg-gradient-to-bl from-red-500/10 to-transparent"
-            >
-              <p className="text-sm text-muted-foreground mb-2">
-                {versusStats.player2.nickname}
-              </p>
+            <div className="p-6 text-center bg-gradient-to-bl from-red-500/10 to-transparent">
+              <p className="text-sm text-muted-foreground mb-2">{p2Name}</p>
               <p className="text-5xl font-bold text-red-500 mb-2">
-                {versusStats.player2Wins}
+                {rankedP2Wins}
               </p>
               <p className="text-sm text-muted-foreground">
-                {player2WinRate}{t('versus.winRate')}
+                {rankedP2WR}{t('versus.winRate')}
               </p>
-            </motion.div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -140,49 +130,57 @@ export default function VersusPage() {
       {/* Player Profiles */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {player1Data && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
+          <div>
             <PlayerCard player={player1Data} variant="compact" />
-          </motion.div>
+          </div>
         )}
         {player2Data && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div>
             <PlayerCard player={player2Data} variant="compact" />
-          </motion.div>
+          </div>
         )}
       </div>
 
-      {/* Stats Comparison */}
-      {player1Data && player2Data && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="h-5 w-5" />
-              {t('versus.statisticsComparison')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <ComparisonBar
-                label={t('versus.eloRating')}
-                player1Value={player1Data.eloRate || 0}
-                player2Value={player2Data.eloRate || 0}
-                player1Name={player1Data.nickname}
-                player2Name={player2Data.nickname}
-                format={(val) => val.toLocaleString()}
-                renderValue={(val) => (
-                  <span className="inline-flex items-center gap-1">
-                    <RankBadge elo={val} showText={false} showElo />
-                  </span>
-                )}
-              />
+  {/* Stats Comparison */}
+  {player1Data && player2Data && (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Target className="h-5 w-5" />
+          {t('versus.statisticsComparison')}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          {/* Ranked head-to-head */}
+          <div>
+            <div className="mb-2 text-sm font-semibold">Ranked</div>
+            <div className="grid grid-cols-3 gap-4 items-end">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-500">{rankedP1Wins}</div>
+                <div className="text-xs text-muted-foreground">{p1Name} • {rankedP1WR}% WR</div>
+              </div>
+              <div className="text-center text-sm text-muted-foreground">{t('versus.totalMatches', { count: rankedTotal })}</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-red-500">{rankedP2Wins}</div>
+                <div className="text-xs text-muted-foreground">{p2Name} • {rankedP2WR}% WR</div>
+              </div>
+            </div>
+          </div>
+
+          <ComparisonBar
+            label={t('versus.eloRating')}
+            player1Value={player1Data.eloRate || 0}
+            player2Value={player2Data.eloRate || 0}
+            player1Name={player1Data.nickname}
+            player2Name={player2Data.nickname}
+            format={(val) => val.toLocaleString()}
+            renderValue={(val) => (
+              <span className="inline-flex items-center gap-1">
+                <RankBadge elo={val} showText={false} showElo />
+              </span>
+            )}
+          />
               <ComparisonBar
                 label={t('player.stats.totalWins')}
                 player1Value={player1Data.statistics.total.wins.ranked}
@@ -236,7 +234,7 @@ export default function VersusPage() {
                 <MatchCard
                   key={match.id}
                   match={match}
-                  highlightPlayer={versusStats.player1.uuid}
+                  highlightPlayer={(playersArr && playersArr[0]?.uuid) || undefined}
                 />
               ))}
             </div>
@@ -300,11 +298,9 @@ function ComparisonBar({
             </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${player1Percentage}%` }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+            <div
               className={`h-full ${player1Better ? 'bg-green-500' : 'bg-blue-500'}`}
+              style={{ width: `${player1Percentage}%` }}
             />
           </div>
         </div>
@@ -320,11 +316,9 @@ function ComparisonBar({
             </span>
           </div>
           <div className="h-2 bg-muted rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${player2Percentage}%` }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+            <div
               className={`h-full ${player2Better ? 'bg-green-500' : 'bg-red-500'}`}
+              style={{ width: `${player2Percentage}%` }}
             />
           </div>
         </div>

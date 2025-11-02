@@ -137,14 +137,8 @@
   }
 
   /* Shimmer sweep on hover */
-  .mc-card::after {
-    content: "";
-    position: absolute; inset: 0; pointer-events: none; border-radius: 12px;
-    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.10) 12%, transparent 24%);
-    transform: translateX(-130%);
-    transition: transform 800ms ease;
-  }
-  .mc-card:hover::after { transform: translateX(130%); }
+  /* Removed shimmer sweep to reduce distracting transitions */
+  .mc-card::after { display: none; }
 
   /* Pixel frame for icons */
   .pixel-frame {
@@ -168,31 +162,19 @@
   .pace-behind { color: rgba(231,76,60,1); }
   .pace-even { color: rgba(255,255,255,0.85); }
 
-  .pulse-glow {
-    animation: pulseGlow 2.2s ease-in-out infinite;
-    text-shadow: 0 0 10px rgba(79,195,247,0.35);
-  }
-  @keyframes pulseGlow {
-    0%, 100% { opacity: 0.85; }
-    50% { opacity: 1; text-shadow: 0 0 16px rgba(46,204,113,0.45); }
-  }
+  /* Disable global pulsing glow */
+  .pulse-glow { text-shadow: none; }
 
   /* Progress track used in split rows */
   .progress-track { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.08); overflow: hidden; }
   .progress-fill { height: 100%; background: linear-gradient(90deg, rgba(46,204,113,.65), rgba(79,195,247,.75)); }
 
-  @keyframes sparkle {
-    0%, 100% { opacity: 0.6; transform: translateY(0) scale(1); }
-    50% { opacity: 1; transform: translateY(-3px) scale(1.03); }
-  }
-  .badge-sparkle { animation: sparkle 2.8s ease-in-out infinite; }
+  /* Disable badge sparkle animation */
+  .badge-sparkle { }
 
   /* PaceWidget-like walk animation for tiny avatars */
-  @keyframes mcsr-walk {
-    0% { transform: translate3D(-50%, -50%, 0); }
-    100% { transform: translate3D(-50%, -62.5%, 0); }
-  }
-  .mcsr-walk { animation: 1s steps(2, end) 0s infinite mcsr-walk; }
+  /* Disable walk animation utility */
+  .mcsr-walk { }
 
   /* Texture-like tracks (PaceWidget inspired). Pure CSS approximations. */
   .tex-overworld {

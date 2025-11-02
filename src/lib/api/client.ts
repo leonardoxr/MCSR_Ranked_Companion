@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosRequestConfig } from 'axios';
 import type { ApiError } from '@/types/api';
 
-const BASE_URL = process.env.NEXT_PUBLIC_MCSR_API_BASE_URL || 'https://api.mcsrranked.com';
+const BASE_URL = process.env.NEXT_PUBLIC_MCSR_API_BASE_URL || 'https://mcsrranked.com/api';
 
 /**
  * Custom error class for API errors

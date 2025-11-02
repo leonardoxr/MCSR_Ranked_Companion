@@ -9,6 +9,8 @@ export {
   CardHeader,
   CardTitle,
 } from './card';
+export { Dialog, DialogContent } from './dialog';
 export { Input } from './input';
 export { Separator } from './separator';
 export { Skeleton } from './skeleton';
+export { Tooltip } from './tooltip';

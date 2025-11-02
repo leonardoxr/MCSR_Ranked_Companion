@@ -1,4 +1,13 @@
 @import url('/icons/icons-minecraft-229.css');
+/* Monocraft font - tries local first, falls back to monospace */
+/* Users can install Monocraft locally for best results */
+@font-face {
+  font-family: 'Monocraft';
+  src: local('Monocraft');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
@@ -215,5 +224,12 @@
       repeating-linear-gradient(45deg, rgba(210,210,120,0.35) 0 8px, rgba(170,170,90,0.35) 8px 16px),
       linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
     background-size: 60px 60px, auto;
+  }
+
+  /* Monocraft font utility - with proper fallback chain */
+  .font-monocraft {
+    font-family: 'Monocraft', 'Courier New', 'Courier', 'Lucida Console', 'Monaco', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
   }
 }

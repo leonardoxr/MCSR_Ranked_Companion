@@ -12,6 +12,7 @@ import { PlayerCard } from '@/components/features/PlayerCard';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { MinecraftIcon } from '@/components/features/MinecraftIcon';
+import { getOverworldIcon, getBastionIcon } from '@/lib/utils/seedIcons';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
 import {
   ArrowLeft,
@@ -234,14 +235,14 @@ export default function MatchDetailsPage() {
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MinecraftIcon name="grass-block" size="sm" />
+                <MinecraftIcon name={getOverworldIcon(match.seed.overworld)} size="sm" />
                 {t('match.overworldType')}
               </p>
               <p className="font-semibold capitalize">{match.seed.overworld}</p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MinecraftIcon name="gilded-blackstone" size="sm" />
+                <MinecraftIcon name={getBastionIcon(match.seed.nether)} size="sm" />
                 {t('match.bastionType')}
               </p>
               <p className="font-semibold capitalize">{match.seed.nether}</p>

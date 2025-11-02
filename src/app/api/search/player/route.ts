@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   try {
     // Fetch first page of leaderboard; client library will call backend base URL
-    const users = await getLeaderboard({ page: 1, pageSize: 100 });
+    const users = await getLeaderboard({ page: 1, count: 100 });
     // Filter by nickname includes (case-insensitive). Adjust to startsWith if preferred.
     const lower = q.toLowerCase();
     const filtered = users.filter(u => u.nickname?.toLowerCase().includes(lower));

@@ -34,82 +34,151 @@ export function LeaderboardTable({
   return (
     <Card variant="mc" className={className}>
       <CardContent className="p-0">
-        {/* Table Header */}
-        <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-border bg-muted/50 text-sm font-semibold text-muted-foreground">
+        {/* Desktop Table Header - Hidden on Mobile */}
+        <div className="hidden md:grid grid-cols-12 gap-4 px-4 lg:px-6 py-3 border-b border-border bg-muted/50 text-sm font-semibold text-muted-foreground">
           <div className="col-span-1">{t('leaderboard.table.rank')}</div>
           <div className="col-span-5">{t('leaderboard.table.player')}</div>
           <div className="col-span-3">{t('leaderboard.table.tier')}</div>
           <div className="col-span-3">{t('leaderboard.table.elo')}</div>
         </div>
 
-        {/* Table Body */}
+        {/* Table Body - Desktop Grid / Mobile Cards */}
         <div className="divide-y divide-border">
           {players.map((player, index) => {
             const isHighlighted = player.uuid === highlightPlayer;
             const playerUrl = `/player/${encodeURIComponent(player.nickname)}?matches=ranked&sort=newest`;
 
             return (
-              <div
-                key={player.uuid}
-                className={cn(
-                  'relative grid grid-cols-12 gap-4 px-6 py-4 transition-colors',
-                  isHighlighted && 'bg-primary/10'
-                )}
-              >
-                {/* Clickable area limited to Player column */}
+              <div key={player.uuid}>
+                {/* Desktop Row View */}
+                <div
+                  className={cn(
+                    'relative hidden md:grid grid-cols-12 gap-4 px-4 lg:px-6 py-4 transition-colors',
+                    isHighlighted && 'bg-primary/10'
+                  )}
+                >
+                  {/* Rank */}
+                  <div className="col-span-1 flex items-center relative z-10">
+                    <RankBadgeIcon rank={player.eloRank || 0} />
+                  </div>
 
-                {/* Rank */}
-                <div className="col-span-1 flex items-center relative z-10">
-                  <RankBadgeIcon rank={player.eloRank || 0} />
-                </div>
-
-                {/* Player */}
-                <div className="col-span-5 flex items-center gap-3 min-w-0 relative z-10">
-                  <PlayerAvatar
-                    uuid={player.uuid}
-                    username={player.nickname}
-                    size="sm"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <Link href={playerUrl} className="group block rounded-md">
-                      <div className="flex h-8 items-center gap-2 text-xl">
-                        {player.eloRank && (
-                          <span className="font-semibold text-muted-foreground">
-                            #{player.eloRank.toLocaleString()}
+                  {/* Player */}
+                  <div className="col-span-5 flex items-center gap-3 min-w-0 relative z-10">
+                    <PlayerAvatar
+                      uuid={player.uuid}
+                      username={player.nickname}
+                      size="sm"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <Link href={playerUrl} className="group block rounded-md">
+                        <div className="flex h-8 items-center gap-2 text-xl">
+                          {player.eloRank && (
+                            <span className="font-semibold text-muted-foreground">
+                              #{player.eloRank.toLocaleString()}
+                            </span>
+                          )}
+                          <CountryFlag country={player.country} size="sm" />
+                          <span className="font-semibold truncate group-hover:text-primary transition-colors">
+                            {player.nickname}
                           </span>
-                        )}
-                        <CountryFlag country={player.country} size="sm" />
-                        <span className="font-semibold truncate group-hover:text-primary transition-colors">
-                          {player.nickname}
-                        </span>
-                      </div>
-                      <div className="h-0.5 w-0 group-hover:w-full bg-primary/60 transition-all" />
-                    </Link>
-                    {showRankChange && player.eloRank && (
-                      <RankChangeIndicator change={0} />
+                        </div>
+                        <div className="h-0.5 w-0 group-hover:w-full bg-primary/60 transition-all" />
+                      </Link>
+                      {showRankChange && player.eloRank && (
+                        <RankChangeIndicator change={0} />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Tier */}
+                  <div className="col-span-3 flex items-center gap-2 relative z-10">
+                    {player.eloRate ? (
+                      <RankBadge elo={player.eloRate} showText showElo={false} className="!bg-transparent !p-0" />
+                    ) : (
+                      <span className="text-muted-foreground">{t('common.unranked')}</span>
+                    )}
+                  </div>
+
+                  {/* ELO */}
+                  <div className="col-span-3 flex items-center relative z-10">
+                    {player.eloRate ? (
+                      <RankBadge elo={player.eloRate} showText={false} showElo className="!bg-transparent !p-0" />
+                    ) : (
+                      <span className="font-semibold text-lg">{t('common.unranked')}</span>
                     )}
                   </div>
                 </div>
 
-                {/* Tier: tier name only */}
-                <div className="col-span-3 flex items-center gap-2 relative z-10">
-                  {player.eloRate ? (
-                    <RankBadge elo={player.eloRate} showText showElo={false} className="!bg-transparent !p-0" />
-                  ) : (
-                    <span className="text-muted-foreground">{t('common.unranked')}</span>
+                {/* Mobile Card View */}
+                <Link
+                  href={playerUrl}
+                  className={cn(
+                    'block md:hidden p-3 sm:p-4 transition-colors hover:bg-white/5',
+                    isHighlighted && 'bg-primary/10'
                   )}
-                </div>
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Rank Badge */}
+                    <div className="flex-shrink-0 mt-1">
+                      <RankBadgeIcon rank={player.eloRank || 0} />
+                    </div>
 
-                {/* ELO */}
-                <div className="col-span-3 flex items-center relative z-10">
-                  {player.eloRate ? (
-                    <RankBadge elo={player.eloRate} showText={false} showElo className="!bg-transparent !p-0" />
-                  ) : (
-                    <span className="font-semibold text-lg">{t('common.unranked')}</span>
-                  )}
-                </div>
-                {/* Hover row emphasis (non-clickable columns) */}
-                <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 hover:opacity-100 transition-opacity"></div>
+                    {/* Player Avatar */}
+                    <div className="flex-shrink-0">
+                      <PlayerAvatar
+                        uuid={player.uuid}
+                        username={player.nickname}
+                        size="sm"
+                      />
+                    </div>
+
+                    {/* Player Info */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      {/* Name and Rank */}
+                      <div className="flex items-center gap-2">
+                        <CountryFlag country={player.country} size="sm" />
+                        <span className="font-semibold text-base truncate">
+                          {player.nickname}
+                        </span>
+                      </div>
+
+                      {/* Rank Number */}
+                      {player.eloRank && (
+                        <div className="text-sm text-muted-foreground">
+                          {t('leaderboard.table.rank')}: #{player.eloRank.toLocaleString()}
+                        </div>
+                      )}
+
+                      {/* Tier and ELO */}
+                      <div className="flex flex-wrap items-center gap-2 text-sm">
+                        {player.eloRate ? (
+                          <>
+                            <RankBadge
+                              elo={player.eloRate}
+                              showText
+                              showElo={false}
+                              className="text-xs"
+                            />
+                            <span className="text-muted-foreground">•</span>
+                            <RankBadge
+                              elo={player.eloRate}
+                              showText={false}
+                              showElo
+                              className="text-xs"
+                            />
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground">{t('common.unranked')}</span>
+                        )}
+                      </div>
+
+                      {/* Rank Change */}
+                      {showRankChange && player.eloRank && (
+                        <RankChangeIndicator change={0} />
+                      )}
+                    </div>
+                  </div>
+                </Link>
               </div>
             );
           })}

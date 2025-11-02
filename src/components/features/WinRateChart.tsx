@@ -25,6 +25,25 @@ export interface WinRateChartProps {
  */
 export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
   const t = useTranslations();
+  const [chartHeight, setChartHeight] = React.useState(200);
+  const [pieSize, setPieSize] = React.useState({ inner: 60, outer: 80 });
+
+  // Set responsive chart dimensions based on screen size
+  React.useEffect(() => {
+    const updateDimensions = () => {
+      if (window.innerWidth < 640) {
+        setChartHeight(180); // Mobile: shorter height
+        setPieSize({ inner: 50, outer: 70 }); // Smaller pie on mobile
+      } else {
+        setChartHeight(200); // Desktop: full height
+        setPieSize({ inner: 60, outer: 80 }); // Standard pie size
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
 
   const data = [
     { name: t('charts.wins'), value: wins, color: 'hsl(var(--emerald))' },
@@ -37,18 +56,18 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
   return (
     <Card variant="mc" className={className}>
       <CardHeader>
-        <CardTitle>{t('charts.winRate')}</CardTitle>
+        <CardTitle className="text-base sm:text-lg">{t('charts.winRate')}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center">
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={chartHeight}>
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={pieSize.inner}
+                outerRadius={pieSize.outer}
                 paddingAngle={2}
                 dataKey="value"
               >
@@ -68,8 +87,8 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
           </ResponsiveContainer>
 
           <div className="text-center mt-4">
-            <p className="text-4xl font-bold text-primary mc-heading">{winRate}%</p>
-            <p className="text-sm text-muted-foreground mt-1 font-monocraft">
+            <p className="text-2xl sm:text-4xl font-bold text-primary mc-heading">{winRate}%</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-monocraft">
               {wins}{t('charts.winsShort')} - {losses}{t('charts.lossesShort')} ({t('charts.total', { count: total })})
             </p>
           </div>

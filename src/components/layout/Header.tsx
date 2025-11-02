@@ -39,10 +39,10 @@ export default function Header() {
     (async () => {
       try {
         for (let page = 1; page <= 3; page++) {
-          const key = ['leaderboard', 'list', { page, pageSize: 100 }];
+          const key = ['leaderboard', 'list', { page, count: 100 }];
           const cached = queryClient.getQueryData(key as any);
           if (!cached && !cancelled) {
-            const data = await getLeaderboard({ page, pageSize: 100 });
+            const data = await getLeaderboard({ page, count: 100 });
             if (!cancelled) queryClient.setQueryData(key as any, data);
           }
         }

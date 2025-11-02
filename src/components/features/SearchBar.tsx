@@ -52,26 +52,6 @@ export function SearchBar({
   const [loading, setLoading] = React.useState(false);
   const [items, setItems] = React.useState<Array<{ username: string; uuid?: string }>>([]);
 
-  // Debounced autosuggest
-  React.useEffect(() => {
-    if (!autoSuggest || fetchSuggestions) return; // handled below if custom fetch provided
-    const q = value.trim();
-    if (!q) {
-      setItems([]);
-      setOpen(false);
-      return;
-    }
-    setLoading(true);
-    const id = setTimeout(() => {
-      // Use cached leaderboard filter (no network)
-      try {
-        const results = useLeaderboardCachedFilter(q, 8) as any; // hook can't be used here; compute synchronously below
-      } catch {}
-      setLoading(false);
-    }, 200);
-    return () => clearTimeout(id);
-  }, [value, autoSuggest, fetchSuggestions]);
-
   // Derive results from cache via a memoized selector when using built-in autosuggest
   const cachedResults = useLeaderboardCachedFilter(value, 8);
   React.useEffect(() => {

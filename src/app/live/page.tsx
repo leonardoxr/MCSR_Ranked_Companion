@@ -157,26 +157,17 @@ function LiveMatchCard({ match, onClick }: LiveMatchCardProps) {
           </div>
         </div>
 
-        {/* Category/Seed summary chip */}
+        {/* Category summary chip */}
         {(() => {
           const vals = Object.values(match.data || {});
           const type = vals.map((p) => p.timeline?.type).find(Boolean);
-          const seed = vals.map((p) => p.seedId).find(Boolean);
-          if (!type && !seed) return null;
+          if (!type) return null;
           return (
             <div className="flex flex-wrap gap-2 text-xs items-center">
-              {type && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 font-mono">
-                  <span className="icon-minecraft-compass text-[13px]" />
-                  Category: {String(type).replace(/_/g, ' ').replace(/\./g, ': ')}
-                </span>
-              )}
-              {seed && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 font-mono">
-                  <span className="icon-minecraft-grass text-[13px]" />
-                  Seed: {seed}
-                </span>
-              )}
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-white/5 border border-white/10 font-mono">
+                <span className="icon-minecraft-compass text-[13px]" />
+                Category: {String(type).replace(/_/g, ' ').replace(/\./g, ': ')}
+              </span>
             </div>
           );
         })()}

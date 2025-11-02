@@ -69,7 +69,7 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
           <div className="text-center mt-4">
             <p className="text-4xl font-bold text-primary">{winRate}%</p>
             <p className="text-sm text-muted-foreground mt-1">
-              {wins}{t('charts.winsShort')} - {losses}{t('charts.lossesShort')} ({total} {t('charts.total')})
+              {wins}{t('charts.winsShort')} - {losses}{t('charts.lossesShort')} ({t('charts.total', { count: total })})
             </p>
           </div>
         </div>

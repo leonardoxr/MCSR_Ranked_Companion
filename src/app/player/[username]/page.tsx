@@ -10,7 +10,7 @@ import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { EloChart } from '@/components/features/EloChart';
 import { WinRateChart } from '@/components/features/WinRateChart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
 import { Trophy, Target, TrendingUp, Clock, Award } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
@@ -20,6 +20,8 @@ export default function PlayerPage() {
   const params = useParams();
   const t = useTranslations();
   const username = params?.username as string;
+  
+  const [showAllAchievements, setShowAllAchievements] = React.useState(false);
 
   const { data: player, isLoading, error } = usePlayer(username);
   const { data: matches, isLoading: matchesLoading } = usePlayerMatches(username, { count: 20 });
@@ -181,24 +183,88 @@ export default function PlayerPage() {
 
       {/* Achievements */}
       {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && (
-        <Card variant="mc">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-5 w-5 text-primary" />
-              {t('player.achievements')} ({player.achievements.display.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {player.achievements.display.slice(0, 8).map((achievement, index) => (
-                <AchievementCard
-                  key={`${achievement.id}-${achievement.date}-${index}`}
-                  achievement={achievement}
-                />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <>
+          <Card variant="mc">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-primary" />
+                  {t('player.highlightedAchievements', { defaultValue: 'Highlighted Achievements' })} ({player.achievements.display.length})
+                </CardTitle>
+                {Array.isArray(player.achievements?.total) && player.achievements.total.length > player.achievements.display.length && (
+                  <button
+                    onClick={() => setShowAllAchievements(true)}
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {t('common.showAll', { defaultValue: 'Show All' })}
+                  </button>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {player.achievements.display.map((achievement, index) => (
+                  <AchievementCard
+                    key={`${achievement.id}-${achievement.date}-${index}`}
+                    achievement={achievement}
+                  />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Achievements Modal */}
+          <Dialog open={showAllAchievements} onOpenChange={setShowAllAchievements}>
+            <DialogContent
+              title={t('player.achievements', { defaultValue: 'Achievements' })}
+              className="max-h-[90vh]"
+            >
+              <div className="space-y-6">
+                {/* Highlighted Achievements Section */}
+                {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Award className="h-5 w-5 text-primary" />
+                      {t('player.highlightedAchievements', { defaultValue: 'Highlighted Achievements' })} ({player.achievements.display.length})
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {player.achievements.display.map((achievement, index) => (
+                        <AchievementCard
+                          key={`display-${achievement.id}-${achievement.date}-${index}`}
+                          achievement={achievement}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Separator between sections */}
+                {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && 
+                 Array.isArray(player.achievements?.total) && player.achievements.total.length > 0 && (
+                  <Separator />
+                )}
+
+                {/* All Achievements Section */}
+                {Array.isArray(player.achievements?.total) && player.achievements.total.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                      <Award className="h-5 w-5 text-primary" />
+                      {t('player.allAchievements', { defaultValue: 'All Achievements' })} ({player.achievements.total.length})
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {player.achievements.total.map((achievement, index) => (
+                        <AchievementCard
+                          key={`total-${achievement.id}-${achievement.date}-${index}`}
+                          achievement={achievement}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
       )}
 
       {/* Match History */}

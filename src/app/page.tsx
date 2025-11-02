@@ -2,11 +2,10 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui';
 import { SearchBar } from '@/components/features/SearchBar';
-import type { Locale } from '@/i18n/config';
 import {
   Trophy,
   Radio,
@@ -20,14 +19,12 @@ import {
 
 export default function HomePage() {
   const router = useRouter();
-  const params = useParams();
-  const locale = params.locale as Locale;
   const t = useTranslations();
   const [searchValue, setSearchValue] = React.useState('');
 
   const handleSearch = (query: string) => {
     if (query) {
-      router.push(`/${locale}/player/${encodeURIComponent(query)}`);
+      router.push(`/player/${encodeURIComponent(query)}`);
     }
   };
 
@@ -58,7 +55,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold text-center mb-8">{t('nav.home')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Leaderboard */}
-          <Link href={`/${locale}/leaderboard`}>
+          <Link href="/leaderboard">
             <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-yellow-500/10 rounded-lg w-fit mb-2">
@@ -79,7 +76,7 @@ export default function HomePage() {
           </Link>
 
           {/* Live Matches */}
-          <Link href={`/${locale}/live`}>
+          <Link href="/live">
             <Card variant="mc" className="h-full transition-all hover:border-primary cursor-pointer">
               <CardHeader>
                 <div className="p-3 bg-red-500/10 rounded-lg w-fit mb-2 relative">

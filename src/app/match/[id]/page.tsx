@@ -77,7 +77,7 @@ export default function MatchDetailsPage() {
             <Trophy className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">{t('match.title')}</h1>
+            <h1 className="text-3xl font-bold mc-heading mc-title">{t('match.title')}</h1>
             <p className="text-muted-foreground">
               {formatDate(new Date(match.date * 1000), 'PPP')}
             </p>

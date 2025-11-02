@@ -72,6 +72,7 @@ export default function LeaderboardPage() {
               value={searchQuery}
               onChange={setSearchQuery}
               onSearch={handleSearch}
+              autoSuggest
               placeholder={t('leaderboard.searchPlaceholder')}
             />
           </div>

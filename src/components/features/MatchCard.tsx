@@ -66,7 +66,8 @@ export function MatchCard({
   return (
     <div>
       <Card
-        className={cn('cursor-pointer', className)}
+        variant="mc"
+        className={cn('cursor-pointer transition-transform hover:-translate-y-0.5', className)}
         onClick={() => router.push(`/match/${id}`)}
         role="button"
         tabIndex={0}
@@ -93,7 +94,7 @@ export function MatchCard({
             >
               {getMatchTypeName(type)}
             </Badge>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground font-monocraft">
               <Calendar className="h-3 w-3" />
               {formatRelativeTime(date)}
             </div>
@@ -131,7 +132,7 @@ export function MatchCard({
                         <CountryFlag country={player.country} size="sm" />
                         <p
                           className={cn(
-                            'font-semibold truncate',
+                            'font-semibold truncate mc-heading',
                             isWinner && 'text-emerald'
                           )}
                         >
@@ -139,7 +140,7 @@ export function MatchCard({
                         </p>
                       </div>
                       {isWinner && result.time && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground font-monocraft">
                           <Clock className="h-3 w-3" />
                           {formatTime(result.time)}
                         </div>
@@ -151,7 +152,7 @@ export function MatchCard({
                   {type === MatchType.Ranked && eloChange !== null && (
                     <div
                       className={cn(
-                        'flex items-center gap-1 font-semibold text-sm',
+                        'flex items-center gap-1 font-semibold text-sm font-monocraft',
                         getEloChangeColor(eloChange)
                       )}
                     >

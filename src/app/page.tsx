@@ -48,6 +48,18 @@ export default function HomePage() {
               value={searchValue}
               onChange={setSearchValue}
               onSearch={handleSearch}
+              autoSuggest
+              fetchSuggestions={async (q) => {
+                try {
+                  const res = await fetch(`/api/search/player?q=${encodeURIComponent(q)}`);
+                  if (!res.ok) return [];
+                  const data = await res.json();
+                  // Expecting array of { username, uuid }
+                  return Array.isArray(data) ? data : [];
+                } catch {
+                  return [];
+                }
+              }}
               placeholder={t('home.searchPlaceholder')}
             />
             <p className="mt-3 text-xs text-white/50">

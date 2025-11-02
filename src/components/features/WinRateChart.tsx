@@ -58,17 +58,18 @@ export function WinRateChart({ wins, losses, className }: WinRateChartProps) {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
+                  backgroundColor: 'hsla(var(--card), 1)',
                   border: '1px solid hsl(var(--border))',
                   borderRadius: '0.5rem',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.35)'
                 }}
               />
             </PieChart>
           </ResponsiveContainer>
 
           <div className="text-center mt-4">
-            <p className="text-4xl font-bold text-primary">{winRate}%</p>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-4xl font-bold text-primary mc-heading">{winRate}%</p>
+            <p className="text-sm text-muted-foreground mt-1 font-monocraft">
               {wins}{t('charts.winsShort')} - {losses}{t('charts.lossesShort')} ({t('charts.total', { count: total })})
             </p>
           </div>

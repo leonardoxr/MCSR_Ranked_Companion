@@ -49,7 +49,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
           }
         }}
       >
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="relative z-50 w-full max-w-4xl max-h-[90vh] overflow-hidden">
           {children}
         </div>
@@ -69,13 +69,13 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        'mc-card relative w-full overflow-y-auto bg-background p-6 shadow-lg',
+        'mc-card relative w-full overflow-y-auto p-6 shadow-lg',
         className
       )}
     >
       {title && (
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-semibold">{title}</h2>
+          <h2 className="text-2xl font-semibold mc-heading mc-title mc-accent-diamond">{title}</h2>
           <button
             onClick={() => {
               onClose?.();

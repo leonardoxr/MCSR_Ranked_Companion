@@ -44,7 +44,7 @@ export function Tooltip({ children, content, className }: TooltipProps) {
       {isVisible && (
         <div
           className={cn(
-            'absolute z-50 mb-2 px-3 py-2 text-sm rounded-md shadow-lg bg-popover border border-border text-popover-foreground pointer-events-none',
+            'absolute z-50 mb-2 px-3 py-2 text-sm rounded-md shadow-lg border text-popover-foreground pointer-events-none mc-card font-monocraft',
             'min-w-[200px] max-w-[300px]',
             'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
             // remove enter animations for reduced motion
@@ -63,7 +63,7 @@ export function Tooltip({ children, content, className }: TooltipProps) {
               height: 0,
               borderLeft: '6px solid transparent',
               borderRight: '6px solid transparent',
-              borderTop: '6px solid hsl(var(--border))',
+              borderTop: '6px solid rgba(79, 195, 247, 0.2)',
             }}
           />
         </div>

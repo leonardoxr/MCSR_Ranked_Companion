@@ -22,7 +22,7 @@ export function AchievementIcon({
   size = 64,
   className = '',
 }: AchievementIconProps) {
-  const imagePath = getAchievementImage(achievement.id);
+  const imagePath = getAchievementImage(achievement); // Pass full achievement object
   const [imageError, setImageError] = React.useState(false);
 
   // If no image path or image failed to load, show fallback icon

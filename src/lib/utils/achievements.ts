@@ -45,7 +45,10 @@ export function getAchievementImage(achievement: Achievement | string): string |
   // Handle legacy string-only calls (for backwards compatibility)
   if (typeof achievement === 'string') {
     const baseFileName = ACHIEVEMENT_FILE_MAPPING[achievement];
-    if (!baseFileName) return null;
+    if (!baseFileName) {
+      console.warn(`[Achievement] Unknown achievement ID: ${achievement}`);
+      return null;
+    }
 
     // Return base image for one-time achievements
     if (!PROGRESSIVE_ACHIEVEMENTS.has(achievement)) {
@@ -58,6 +61,8 @@ export function getAchievementImage(achievement: Achievement | string): string |
 
   const { id, level, data } = achievement;
 
+  console.log(`[Achievement] Processing:`, { id, level, data });
+
   // Handle competitive achievements with placement data
   if (id === 'PlayoffsOutcome' && data && data.length > 0) {
     const placement = data[0]; // First data element is placement
@@ -67,34 +72,50 @@ export function getAchievementImage(achievement: Achievement | string): string |
       '3': '3rd',
     };
     const suffix = placementMap[placement] || 'participant';
-    return `/achievements/playoffs_${suffix}.png`;
+    const imagePath = `/achievements/playoffs_${suffix}.png`;
+    console.log(`[Achievement] Playoffs - Returning path:`, imagePath);
+    return imagePath;
   }
 
   if (id === 'SeasonOutcome' && data && data.length > 0) {
     const placement = data[0]; // First data element is top X
-    return `/achievements/season_placement_top_${placement}.png`;
+    const imagePath = `/achievements/season_placement_top_${placement}.png`;
+    console.log(`[Achievement] Season - Returning path:`, imagePath);
+    return imagePath;
   }
 
   if (id === 'WeeklyRace' && data && data.length > 0) {
     const placement = data[0]; // First data element is top X
-    return `/achievements/weekly_race_top_${placement}.png`;
+    const imagePath = `/achievements/weekly_race_top_${placement}.png`;
+    console.log(`[Achievement] Weekly - Returning path:`, imagePath);
+    return imagePath;
   }
 
   // Handle progressive achievements with levels
   if (PROGRESSIVE_ACHIEVEMENTS.has(id)) {
     const baseFileName = ACHIEVEMENT_FILE_MAPPING[id];
-    if (!baseFileName) return null;
+    if (!baseFileName) {
+      console.warn(`[Achievement] Progressive achievement ${id} not found in mapping`);
+      return null;
+    }
 
     // Level is 1-indexed, max level is 12
     const clampedLevel = Math.max(1, Math.min(level, 12));
-    return `/achievements/${baseFileName}_level_${clampedLevel}.png`;
+    const imagePath = `/achievements/${baseFileName}_level_${clampedLevel}.png`;
+    console.log(`[Achievement] Progressive (${id}, level ${level}) - Returning path:`, imagePath);
+    return imagePath;
   }
 
   // Handle one-time achievements
   const baseFileName = ACHIEVEMENT_FILE_MAPPING[id];
-  if (!baseFileName) return null;
+  if (!baseFileName) {
+    console.warn(`[Achievement] Unknown achievement ID: ${id}`);
+    return null;
+  }
 
-  return `/achievements/${baseFileName}.png`;
+  const imagePath = `/achievements/${baseFileName}.png`;
+  console.log(`[Achievement] Returning path:`, imagePath);
+  return imagePath;
 }
 
 /**

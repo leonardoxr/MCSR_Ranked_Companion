@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useAuthStore } from '@/lib/store/useAuthStore';
 import { usePlayer, usePlayerMatches } from '@/lib/api/hooks/usePlayer';
 import { PlayerCard } from '@/components/features/PlayerCard';
 import { MatchCard } from '@/components/features/MatchCard';
@@ -10,10 +11,12 @@ import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { EloChart } from '@/components/features/EloChart';
 import { WinRateChart } from '@/components/features/WinRateChart';
+import { PlayerInsights } from '@/components/features/PlayerInsights';
 import { MatchFilters, defaultFilters, type MatchFiltersState } from '@/components/features/MatchFilters';
 import { Pagination } from '@/components/features/Pagination';
 import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
-import { Trophy, Target, TrendingUp, Clock, Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
 import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
@@ -21,13 +24,23 @@ import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
   const params = useParams();
+  const router = useRouter();
   const t = useTranslations();
   const username = params?.username as string;
+  const { username: authUsername, isAuthenticated, logout } = useAuthStore();
 
   const [showAllAchievements, setShowAllAchievements] = React.useState(false);
   const [filters, setFilters] = React.useState<MatchFiltersState>(defaultFilters);
   const [currentPage, setCurrentPage] = React.useState(1);
   const MATCHES_PER_PAGE = 10;
+
+  // Check if viewing own profile
+  const isOwnProfile = isAuthenticated && authUsername?.toLowerCase() === username?.toLowerCase();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/');
+  };
 
   const { data: player, isLoading, error } = usePlayer(username);
   // Fetch more matches (100) to have enough data for filtering
@@ -118,8 +131,28 @@ export default function PlayerPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
+      {/* Header with Logout (only shown when viewing own profile) */}
+      {isOwnProfile && (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <User className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">My Stats</h1>
+              <p className="text-sm text-muted-foreground">Logged in as {authUsername}</p>
+            </div>
+          </div>
+          <Button onClick={handleLogout} variant="outline">
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
+      )}
+
       {/* Player Header */}
       <PlayerCard player={player} variant="default" />
+
+      {/* Personalized Insights (only shown when viewing own profile) */}
+      {isOwnProfile && <PlayerInsights player={player} />}
 
       {/* Statistics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -21,6 +21,7 @@ import { formatRelativeTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
 import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
 import type { EloDataPoint } from '@/components/features/EloChart';
+import { MatchType } from '@/types/api';
 
 export default function PlayerPage() {
   const params = useParams();
@@ -95,9 +96,10 @@ export default function PlayerPage() {
     );
   }
 
-  // Transform match data for ELO chart
+  // Transform match data for ELO chart - only include ranked matches
   const eloData: EloDataPoint[] = Array.isArray(matches)
     ? matches
+        .filter((match) => match.type === MatchType.Ranked) // Only ranked matches affect ELO
         .map((match) => {
           const playerChange = match.changes.find((c) => c.uuid === player.uuid);
           return {

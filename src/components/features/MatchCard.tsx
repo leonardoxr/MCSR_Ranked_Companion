@@ -24,12 +24,41 @@ import {
   TrendingUp,
   TrendingDown,
   Crown,
+  X,
+  Minus,
 } from 'lucide-react';
 
 export interface MatchCardProps {
   match: MatchInfo;
   className?: string;
   highlightPlayer?: string; // UUID to highlight
+}
+
+/**
+ * Match outcome from the perspective of a specific player
+ */
+type MatchOutcome = 'win' | 'loss' | 'draw';
+
+/**
+ * Get match outcome for a specific player
+ */
+function getMatchOutcome(
+  resultUuid: string | null,
+  playerUuid: string | null,
+  forfeited: boolean
+): MatchOutcome {
+  // If no winner or forfeited, it's a draw
+  if (resultUuid === null || forfeited) {
+    return 'draw';
+  }
+
+  // If we have a highlighted player, determine win/loss
+  if (playerUuid) {
+    return resultUuid === playerUuid ? 'win' : 'loss';
+  }
+
+  // Default to draw if no player specified
+  return 'draw';
 }
 
 /**
@@ -42,11 +71,16 @@ export function MatchCard({
   highlightPlayer,
 }: MatchCardProps) {
   const t = useTranslations();
-  const { id, type, result, date, seed, players, changes } = match;
+  const { id, type, result, date, seed, players, changes, forfeited } = match;
   const router = useRouter();
 
   const winner = result.uuid; // Can be null for forfeited matches
   const matchTypeColor = getMatchTypeColor(type);
+
+  // Determine match outcome if highlightPlayer is set
+  const matchOutcome = highlightPlayer
+    ? getMatchOutcome(winner, highlightPlayer, forfeited)
+    : null;
 
   const getMatchTypeName = (type: MatchType): string => {
     switch (type) {
@@ -108,20 +142,56 @@ export function MatchCard({
               const playerChange = changes.find((c) => c.uuid === player.uuid);
               const eloChange = playerChange?.change || null;
 
+              // Determine styling based on match outcome for highlighted player
+              let outcomeStyles = {
+                container: 'bg-background',
+                icon: null as React.ReactNode,
+                textColor: '',
+              };
+
+              if (isHighlighted && matchOutcome) {
+                if (matchOutcome === 'win') {
+                  outcomeStyles = {
+                    container: 'bg-emerald/10 border border-emerald/30',
+                    icon: <Crown className="h-5 w-5 text-emerald shrink-0" />,
+                    textColor: 'text-emerald',
+                  };
+                } else if (matchOutcome === 'loss') {
+                  outcomeStyles = {
+                    container: 'bg-destructive/10 border border-destructive/30',
+                    icon: <X className="h-5 w-5 text-destructive shrink-0" />,
+                    textColor: 'text-destructive',
+                  };
+                } else {
+                  // draw
+                  outcomeStyles = {
+                    container: 'bg-muted/50 border border-muted',
+                    icon: <Minus className="h-5 w-5 text-muted-foreground shrink-0" />,
+                    textColor: 'text-muted-foreground',
+                  };
+                }
+              } else if (!isHighlighted && isWinner) {
+                // Non-highlighted winner (opponent won)
+                outcomeStyles = {
+                  container: 'bg-emerald/10 border border-emerald/30',
+                  icon: <Crown className="h-5 w-5 text-emerald shrink-0" />,
+                  textColor: 'text-emerald',
+                };
+              } else if (isHighlighted && !matchOutcome) {
+                // Highlighted but no outcome (shouldn't happen, but fallback)
+                outcomeStyles.container = 'bg-muted';
+              }
+
               return (
                 <div
                   key={player.uuid}
                   className={cn(
                     'flex items-center justify-between p-3 rounded-lg transition-colors',
-                    isWinner && 'bg-emerald/10 border border-emerald/30',
-                    isHighlighted && !isWinner && 'bg-muted',
-                    !isWinner && !isHighlighted && 'bg-background'
+                    outcomeStyles.container
                   )}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {isWinner && (
-                      <Crown className="h-5 w-5 text-emerald shrink-0" />
-                    )}
+                    {outcomeStyles.icon}
                     <PlayerAvatar
                       uuid={player.uuid}
                       username={player.nickname}
@@ -133,7 +203,7 @@ export function MatchCard({
                         <p
                           className={cn(
                             'font-semibold truncate mc-heading',
-                            isWinner && 'text-emerald'
+                            outcomeStyles.textColor
                           )}
                         >
                           {player.nickname}

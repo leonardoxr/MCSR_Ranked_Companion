@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Input, Button } from "@/components/ui";
+import { Button } from "@/components/ui";
 import * as React from 'react';
 import LanguageSwitcher from "@/components/features/LanguageSwitcher";
-import { useLeaderboardCachedFilter } from '@/lib/api/hooks/useLeaderboard';
+import { PlayerNameInput } from "@/components/features/PlayerNameInput";
 import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/store/useAuthStore';
@@ -118,21 +118,14 @@ export default function Header() {
             {/* Desktop Search & Actions */}
             <div className="ml-auto flex items-center gap-2">
               <div className="hidden sm:flex items-center">
-                <div className="relative">
-                  <Input
-                    placeholder="Search player..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSearch(query);
-                    }}
-                    className="h-9 w-40 sm:w-56 bg-white/5 text-white placeholder:text-white/50 border-white/10 font-monocraft text-sm"
-                  />
-                  {/* Autosuggest dropdown */}
-                  {query.trim() && (
-                    <HeaderSuggestions query={query} onPick={(name) => { setQuery(name); handleSearch(name); }} />)
-                  }
-                </div>
+                <PlayerNameInput
+                  value={query}
+                  onChange={setQuery}
+                  onSelect={handleSearch}
+                  placeholder="Search player..."
+                  variant="header"
+                  showSuggestions={true}
+                />
               </div>
 
               {/* Desktop Auth Buttons */}
@@ -208,19 +201,16 @@ export default function Header() {
               {/* Mobile Search */}
               <div className="py-4 border-b border-white/10">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50" />
-                  <Input
-                    placeholder="Search player..."
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/50 pointer-events-none z-10" />
+                  <PlayerNameInput
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSearch(query);
-                    }}
-                    className="h-10 pl-10 bg-white/5 text-white placeholder:text-white/50 border-white/10 font-monocraft"
+                    onChange={setQuery}
+                    onSelect={handleSearch}
+                    placeholder="Search player..."
+                    variant="header"
+                    showSuggestions={true}
+                    className="pl-10"
                   />
-                  {query.trim() && (
-                    <HeaderSuggestions query={query} onPick={(name) => { setQuery(name); handleSearch(name); }} />)
-                  }
                 </div>
               </div>
 
@@ -277,58 +267,5 @@ export default function Header() {
         </div>
       )}
     </>
-  );
-}
-
-function HeaderSuggestions({ query, onPick }: { query: string; onPick: (name: string) => void }) {
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const [open, setOpen] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-
-  // Debounce the query, then filter from cache (no network)
-  const [debounced, setDebounced] = React.useState('');
-  React.useEffect(() => {
-    setLoading(true);
-    const id = setTimeout(() => { setDebounced(query); setLoading(false); setOpen(true); }, 200);
-    return () => clearTimeout(id);
-  }, [query]);
-
-  const results = useLeaderboardCachedFilter(debounced, 8);
-
-  // Close on outside click
-  React.useEffect(() => {
-    const onDocDown = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      if (!containerRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener('mousedown', onDocDown);
-    return () => document.removeEventListener('mousedown', onDocDown);
-  }, []);
-
-  if (!open && !loading) return null;
-  return (
-    <div ref={containerRef} className="absolute mt-1 w-56 z-50">
-      <div className="mc-card border border-border rounded-md overflow-hidden">
-        {loading && (
-          <div className="px-3 py-2 text-sm text-white/70 font-monocraft">Loading…</div>
-        )}
-        {!loading && results.map((u, idx) => (
-          <div
-            key={`${u.nickname}-${idx}`}
-            className="px-3 py-2 text-sm hover:bg-accent cursor-pointer flex items-center gap-2 font-monocraft"
-            onClick={() => onPick(u.nickname)}
-          >
-            <span className="icon-minecraft-steve text-lg image-pixelated" />
-            <span className="flex-1 truncate">{u.nickname}</span>
-            {typeof (u as any).eloRate === 'number' && (
-              <span className="text-xs text-white/60 ml-2">{(u as any).eloRate}</span>
-            )}
-          </div>
-        ))}
-        {!loading && results.length === 0 && debounced.trim() && (
-          <div className="px-3 py-2 text-sm text-white/60 font-monocraft">No results in Top 150</div>
-        )}
-      </div>
-    </div>
   );
 }

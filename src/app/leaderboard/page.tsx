@@ -8,8 +8,20 @@ import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui';
 import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { COUNTRIES, SEASONS } from '@/lib/constants/filters';
 
 const PAGE_SIZE = 10;
 
@@ -77,27 +89,51 @@ export default function LeaderboardPage() {
             />
           </div>
           {/* Filters - Mobile: Full Width Stack, Desktop: Inline */}
-          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
+            {/* Season Filter */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-              <label className="text-xs sm:text-sm text-muted-foreground">Season</label>
-              <input
-                type="number"
-                value={season ?? ''}
-                onChange={(e) => setSeason(e.target.value ? Number(e.target.value) : undefined)}
-                placeholder="current"
-                className="h-9 w-full sm:w-28 bg-white/5 border border-white/10 rounded-md px-2 text-sm"
-              />
+              <label className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Season
+              </label>
+              <Select
+                value={season?.toString() ?? 'all'}
+                onValueChange={(value) => setSeason(value === 'all' ? undefined : Number(value))}
+              >
+                <SelectTrigger className="h-9 w-full sm:w-32">
+                  <SelectValue placeholder="All Seasons" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Seasons</SelectItem>
+                  {SEASONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value.toString()}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
+            {/* Country Filter */}
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-              <label className="text-xs sm:text-sm text-muted-foreground">Country</label>
-              <input
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value.toLowerCase())}
-                placeholder="iso (e.g., us)"
-                maxLength={2}
-                className="h-9 w-full sm:w-36 bg-white/5 border border-white/10 rounded-md px-2 uppercase text-sm"
-              />
+              <label className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Country
+              </label>
+              <Select
+                value={country || 'all'}
+                onValueChange={(value) => setCountry(value === 'all' ? '' : value)}
+              >
+                <SelectTrigger className="h-9 w-full sm:w-44">
+                  <SelectValue placeholder="All Countries" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Countries</SelectItem>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.flag} {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </div>

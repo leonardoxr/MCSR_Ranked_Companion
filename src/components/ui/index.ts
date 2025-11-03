@@ -11,6 +11,13 @@ export {
 } from './card';
 export { Dialog, DialogContent } from './dialog';
 export { Input } from './input';
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select';
 export { Separator } from './separator';
 export { Skeleton } from './skeleton';
 export { Tooltip } from './tooltip';

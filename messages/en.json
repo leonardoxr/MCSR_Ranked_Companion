@@ -136,6 +136,7 @@
     "allTimeStats": "All-Time Stats",
     "performance": "Performance",
     "recentMatches": "Recent Matches",
+    "matchHistory": "Match History",
     "achievements": "Achievements",
     "highlightedAchievements": "Highlighted Achievements",
     "allAchievements": "All Achievements",
@@ -334,5 +335,32 @@
   "search": {
     "placeholder": "Search players...",
     "clearLabel": "Clear search"
+  },
+  "filters": {
+    "searchOpponent": "Search opponent...",
+    "matchType": {
+      "all": "All Match Types",
+      "label": "Match Type"
+    },
+    "overworldType": "Overworld Type",
+    "netherType": "Nether Type",
+    "anyType": "Any",
+    "forfeited": "Forfeited",
+    "decayed": "Decayed",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "showAdvanced": "Advanced Filters",
+    "hideAdvanced": "Hide Filters",
+    "clearAll": "Clear Filters",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "noMatchesFound": "No matches found with current filters"
+  },
+  "pagination": {
+    "firstPage": "First page",
+    "lastPage": "Last page",
+    "pageInfo": "Page {current} of {total}",
+    "showing": "Showing {start}-{end} of {total} matches"
   }
 }

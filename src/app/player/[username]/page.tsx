@@ -10,21 +10,45 @@ import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { EloChart } from '@/components/features/EloChart';
 import { WinRateChart } from '@/components/features/WinRateChart';
+import { MatchFilters, defaultFilters, type MatchFiltersState } from '@/components/features/MatchFilters';
+import { Pagination } from '@/components/features/Pagination';
 import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
 import { Trophy, Target, TrendingUp, Clock, Award } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
+import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
 import type { EloDataPoint } from '@/components/features/EloChart';
 
 export default function PlayerPage() {
   const params = useParams();
   const t = useTranslations();
   const username = params?.username as string;
-  
+
   const [showAllAchievements, setShowAllAchievements] = React.useState(false);
+  const [filters, setFilters] = React.useState<MatchFiltersState>(defaultFilters);
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const MATCHES_PER_PAGE = 10;
 
   const { data: player, isLoading, error } = usePlayer(username);
-  const { data: matches, isLoading: matchesLoading } = usePlayerMatches(username, { count: 20 });
+  // Fetch more matches (100) to have enough data for filtering
+  const { data: matches, isLoading: matchesLoading } = usePlayerMatches(username, { count: 100 });
+
+  // Apply filters and pagination
+  const filteredMatches = React.useMemo(() => {
+    if (!Array.isArray(matches)) return [];
+    return filterMatches(matches, filters, player?.uuid);
+  }, [matches, filters, player?.uuid]);
+
+  const paginatedMatches = React.useMemo(() => {
+    return paginateItems(filteredMatches, currentPage, MATCHES_PER_PAGE);
+  }, [filteredMatches, currentPage]);
+
+  const totalPages = getTotalPages(filteredMatches.length, MATCHES_PER_PAGE);
+
+  // Reset to page 1 when filters change
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
 
   if (isLoading) {
     return (
@@ -270,17 +294,41 @@ export default function PlayerPage() {
       {/* Match History */}
       <Card variant="mc">
         <CardHeader>
-          <CardTitle>{t('player.recentMatches')}</CardTitle>
+          <CardTitle>{t('player.matchHistory')}</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {/* Filters */}
+          <MatchFilters filters={filters} onFiltersChange={setFilters} />
+
+          {/* Match List */}
           {matchesLoading ? (
             <LoadingState message={t('common.loading')} />
+          ) : filteredMatches.length > 0 ? (
+            <>
+              <div className="space-y-4">
+                {paginatedMatches.map((match) => (
+                  <MatchCard key={match.id} match={match} highlightPlayer={player.uuid} />
+                ))}
+              </div>
+
+              {/* Results Summary */}
+              <div className="text-sm text-muted-foreground text-center font-monocraft">
+                {t('pagination.showing', {
+                  start: (currentPage - 1) * MATCHES_PER_PAGE + 1,
+                  end: Math.min(currentPage * MATCHES_PER_PAGE, filteredMatches.length),
+                  total: filteredMatches.length,
+                })}
+              </div>
+
+              {/* Pagination */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </>
           ) : Array.isArray(matches) && matches.length > 0 ? (
-            <div className="space-y-4">
-              {matches.map((match) => (
-                <MatchCard key={match.id} match={match} highlightPlayer={player.uuid} />
-              ))}
-            </div>
+            <p className="text-center text-muted-foreground py-8">{t('filters.noMatchesFound')}</p>
           ) : (
             <p className="text-center text-muted-foreground py-8">{t('player.noMatches')}</p>
           )}

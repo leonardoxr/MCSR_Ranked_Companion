@@ -27,6 +27,7 @@ export type { MinecraftIconName, MinecraftIconProps } from './MinecraftIcon';
 
 // Utility components
 export { SearchBar } from './SearchBar';
+export { PlayerNameInput } from './PlayerNameInput';
 export {
   LoadingState,
   PlayerCardSkeleton,

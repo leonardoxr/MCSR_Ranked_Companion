@@ -89,22 +89,23 @@ export function PlayerCard({
     <div>
     <Card variant="mc" className={cn('', className)}>
         <CardHeader className="pb-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
               <PlayerHead3D
                 uuid={uuid}
                 username={nickname}
-                size={128}
+                size={96}
+                className="sm:w-32 sm:h-32"
               />
-              <div>
-                <div className="flex items-center gap-2 mb-2">
+              <div className="flex-1 sm:flex-initial min-w-0">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <CountryFlag country={country} size="md" />
-                  <CardTitle className="text-2xl">{nickname}</CardTitle>
+                  <CardTitle className="text-xl sm:text-2xl truncate">{nickname}</CardTitle>
                 </div>
-                <div className="flex items-center gap-2">
-                  {eloRate && <RankBadge elo={eloRate} showText showElo />}
+                <div className="flex flex-wrap items-center gap-2">
+                  {eloRate && <RankBadge elo={eloRate} showText showElo className="text-sm sm:text-base" />}
                   {eloRank && (
-                    <CardDescription className="text-base">
+                    <CardDescription className="text-sm sm:text-base">
                       {t('player.rank')} #{eloRank.toLocaleString()}
                     </CardDescription>
                   )}
@@ -123,24 +124,24 @@ export function PlayerCard({
 
         {statistics && (
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <StatItem
-                icon={<Trophy className="h-4 w-4" />}
+                icon={<Trophy className="h-3 w-3 sm:h-4 sm:w-4" />}
                 label={t('player.stats.wins')}
                 value={statistics.total.wins.ranked.toLocaleString()}
               />
               <StatItem
-                icon={<Target className="h-4 w-4" />}
+                icon={<Target className="h-3 w-3 sm:h-4 sm:w-4" />}
                 label={t('player.stats.winRate')}
                 value={winRate ? `${winRate}%` : t('common.notAvailable')}
               />
               <StatItem
-                icon={<TrendingUp className="h-4 w-4" />}
+                icon={<TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />}
                 label={t('player.stats.highestWinStreak')}
                 value={statistics.total.highestWinStreak.ranked?.toLocaleString() || '0'}
               />
               <StatItem
-                icon={<Clock className="h-4 w-4" />}
+                icon={<Clock className="h-3 w-3 sm:h-4 sm:w-4" />}
                 label={t('player.stats.totalPlaytime')}
                 value={formatPlaytime(statistics.total.playtime.ranked || 0)}
               />
@@ -148,20 +149,20 @@ export function PlayerCard({
 
             {statistics.total.bestTime.ranked && (
               <div className="mt-4 pt-4 border-t border-border">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-1">
                       {t('player.stats.bestTimeRanked')}
                     </p>
-                    <p className="text-lg font-semibold">
+                    <p className="text-base sm:text-lg font-semibold">
                       {formatTime(statistics.total.bestTime.ranked)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground mb-1">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-1">
                       {t('player.stats.matchesPlayed')}
                     </p>
-                    <p className="text-lg font-semibold">
+                    <p className="text-base sm:text-lg font-semibold">
                       {statistics.total.playedMatches.ranked}
                     </p>
                   </div>
@@ -186,9 +187,9 @@ function StatItem({ icon, label, value }: StatItemProps) {
     <div className="flex flex-col">
       <div className="flex items-center gap-1 text-muted-foreground mb-1">
         {icon}
-        <span className="text-xs">{label}</span>
+        <span className="text-xs sm:text-sm">{label}</span>
       </div>
-      <span className="text-lg font-semibold">{value}</span>
+      <span className="text-base sm:text-lg font-semibold">{value}</span>
     </div>
   );
 }

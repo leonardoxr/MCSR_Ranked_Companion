@@ -32,17 +32,17 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-14">
+    <div className="space-y-8 sm:space-y-12 md:space-y-14">
       {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-2xl mc-card p-8 md:p-12">
+      <section className="relative overflow-hidden rounded-2xl mc-card p-6 sm:p-8 md:p-12">
         <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full blur-3xl bg-emerald-500/20" />
         <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full blur-3xl bg-cyan-400/20" />
 
         <div className="text-center relative">
-          <h1 className="text-4xl md:text-6xl font-extrabold mb-4 bg-gradient-to-r from-emerald-300 via-cyan-200 to-sky-300 bg-clip-text text-transparent mc-title">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-emerald-300 via-cyan-200 to-sky-300 bg-clip-text text-transparent mc-title">
             {t('home.title')}
           </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-3xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-3xl mx-auto px-2">
             {t('home.subtitle')}
           </p>
 
@@ -70,8 +70,8 @@ export default function HomePage() {
 
       {/* Quick Navigation */}
       <section>
-        <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Explore</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Explore</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Leaderboard */}
           <Link href="/leaderboard">
             <Card variant="mc" className="mc-card h-full transition-all hover:border-primary cursor-pointer">

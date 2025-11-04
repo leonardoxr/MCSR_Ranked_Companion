@@ -134,18 +134,18 @@ export default function PlayerPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 space-y-6 sm:space-y-8">
       {/* Header with Logout (only shown when viewing own profile) */}
       {isOwnProfile && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
           <div className="flex items-center gap-3">
-            <User className="h-8 w-8 text-primary" />
+            <User className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             <div>
-              <h1 className="text-3xl font-bold">My Stats</h1>
-              <p className="text-sm text-muted-foreground">Logged in as {authUsername}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold">My Stats</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Logged in as {authUsername}</p>
             </div>
           </div>
-          <Button onClick={handleLogout} variant="outline">
+          <Button onClick={handleLogout} variant="outline" className="w-full sm:w-auto">
             <LogOut className="mr-2 h-4 w-4" />
             Logout
           </Button>
@@ -162,7 +162,7 @@ export default function PlayerPage() {
       {isOwnProfile && <PrivateKeyManager />}
 
       {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         {/* Season Stats */}
         <Card variant="mc">
           <CardHeader>
@@ -235,7 +235,7 @@ export default function PlayerPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {eloData.length > 0 && <EloChart data={eloData} showRankLines />}
         {Array.isArray(matches) && matches.length > 0 && (
           <WinRateChart
@@ -269,7 +269,7 @@ export default function PlayerPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {player.achievements.display.map((achievement, index) => (
                   <AchievementCard
                     key={`${achievement.id}-${achievement.date}-${index}`}
@@ -294,7 +294,7 @@ export default function PlayerPage() {
                       <Award className="h-5 w-5 text-primary" />
                       {t('player.highlightedAchievements', { defaultValue: 'Highlighted Achievements' })} ({player.achievements.display.length})
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {player.achievements.display.map((achievement, index) => (
                         <AchievementCard
                           key={`display-${achievement.id}-${achievement.date}-${index}`}
@@ -318,7 +318,7 @@ export default function PlayerPage() {
                       <Award className="h-5 w-5 text-primary" />
                       {t('player.allAchievements', { defaultValue: 'All Achievements' })} ({player.achievements.total.length})
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {player.achievements.total.map((achievement, index) => (
                         <AchievementCard
                           key={`total-${achievement.id}-${achievement.date}-${index}`}

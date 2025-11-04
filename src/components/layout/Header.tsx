@@ -87,14 +87,15 @@ export default function Header() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-black/40">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4">
           <div className="flex h-14 items-center gap-2 sm:gap-3">
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden text-white/80 hover:text-white p-2"
+              className="md:hidden text-white/80 hover:text-white p-2 min-w-[44px] min-h-[44px]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -180,8 +181,8 @@ export default function Header() {
           />
 
           {/* Menu Panel */}
-          <div className="absolute top-0 left-0 right-0 bg-black/95 border-b border-white/10 shadow-xl">
-            <div className="container mx-auto px-4">
+          <div className="absolute top-0 left-0 right-0 bg-black/95 border-b border-white/10 shadow-xl max-h-[100vh] overflow-y-auto">
+            <div className="container mx-auto px-3 sm:px-4">
               {/* Header with close button */}
               <div className="flex h-14 items-center justify-between border-b border-white/10">
                 <span className="font-monocraft text-white flex items-center gap-2">
@@ -191,8 +192,9 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white/80 hover:text-white p-2"
+                  className="text-white/80 hover:text-white p-2 min-w-[44px] min-h-[44px]"
                   onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close menu"
                 >
                   <X className="h-5 w-5" />
                 </Button>

@@ -8,6 +8,7 @@ import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Inpu
 import { SearchBar } from '@/components/features/SearchBar';
 import { PlayerNameInput } from '@/components/features/PlayerNameInput';
 import { BannerAd, InContentAd } from '@/components/features/AdUnit';
+import { searchPlayers } from '@/lib/utils/search';
 import {
   Trophy,
   Radio,
@@ -52,15 +53,8 @@ export default function HomePage() {
               onSearch={handleSearch}
               autoSuggest
               fetchSuggestions={async (q) => {
-                try {
-                  const res = await fetch(`/api/search/player?q=${encodeURIComponent(q)}`);
-                  if (!res.ok) return [];
-                  const data = await res.json();
-                  // Expecting array of { username, uuid }
-                  return Array.isArray(data) ? data : [];
-                } catch {
-                  return [];
-                }
+                // Use client-side search (works in both web and Tauri)
+                return searchPlayers(q, 8);
               }}
               placeholder={t('home.searchPlaceholder')}
             />

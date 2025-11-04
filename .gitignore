@@ -56,3 +56,7 @@ logs/
 # Temporary files
 *.tmp
 *.temp
+
+# Tauri
+src-tauri/target/
+src-tauri/Cargo.lock

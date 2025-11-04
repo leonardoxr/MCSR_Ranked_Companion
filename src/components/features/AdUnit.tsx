@@ -57,7 +57,7 @@ export function AdUnit({
   hideOnDesktop = false,
   style,
 }: AdUnitProps) {
-  const adRef = React.useRef<HTMLDivElement>(null);
+  const adRef = React.useRef<HTMLModElement>(null);
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [hasError, setHasError] = React.useState(false);
 

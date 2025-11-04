@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const isTauriBuild = process.env.TAURI_BUILD === 'true';
+
 const nextConfig = {
   // Enable React 19 features
   experimental: {
@@ -7,6 +9,8 @@ const nextConfig = {
 
   // Image optimization
   images: {
+    // For Tauri static export, we need unoptimized images
+    unoptimized: isTauriBuild,
     remotePatterns: [
       {
         protocol: 'https',
@@ -32,8 +36,14 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
 
-  // Output standalone for Docker/Tauri
-  output: 'standalone',
+  // Output configuration
+  // For Tauri: use static export (no Node.js runtime needed)
+  // For web: use standalone (includes Node.js server)
+  ...(isTauriBuild ? { output: 'export' } : { output: 'standalone' }),
+  
+  // Tauri specific configuration
+  basePath: '',
+  trailingSlash: isTauriBuild,
 
   // Disable x-powered-by header
   poweredByHeader: false,

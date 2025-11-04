@@ -43,12 +43,36 @@ export default function LiveMatchPage() {
   }
 
   if (error) {
+    // Check if this is the specific error about not being in private room or not host/co-host
+    const errorMessage = error.message || '';
+    const isPrivateRoomError = 
+      errorMessage.includes('Player is not in private room') ||
+      errorMessage.includes('not host/co-host');
+
     return (
-      <div className="container mx-auto px-4 py-8">
-        <ErrorState
-          title="Error Loading Live Match"
-          message={error.message || 'Failed to load live match data'}
-        />
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+
+        <Card variant="mc">
+          <CardContent className="py-12 text-center">
+            <Activity className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h2 className="text-xl font-semibold mb-2">
+              {isPrivateRoomError ? 'Access Restricted' : 'Error Loading Live Match'}
+            </h2>
+            <p className="text-muted-foreground">
+              {isPrivateRoomError
+                ? 'You are not in a private room or you are not the host/co-host. Live match data is only available for private room hosts and co-hosts.'
+                : errorMessage || 'Failed to load live match data'}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }

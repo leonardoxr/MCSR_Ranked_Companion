@@ -17,6 +17,7 @@ import { Pagination } from '@/components/features/Pagination';
 import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User } from 'lucide-react';
+import { PrivateKeyManager } from '@/components/features/PrivateKeyManager';
 import { formatRelativeTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
 import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
@@ -155,6 +156,9 @@ export default function PlayerPage() {
 
       {/* Personalized Insights (only shown when viewing own profile) */}
       {isOwnProfile && <PlayerInsights player={player} />}
+
+      {/* Private Key Management (only shown when viewing own profile) */}
+      {isOwnProfile && <PrivateKeyManager />}
 
       {/* Statistics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -33,11 +33,18 @@ const createApiClient = (): AxiosInstance => {
   // Request interceptor
   client.interceptors.request.use(
     (config) => {
-      // Add API key if available
-      const apiKey = process.env.NEXT_PUBLIC_MCSR_API_KEY;
+      // Add API key if available (from user's stored key or env var)
+      // User-provided API key takes precedence
+      const userApiKey = (config as any).userApiKey;
+      const envApiKey = process.env.NEXT_PUBLIC_MCSR_API_KEY;
+      const apiKey = userApiKey || envApiKey;
+      
       if (apiKey) {
         config.headers['X-API-Key'] = apiKey;
       }
+
+      // Remove the temporary userApiKey from config
+      delete (config as any).userApiKey;
 
       // Log request in development
       if (process.env.NODE_ENV === 'development') {
@@ -98,8 +105,14 @@ interface McsrApiResponse<T> {
 /**
  * Helper function for GET requests
  */
-export async function get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-  const response = await apiClient.get<McsrApiResponse<T> | T>(url, config);
+export async function get<T>(url: string, config?: AxiosRequestConfig & { userApiKey?: string }): Promise<T> {
+  // If userApiKey is provided, add it to the config
+  const requestConfig = config ? { ...config } : {};
+  if (config?.userApiKey) {
+    (requestConfig as any).userApiKey = config.userApiKey;
+  }
+  
+  const response = await apiClient.get<McsrApiResponse<T> | T>(url, requestConfig);
 
   // Check if response is wrapped in { status, data } format
   if (response.data && typeof response.data === 'object' && 'status' in response.data) {
@@ -126,8 +139,14 @@ export async function get<T>(url: string, config?: AxiosRequestConfig): Promise<
 export async function post<T>(
   url: string,
   data?: unknown,
-  config?: AxiosRequestConfig
+  config?: AxiosRequestConfig & { userApiKey?: string }
 ): Promise<T> {
-  const response = await apiClient.post<T>(url, data, config);
+  // If userApiKey is provided, add it to the config
+  const requestConfig = config ? { ...config } : {};
+  if (config?.userApiKey) {
+    (requestConfig as any).userApiKey = config.userApiKey;
+  }
+  
+  const response = await apiClient.post<T>(url, data, requestConfig);
   return response.data;
 }

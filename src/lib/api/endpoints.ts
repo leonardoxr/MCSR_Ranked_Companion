@@ -1,4 +1,4 @@
-import { get } from './client';
+import { get, McsrApiError } from './client';
 import type {
   UserInfo,
   MatchInfo,
@@ -81,8 +81,19 @@ export async function getUserLiveMatch(
       userApiKey: privateKey,
     });
   } catch (error) {
-    // If user is not in a live match, API may return 400 or 404
-    // Return null instead of throwing
+    // Check if this is the specific error about not being in private room or not host/co-host
+    if (error instanceof McsrApiError) {
+      const errorMessage = error.data.error || error.message;
+      if (
+        errorMessage.includes('Player is not in private room') ||
+        errorMessage.includes('not host/co-host')
+      ) {
+        // Rethrow this specific error so it can be handled with a user-friendly message
+        throw error;
+      }
+    }
+    
+    // For other errors (user not in a live match, 400 or 404), return null
     return null;
   }
 }

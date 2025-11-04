@@ -43,12 +43,36 @@ export default function LiveMatchPage() {
   }
 
   if (error) {
+    // Check if this is the specific error about not being in private room or not host/co-host
+    const errorMessage = error.message || '';
+    const isPrivateRoomError = 
+      errorMessage.includes('Player is not in private room') ||
+      errorMessage.includes('not host/co-host');
+
     return (
-      <div className="container mx-auto px-4 py-8">
-        <ErrorState
-          title="Error Loading Live Match"
-          message={error.message || 'Failed to load live match data'}
-        />
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <Button
+          variant="outline"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+
+        <Card variant="mc">
+          <CardContent className="py-12 text-center">
+            <Activity className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+            <h2 className="text-xl font-semibold mb-2">
+              {isPrivateRoomError ? 'Access Restricted' : 'Error Loading Live Match'}
+            </h2>
+            <p className="text-muted-foreground">
+              {isPrivateRoomError
+                ? 'You are not in a private room or you are not the host/co-host. Live match data is only available for private room hosts and co-hosts.'
+                : errorMessage || 'Failed to load live match data'}
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -81,6 +105,9 @@ export default function LiveMatchPage() {
   const currentTime = liveMatch.currentTime;
   const players = liveMatch.players || [];
   const playerData = liveMatch.data || {};
+  
+  // Check if currentTime is valid (not null, undefined, or NaN)
+  const isValidTime = currentTime != null && !isNaN(currentTime) && isFinite(currentTime);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -113,7 +140,9 @@ export default function LiveMatchPage() {
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold font-mono">
-            {formatTime(currentTime)}
+            {isValidTime ? formatTime(currentTime) : (
+              <span className="text-muted-foreground">Not Started</span>
+            )}
           </p>
         </CardContent>
       </Card>
@@ -131,6 +160,10 @@ export default function LiveMatchPage() {
             {players.map((player) => {
               const data = playerData[player.uuid];
               const isCurrentUser = player.nickname.toLowerCase() === username.toLowerCase();
+              
+              // Check if timeline time is valid
+              const timelineTime = data?.timeline?.time;
+              const isValidTimelineTime = timelineTime != null && !isNaN(timelineTime) && isFinite(timelineTime);
 
               return (
                 <div
@@ -171,7 +204,9 @@ export default function LiveMatchPage() {
                         {data.timeline && (
                           <div className="space-y-1">
                             <p className="text-sm font-mono font-semibold">
-                              {formatTime(data.timeline.time)}
+                              {isValidTimelineTime ? formatTime(timelineTime) : (
+                                <span className="text-muted-foreground">Not Started</span>
+                              )}
                             </p>
                             <p className="text-xs text-muted-foreground capitalize">
                               {data.timeline.type}

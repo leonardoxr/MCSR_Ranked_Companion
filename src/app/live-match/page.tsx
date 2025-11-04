@@ -105,6 +105,9 @@ export default function LiveMatchPage() {
   const currentTime = liveMatch.currentTime;
   const players = liveMatch.players || [];
   const playerData = liveMatch.data || {};
+  
+  // Check if currentTime is valid (not null, undefined, or NaN)
+  const isValidTime = currentTime != null && !isNaN(currentTime) && isFinite(currentTime);
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
@@ -137,7 +140,9 @@ export default function LiveMatchPage() {
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold font-mono">
-            {formatTime(currentTime)}
+            {isValidTime ? formatTime(currentTime) : (
+              <span className="text-muted-foreground">Not Started</span>
+            )}
           </p>
         </CardContent>
       </Card>
@@ -155,6 +160,10 @@ export default function LiveMatchPage() {
             {players.map((player) => {
               const data = playerData[player.uuid];
               const isCurrentUser = player.nickname.toLowerCase() === username.toLowerCase();
+              
+              // Check if timeline time is valid
+              const timelineTime = data?.timeline?.time;
+              const isValidTimelineTime = timelineTime != null && !isNaN(timelineTime) && isFinite(timelineTime);
 
               return (
                 <div
@@ -195,7 +204,9 @@ export default function LiveMatchPage() {
                         {data.timeline && (
                           <div className="space-y-1">
                             <p className="text-sm font-mono font-semibold">
-                              {formatTime(data.timeline.time)}
+                              {isValidTimelineTime ? formatTime(timelineTime) : (
+                                <span className="text-muted-foreground">Not Started</span>
+                              )}
                             </p>
                             <p className="text-xs text-muted-foreground capitalize">
                               {data.timeline.type}

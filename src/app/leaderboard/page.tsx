@@ -35,8 +35,8 @@ export default function LeaderboardPage() {
   const { data: seasonData } = useQuery({
     queryKey: ['leaderboard', 'current-season'],
     queryFn: () => getLeaderboardWithSeason({ count: 1 }),
-    ...CACHE_PRESETS.REAL_TIME,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    ...CACHE_PRESETS.LEADERBOARD,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes (override default)
   });
 
   // Get current season from API response, fallback to 9 if not available

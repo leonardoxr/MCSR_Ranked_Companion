@@ -3,40 +3,57 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
 import { useLeaderboard } from '@/lib/api/hooks/useLeaderboard';
+import { getLeaderboardWithSeason } from '@/lib/api/endpoints';
 import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import {
-  Button,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui';
-import { Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { COUNTRIES, SEASONS } from '@/lib/constants/filters';
+import { CACHE_PRESETS } from '@/lib/api/cache-config';
 
-const PAGE_SIZE = 10;
+const MAX_USERS = 150;
 
 export default function LeaderboardPage() {
   const router = useRouter();
   const t = useTranslations();
-  const [page, setPage] = React.useState(1);
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  const [season, setSeason] = React.useState<number | undefined>(undefined);
+  // Fetch current season from API
+  const { data: seasonData } = useQuery({
+    queryKey: ['leaderboard', 'current-season'],
+    queryFn: () => getLeaderboardWithSeason({ count: 1 }),
+    ...CACHE_PRESETS.REAL_TIME,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Get current season from API response, fallback to 9 if not available
+  const currentSeasonFromApi = seasonData?.season?.number;
+  const defaultSeason = currentSeasonFromApi ?? 9;
+
+  const [season, setSeason] = React.useState<number | null>(null);
   const [country, setCountry] = React.useState('');
 
+  // Set season once we have the API data
+  React.useEffect(() => {
+    if (season === null && defaultSeason) {
+      setSeason(defaultSeason);
+    }
+  }, [defaultSeason, season]);
+
   const { data: players, isLoading, error } = useLeaderboard({
-    page,
-    count: PAGE_SIZE,
+    count: MAX_USERS,
     ...(season ? { season } : {}),
     ...(country ? { country } : {} as any),
   });
@@ -47,16 +64,6 @@ export default function LeaderboardPage() {
       // Navigate to player profile
       router.push(`/player/${encodeURIComponent(query)}`);
     }
-  };
-
-  const handleNextPage = () => {
-    setPage((prev) => prev + 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handlePrevPage = () => {
-    setPage((prev) => Math.max(1, prev - 1));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -96,14 +103,17 @@ export default function LeaderboardPage() {
                 Season
               </label>
               <Select
-                value={season?.toString() ?? 'all'}
-                onValueChange={(value) => setSeason(value === 'all' ? undefined : Number(value))}
+                value={season?.toString() ?? ''}
+                onValueChange={(value) => setSeason(Number(value))}
+                disabled={season === null}
               >
-                <SelectTrigger className="h-9 w-full sm:w-32">
-                  <SelectValue placeholder="All Seasons" />
+                <SelectTrigger
+                  className="h-9 w-full sm:w-32"
+                  allowClear={false}
+                >
+                  <SelectValue placeholder={season === null ? "Loading..." : "Select Season"} />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Seasons</SelectItem>
+                <SelectContent searchable searchPlaceholder="Search seasons...">
                   {SEASONS.map((s) => (
                     <SelectItem key={s.value} value={s.value.toString()}>
                       {s.label}
@@ -122,10 +132,15 @@ export default function LeaderboardPage() {
                 value={country || 'all'}
                 onValueChange={(value) => setCountry(value === 'all' ? '' : value)}
               >
-                <SelectTrigger className="h-9 w-full sm:w-44">
+                <SelectTrigger
+                  className="h-9 w-full sm:w-44"
+                  allowClear={country !== ''}
+                  showClearButton={country !== ''}
+                  onClear={() => setCountry('')}
+                >
                   <SelectValue placeholder="All Countries" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent searchable searchPlaceholder="Search countries...">
                   <SelectItem value="all">All Countries</SelectItem>
                   {COUNTRIES.map((c) => (
                     <SelectItem key={c.code} value={c.code}>
@@ -139,47 +154,6 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card variant="mc">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('leaderboard.currentPage')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {((page - 1) * PAGE_SIZE + 1).toLocaleString()} -{' '}
-              {(page * PAGE_SIZE).toLocaleString()}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card variant="mc">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('leaderboard.playersShown')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">
-              {Array.isArray(players) ? players.length.toLocaleString() : '0'}
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card variant="mc">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              {t('common.season')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{t('common.current')}</p>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Leaderboard Table */}
       {isLoading ? (
         <LoadingState message={t('leaderboard.loading')} />
@@ -189,32 +163,7 @@ export default function LeaderboardPage() {
           message={error.message || t('leaderboard.errorMessage')}
         />
       ) : players && players.length > 0 ? (
-        <>
-          <LeaderboardTable players={players} />
-
-          {/* Pagination */}
-          <div className="flex justify-center gap-4">
-            <Button
-              variant="outline"
-              onClick={handlePrevPage}
-              disabled={page === 1}
-            >
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              {t('common.previous')}
-            </Button>
-            <div className="flex items-center px-4 py-2 bg-muted rounded-lg">
-              <span className="font-semibold">{t('common.page', { page })}</span>
-            </div>
-            <Button
-              variant="outline"
-              onClick={handleNextPage}
-              disabled={!players || players.length < PAGE_SIZE}
-            >
-              {t('common.next')}
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </div>
-        </>
+        <LeaderboardTable players={players} />
       ) : (
         <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">

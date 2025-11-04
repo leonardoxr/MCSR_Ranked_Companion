@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 export function LoginForm() {
   const [username, setUsername] = useState('');
+  const [privateKey, setPrivateKey] = useState('');
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
   const router = useRouter();
 
@@ -16,18 +18,22 @@ export function LoginForm() {
     e.preventDefault();
 
     try {
-      await login(username);
+      await login(username, privateKey || undefined);
       router.push('/my-stats');
     } catch (err) {
       // Error is already handled by the store
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
     if (error) {
       clearError();
     }
+  };
+
+  const handlePrivateKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrivateKey(e.target.value);
   };
 
   return (
@@ -49,7 +55,7 @@ export function LoginForm() {
               type="text"
               placeholder="Enter your username"
               value={username}
-              onChange={handleInputChange}
+              onChange={handleUsernameChange}
               disabled={isLoading}
               className={error ? 'border-red-500 focus-visible:ring-red-500' : ''}
               autoFocus
@@ -57,6 +63,45 @@ export function LoginForm() {
             />
             {error && (
               <p className="text-sm text-red-500 mt-1">{error}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label htmlFor="privateKey" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                Private Key (Optional)
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPrivateKey(!showPrivateKey)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                {showPrivateKey ? 'Hide' : 'Show'} Info
+              </button>
+            </div>
+            <Input
+              id="privateKey"
+              type="password"
+              placeholder="Enter private key for live match data access (optional)"
+              value={privateKey}
+              onChange={handlePrivateKeyChange}
+              disabled={isLoading}
+              autoComplete="off"
+            />
+            {showPrivateKey && (
+              <p className="text-xs text-muted-foreground">
+                Private keys are used to access live match data for your account. 
+                To get a private key, make a ticket in the{' '}
+                <a
+                  href="https://discord.gg/mcsrranked"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  MCSR Ranked Discord server
+                </a>
+                .
+              </p>
             )}
           </div>
         </CardContent>

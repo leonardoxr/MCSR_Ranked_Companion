@@ -67,6 +67,26 @@ export async function getUserAchievements(user: UserIdentifier): Promise<Achieve
   return get<Achievement[]>(`/users/${user}/achievements`);
 }
 
+/**
+ * Get user's live match data
+ * @param user - UUID, nickname, or Discord ID
+ * @param privateKey - Optional private key for live match data access
+ */
+export async function getUserLiveMatch(
+  user: UserIdentifier,
+  privateKey?: string
+): Promise<LiveMatch | null> {
+  try {
+    return await get<LiveMatch>(`/users/${user}/live`, {
+      userApiKey: privateKey,
+    });
+  } catch (error) {
+    // If user is not in a live match, API may return 400 or 404
+    // Return null instead of throwing
+    return null;
+  }
+}
+
 // ============================================================================
 // Match Endpoints
 // ============================================================================
@@ -100,6 +120,16 @@ export async function getLeaderboard(
 ): Promise<LeaderboardUser[]> {
   const response = await get<LeaderboardResponse>('/leaderboard', { params });
   return response.users;
+}
+
+/**
+ * Get leaderboard response with season information
+ * @param params - Pagination parameters and optional season filter
+ */
+export async function getLeaderboardWithSeason(
+  params?: PaginationParams & { season?: number }
+): Promise<LeaderboardResponse> {
+  return get<LeaderboardResponse>('/leaderboard', { params });
 }
 
 // ============================================================================

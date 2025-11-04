@@ -5,12 +5,15 @@ import { McsrApiError } from '@/lib/api/client';
 
 interface AuthState {
   username: string | null;
+  privateKey: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
 
   // Actions
-  login: (username: string) => Promise<void>;
+  login: (username: string, privateKey?: string) => Promise<void>;
+  setPrivateKey: (privateKey: string) => void;
+  clearPrivateKey: () => void;
   logout: () => void;
   clearError: () => void;
 }
@@ -19,11 +22,12 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       username: null,
+      privateKey: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
 
-      login: async (username: string) => {
+      login: async (username: string, privateKey?: string) => {
         set({ isLoading: true, error: null });
 
         try {
@@ -40,6 +44,7 @@ export const useAuthStore = create<AuthState>()(
           // If successful, set the authenticated state
           set({
             username: trimmedUsername,
+            privateKey: privateKey?.trim() || null,
             isAuthenticated: true,
             isLoading: false,
             error: null,
@@ -53,6 +58,7 @@ export const useAuthStore = create<AuthState>()(
 
           set({
             username: null,
+            privateKey: null,
             isAuthenticated: false,
             isLoading: false,
             error: errorMessage,
@@ -62,9 +68,18 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      setPrivateKey: (privateKey: string) => {
+        set({ privateKey: privateKey.trim() || null });
+      },
+
+      clearPrivateKey: () => {
+        set({ privateKey: null });
+      },
+
       logout: () => {
         set({
           username: null,
+          privateKey: null,
           isAuthenticated: false,
           isLoading: false,
           error: null,
@@ -79,6 +94,7 @@ export const useAuthStore = create<AuthState>()(
       name: 'mcsr-auth-storage',
       partialize: (state) => ({
         username: state.username,
+        privateKey: state.privateKey,
         isAuthenticated: state.isAuthenticated,
       }),
     }

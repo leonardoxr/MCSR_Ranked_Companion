@@ -18,6 +18,8 @@ export {
   SelectTrigger,
   SelectValue,
 } from './select';
+export { Combobox } from './combobox';
+export type { ComboboxOption, ComboboxProps } from './combobox';
 export { Separator } from './separator';
 export { Skeleton } from './skeleton';
 export { Tooltip } from './tooltip';

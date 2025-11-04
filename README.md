@@ -46,7 +46,21 @@ cd MCSR_Ranked_Companion
 npm install
 ```
 
-3. Create a `.env.local` file (copy from `.env.local` template)
+3. Create a `.env.local` file with the following configuration:
+
+```env
+# Google AdSense Configuration (optional)
+NEXT_PUBLIC_ADSENSE_PUBLISHER_ID=ca-pub-XXXXXXXXXXXXXXXX
+```
+
+To set up ads:
+- Sign up for [Google AdSense](https://www.google.com/adsense)
+- Get your publisher ID (format: `ca-pub-XXXXXXXXXXXXXXXX`)
+- Create ad units in your AdSense dashboard
+- Replace the placeholder `adSlot` values in the code with your actual ad unit slot IDs:
+  - Home page: `src/app/page.tsx`
+  - Leaderboard: `src/app/leaderboard/page.tsx`
+  - Player pages: `src/app/player/[username]/page.tsx`
 
 4. Run the development server:
 ```bash

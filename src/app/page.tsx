@@ -71,8 +71,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Banner Ad - Replace with your AdSense ad unit slot ID */}
-      <BannerAd adSlot="1234567890/6789012345" />
+      {/* Banner Ad */}
+      <BannerAd />
 
       {/* Quick Navigation */}
       <section>
@@ -147,8 +147,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* In-Content Ad - Replace with your AdSense ad unit slot ID */}
-      <InContentAd adSlot="1234567890/6789012345" />
+      {/* In-Content Ad */}
+      <InContentAd />
 
       {/* Features Section removed per request */}
 

@@ -155,8 +155,8 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      {/* Banner Ad - Replace with your AdSense ad unit slot ID */}
-      <BannerAd adSlot="1234567890/6789012345" className="mb-6" />
+      {/* Banner Ad */}
+      <BannerAd className="mb-6" />
 
       {/* Leaderboard Table */}
       {isLoading ? (
@@ -169,8 +169,8 @@ export default function LeaderboardPage() {
       ) : players && players.length > 0 ? (
         <>
           <LeaderboardTable players={players} />
-          {/* In-Content Ad after leaderboard - Replace with your AdSense ad unit slot ID */}
-          <InContentAd adSlot="1234567890/6789012345" className="mt-6" />
+          {/* In-Content Ad after leaderboard */}
+          <InContentAd className="mt-6" />
         </>
       ) : (
         <Card variant="mc">

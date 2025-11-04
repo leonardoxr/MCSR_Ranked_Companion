@@ -63,9 +63,6 @@ export function AdUnit({
 
   // Only load ads if AdSense is configured
   const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
-  if (!adsenseId) {
-    return null; // Silently fail if not configured
-  }
 
   // Size mapping for Google AdSense
   const sizeMap: Record<AdSize, { width: number; height: number } | 'responsive'> = {
@@ -80,6 +77,11 @@ export function AdUnit({
   const adSize = sizeMap[size];
 
   React.useEffect(() => {
+    // Don't initialize if AdSense is not configured
+    if (!adsenseId) {
+      return;
+    }
+
     // Wait for AdSense script to load
     const initAd = () => {
       if (adRef.current && (window as any).adsbygoogle) {
@@ -101,8 +103,8 @@ export function AdUnit({
     return () => clearTimeout(timer);
   }, [adsenseId]);
 
-  // Don't render if there's an error or not configured
-  if (hasError || !adsenseId) {
+  // Don't render if there's an error, not configured, or missing ad slot
+  if (hasError || !adsenseId || !adSlot) {
     return null;
   }
 
@@ -161,11 +163,25 @@ export function AdUnit({
 /**
  * Convenience component for sidebar ads
  */
-export function SidebarAd({ adSlot, className }: { adSlot: string; className?: string }) {
+export function SidebarAd({ 
+  adSlot, 
+  className 
+}: { 
+  adSlot?: string; 
+  className?: string;
+}) {
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
+  const slot = adSlot || process.env.NEXT_PUBLIC_ADSENSE_AD_SLOT_SIDEBAR;
+  
+  // Don't render anything if publisher ID or slot is missing
+  if (!adsenseId || !slot) {
+    return null;
+  }
+  
   return (
     <div className={cn('sticky top-20', className)}>
       <AdUnit 
-        adSlot={adSlot} 
+        adSlot={slot} 
         size="wide-skyscraper" 
         hideOnMobile={true}
         className="w-full"
@@ -177,10 +193,24 @@ export function SidebarAd({ adSlot, className }: { adSlot: string; className?: s
 /**
  * Convenience component for banner ads
  */
-export function BannerAd({ adSlot, className }: { adSlot: string; className?: string }) {
+export function BannerAd({ 
+  adSlot, 
+  className 
+}: { 
+  adSlot?: string; 
+  className?: string;
+}) {
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
+  const slot = adSlot || process.env.NEXT_PUBLIC_ADSENSE_AD_SLOT_BANNER;
+  
+  // Don't render anything if publisher ID or slot is missing
+  if (!adsenseId || !slot) {
+    return null;
+  }
+  
   return (
     <AdUnit 
-      adSlot={adSlot} 
+      adSlot={slot} 
       size="banner" 
       className={cn('w-full max-w-4xl mx-auto', className)}
       hideOnMobile={true}
@@ -191,11 +221,25 @@ export function BannerAd({ adSlot, className }: { adSlot: string; className?: st
 /**
  * Convenience component for in-content rectangle ads
  */
-export function InContentAd({ adSlot, className }: { adSlot: string; className?: string }) {
+export function InContentAd({ 
+  adSlot, 
+  className 
+}: { 
+  adSlot?: string; 
+  className?: string;
+}) {
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
+  const slot = adSlot || process.env.NEXT_PUBLIC_ADSENSE_AD_SLOT_RECTANGLE;
+  
+  // Don't render anything if publisher ID or slot is missing
+  if (!adsenseId || !slot) {
+    return null;
+  }
+  
   return (
     <div className={cn('flex justify-center my-6', className)}>
       <AdUnit 
-        adSlot={adSlot} 
+        adSlot={slot} 
         size="rectangle" 
         className="w-full max-w-xs"
       />

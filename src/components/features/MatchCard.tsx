@@ -101,7 +101,7 @@ export function MatchCard({
     <div>
       <Card
         variant="mc"
-        className={cn('cursor-pointer transition-transform hover:-translate-y-0.5', className)}
+        className={cn('cursor-pointer transition-transform hover:-translate-y-0.5 active:scale-[0.98]', className)}
         onClick={() => router.push(`/match/${id}`)}
         role="button"
         tabIndex={0}
@@ -112,9 +112,9 @@ export function MatchCard({
           }
         }}
       >
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           {/* Header: Match type and date */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
             <Badge
               variant={
                 type === MatchType.Ranked
@@ -135,7 +135,7 @@ export function MatchCard({
           </div>
 
           {/* Players */}
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {players.map((player) => {
               const isWinner = winner && player.uuid === winner;
               const isHighlighted = player.uuid === highlightPlayer;
@@ -241,8 +241,8 @@ export function MatchCard({
 
           {/* Seed info */}
           {seed && (
-            <div className="mt-3 pt-3 border-t border-border">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-foreground font-mono">
+            <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border">
+              <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-foreground font-mono">
                 <div className="flex items-center gap-2">
                   <MinecraftIcon 
                     name={getOverworldIcon(seed.overworld)} 

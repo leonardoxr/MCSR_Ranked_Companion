@@ -33,14 +33,15 @@ const createApiClient = (): AxiosInstance => {
   // Request interceptor
   client.interceptors.request.use(
     (config) => {
-      // Add API key if available (from user's stored key or env var)
-      // User-provided API key takes precedence
+      // Add private key if available (from user's stored key or env var)
+      // User-provided private key takes precedence
+      // Note: MCSR Ranked API uses "Private-Key" header (not "X-API-Key")
       const userApiKey = (config as any).userApiKey;
       const envApiKey = process.env.NEXT_PUBLIC_MCSR_API_KEY;
-      const apiKey = userApiKey || envApiKey;
+      const privateKey = userApiKey || envApiKey;
       
-      if (apiKey) {
-        config.headers['X-API-Key'] = apiKey;
+      if (privateKey) {
+        config.headers['Private-Key'] = privateKey;
       }
 
       // Remove the temporary userApiKey from config
@@ -63,11 +64,28 @@ const createApiClient = (): AxiosInstance => {
     (response) => {
       return response;
     },
-    (error: AxiosError<ApiError>) => {
+    (error: AxiosError<ApiError | { status: string; data: string }>) => {
       if (error.response) {
         // Server responded with error status
+        // Handle both direct error format and wrapped format { status: "error", data: "..." }
+        const responseData = error.response.data as any;
+        let errorMessage: string;
+        
+        if (responseData?.status === 'error' && typeof responseData?.data === 'string') {
+          // Wrapped error format: { status: "error", data: "message" }
+          errorMessage = responseData.data;
+        } else if (typeof responseData?.error === 'string') {
+          // Direct error format: { error: "message" }
+          errorMessage = responseData.error;
+        } else if (typeof responseData === 'string') {
+          // Plain string error
+          errorMessage = responseData;
+        } else {
+          errorMessage = error.message;
+        }
+        
         const apiError: ApiError = {
-          error: (error.response.data as ApiError)?.error || error.message,
+          error: errorMessage,
           status: error.response.status,
           timestamp: Date.now(),
         };

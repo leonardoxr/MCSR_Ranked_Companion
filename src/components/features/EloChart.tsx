@@ -41,22 +41,25 @@ export function EloChart({
 }: EloChartProps) {
   const t = useTranslations();
   const [chartHeight, setChartHeight] = React.useState(300);
+  const [isMobile, setIsMobile] = React.useState(false);
 
   // Set responsive chart height based on screen size
   React.useEffect(() => {
-    const updateHeight = () => {
-      if (window.innerWidth < 640) {
-        setChartHeight(200); // Mobile: shorter height
+    const updateDimensions = () => {
+      const mobile = window.innerWidth < 640;
+      setIsMobile(mobile);
+      if (mobile) {
+        setChartHeight(250); // Mobile: compact but readable height
       } else if (window.innerWidth < 1024) {
-        setChartHeight(250); // Tablet: medium height
+        setChartHeight(280); // Tablet: medium height
       } else {
         setChartHeight(300); // Desktop: full height
       }
     };
 
-    updateHeight();
-    window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
   const rankTiers = [
@@ -81,13 +84,19 @@ export function EloChart({
               dataKey="date"
               tickFormatter={(value) => {
                 const date = new Date(value);
+                // Shorter format on mobile
+                if (isMobile) {
+                  return formatDate(date, 'MM/d');
+                }
                 return formatDate(date, 'MMM d');
               }}
               className="text-xs text-muted-foreground"
+              tick={{ fontSize: isMobile ? 10 : 12 }}
             />
             <YAxis
               domain={['dataMin - 50', 'dataMax + 50']}
               className="text-xs text-muted-foreground"
+              tick={{ fontSize: isMobile ? 10 : 12 }}
             />
             <Tooltip
               content={<CustomTooltip />}

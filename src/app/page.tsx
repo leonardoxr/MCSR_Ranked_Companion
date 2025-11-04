@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui';
 import { SearchBar } from '@/components/features/SearchBar';
+import { PlayerNameInput } from '@/components/features/PlayerNameInput';
+import { BannerAd, InContentAd } from '@/components/features/AdUnit';
 import {
   Trophy,
   Radio,
@@ -68,6 +70,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Banner Ad */}
+      <BannerAd />
 
       {/* Quick Navigation */}
       <section>
@@ -142,6 +147,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* In-Content Ad */}
+      <InContentAd />
+
       {/* Features Section removed per request */}
 
       {/* Built With section removed per request */}
@@ -179,67 +187,68 @@ function TechBadge({ name }: { name: string }) {
 
 function HeadToHeadLauncher() {
   const router = useRouter();
-  const [tokens, setTokens] = React.useState<string[]>([]);
-  const [value, setValue] = React.useState('');
+  const [player1, setPlayer1] = React.useState('');
+  const [player2, setPlayer2] = React.useState('');
 
-  const addToken = (raw: string) => {
-    const v = raw.trim();
-    if (!v) return;
-    // Allow MC-style names: letters, numbers, underscore, length 1-16
-    if (!/^[A-Za-z0-9_]{1,16}$/.test(v)) return;
-    setTokens((prev) => (prev.includes(v) ? prev : [...prev, v]));
-    setValue('');
+  const handlePlayer1Select = (username: string) => {
+    setPlayer1(username);
   };
 
-  const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
-    if (e.key === 'Enter' || e.key === ',') {
-      e.preventDefault();
-      addToken(value);
-    } else if (e.key === 'Backspace' && value === '' && tokens.length) {
-      setTokens((prev) => prev.slice(0, -1));
-    }
+  const handlePlayer2Select = (username: string) => {
+    setPlayer2(username);
   };
 
   const compare = () => {
-    if (tokens.length < 2) return;
-    const [p1, p2, ...rest] = tokens;
+    const p1 = player1.trim();
+    const p2 = player2.trim();
+    if (!p1 || !p2) return;
+    if (!/^[A-Za-z0-9_]{1,16}$/.test(p1) || !/^[A-Za-z0-9_]{1,16}$/.test(p2)) return;
     router.push(`/versus/${encodeURIComponent(p1)}/${encodeURIComponent(p2)}`);
-    // Optionally, could pass extra names via query for future multi-compare
   };
 
+  const canCompare = player1.trim() && player2.trim() && 
+    /^[A-Za-z0-9_]{1,16}$/.test(player1.trim()) && 
+    /^[A-Za-z0-9_]{1,16}$/.test(player2.trim());
+
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2 p-2 rounded-lg border border-white/10 bg-white/5">
-        {tokens.map((t) => (
-          <span key={t} className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-white/10 text-sm">
-            {t}
-            <button
-              type="button"
-              aria-label={`Remove ${t}`}
-              className="text-white/60 hover:text-white"
-              onClick={() => setTokens((prev) => prev.filter((x) => x !== t))}
-            >
-              ×
-            </button>
-          </span>
-        ))}
-        <input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={onKeyDown}
-          placeholder="Add player (Enter)"
-          className="flex-1 min-w-[140px] bg-transparent outline-none px-2 py-1 text-sm placeholder:text-white/50"
-        />
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label htmlFor="player1" className="text-sm font-medium text-white/80">
+            Player 1
+          </label>
+          <PlayerNameInput
+            value={player1}
+            onChange={setPlayer1}
+            onSelect={handlePlayer1Select}
+            placeholder="Enter player 1 username..."
+            showSuggestions={true}
+          />
+        </div>
+        <div className="space-y-2">
+          <label htmlFor="player2" className="text-sm font-medium text-white/80">
+            Player 2
+          </label>
+          <PlayerNameInput
+            value={player2}
+            onChange={setPlayer2}
+            onSelect={handlePlayer2Select}
+            placeholder="Enter player 2 username..."
+            showSuggestions={true}
+          />
+        </div>
       </div>
       <div className="flex gap-2">
-        <Button variant="ghost" className="ml-auto" disabled={tokens.length < 2} onClick={compare}>
+        <Button 
+          variant="ghost" 
+          className="ml-auto" 
+          disabled={!canCompare} 
+          onClick={compare}
+        >
           Compare
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
       </div>
-      {tokens.length > 2 && (
-        <p className="text-xs text-white/60">Currently compares the first two players.</p>
-      )}
     </div>
   );
 }

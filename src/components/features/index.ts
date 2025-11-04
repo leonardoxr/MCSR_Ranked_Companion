@@ -35,3 +35,7 @@ export {
   LeaderboardSkeleton,
 } from './LoadingState';
 export { ErrorState, EmptyState } from './ErrorState';
+
+// Ad components
+export { AdUnit, SidebarAd, BannerAd, InContentAd } from './AdUnit';
+export type { AdSize } from './AdUnit';

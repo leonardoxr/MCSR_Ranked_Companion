@@ -141,7 +141,7 @@ export default function LiveMatchPage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <PlayerAvatar player={player} size="md" />
+                      <PlayerAvatar uuid={player.uuid} username={player.nickname} size="md" />
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-semibold text-lg">

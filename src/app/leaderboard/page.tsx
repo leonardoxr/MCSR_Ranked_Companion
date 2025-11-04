@@ -10,6 +10,7 @@ import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
+import { BannerAd, InContentAd } from '@/components/features/AdUnit';
 import {
   Card,
   CardContent,
@@ -34,8 +35,8 @@ export default function LeaderboardPage() {
   const { data: seasonData } = useQuery({
     queryKey: ['leaderboard', 'current-season'],
     queryFn: () => getLeaderboardWithSeason({ count: 1 }),
-    ...CACHE_PRESETS.REAL_TIME,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    ...CACHE_PRESETS.LEADERBOARD,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes (override default)
   });
 
   // Get current season from API response, fallback to 9 if not available
@@ -154,6 +155,9 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
+      {/* Banner Ad */}
+      <BannerAd className="mb-6" />
+
       {/* Leaderboard Table */}
       {isLoading ? (
         <LoadingState message={t('leaderboard.loading')} />
@@ -163,7 +167,11 @@ export default function LeaderboardPage() {
           message={error.message || t('leaderboard.errorMessage')}
         />
       ) : players && players.length > 0 ? (
-        <LeaderboardTable players={players} />
+        <>
+          <LeaderboardTable players={players} />
+          {/* In-Content Ad after leaderboard */}
+          <InContentAd className="mt-6" />
+        </>
       ) : (
         <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">

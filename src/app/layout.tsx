@@ -6,31 +6,78 @@ import { Providers } from '@/components/providers';
 import { cn } from '@/lib/utils';
 import Header from '@/components/layout/Header';
 
+const BASE_URL = 'https://mcsr-ranked-companion.vercel.app';
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: {
-    default: 'MCSR Ranked Companion',
+    default: 'MCSR Ranked Companion - Minecraft Speedrun Rankings & Statistics',
     template: '%s | MCSR Ranked Companion',
   },
-  description: 'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
-  keywords: ['MCSR', 'Minecraft Speedrunning', 'Ranked', 'Statistics', 'Leaderboard', 'Speedrun'],
+  description:
+    'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players. Search for players, view ELO ratings, match history, and more.',
+  keywords: [
+    'MCSR',
+    'Minecraft Speedrunning',
+    'Ranked',
+    'Statistics',
+    'Leaderboard',
+    'Speedrun',
+    'Minecraft',
+    'ELO Rating',
+    'Match History',
+    'Live Matches',
+    'Speedrun Rankings',
+  ],
   authors: [{ name: 'MCSR Ranked Community' }],
   creator: 'MCSR Ranked Community',
+  publisher: 'MCSR Ranked Community',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
     type: 'website',
-    title: 'MCSR Ranked Companion',
-    description: 'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
+    locale: 'en_US',
+    url: BASE_URL,
+    title: 'MCSR Ranked Companion - Minecraft Speedrun Rankings',
+    description:
+      'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
     siteName: 'MCSR Ranked Companion',
+    images: [
+      {
+        url: '/icon.png',
+        width: 512,
+        height: 512,
+        alt: 'MCSR Ranked Companion Logo',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MCSR Ranked Companion',
-    description: 'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
+    title: 'MCSR Ranked Companion - Minecraft Speedrun Rankings',
+    description:
+      'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
+    images: ['/icon.png'],
   },
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',
     apple: '/icon.png',
   },
+  manifest: '/site.webmanifest',
+  alternates: {
+    canonical: BASE_URL,
+  },
+  category: 'gaming',
+  classification: 'Minecraft Speedrunning Statistics',
 };
 
 export const viewport: Viewport = {

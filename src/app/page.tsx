@@ -10,7 +10,6 @@ import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
-import { BannerAd, InContentAd } from '@/components/features/AdUnit';
 import {
   Card,
   CardContent,
@@ -155,9 +154,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Banner Ad */}
-      <BannerAd className="mb-6" />
-
       {/* Leaderboard Table */}
       {isLoading ? (
         <LoadingState message={t('leaderboard.loading')} />
@@ -167,11 +163,7 @@ export default function HomePage() {
           message={error.message || t('leaderboard.errorMessage')}
         />
       ) : players && players.length > 0 ? (
-        <>
-          <LeaderboardTable players={players} />
-          {/* In-Content Ad after leaderboard */}
-          <InContentAd className="mt-6" />
-        </>
+<LeaderboardTable players={players} />
       ) : (
         <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">

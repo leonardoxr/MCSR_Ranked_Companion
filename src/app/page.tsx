@@ -1,248 +1,184 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input } from '@/components/ui';
+import { useQuery } from '@tanstack/react-query';
+import { useLeaderboard } from '@/lib/api/hooks/useLeaderboard';
+import { getLeaderboardWithSeason } from '@/lib/api/endpoints';
+import { LeaderboardTable } from '@/components/features/LeaderboardTable';
 import { SearchBar } from '@/components/features/SearchBar';
-import { PlayerNameInput } from '@/components/features/PlayerNameInput';
+import { LoadingState } from '@/components/features/LoadingState';
+import { ErrorState } from '@/components/features/ErrorState';
 import { BannerAd, InContentAd } from '@/components/features/AdUnit';
-import { searchPlayers } from '@/lib/utils/search';
 import {
-  Trophy,
-  Radio,
-  Swords,
-  User,
-  ArrowRight,
-  Sparkles,
-  Target,
-  TrendingUp,
-} from 'lucide-react';
+  Card,
+  CardContent,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui';
+import { Trophy } from 'lucide-react';
+import { COUNTRIES, SEASONS } from '@/lib/constants/filters';
+import { CACHE_PRESETS } from '@/lib/api/cache-config';
+
+const MAX_USERS = 150;
 
 export default function HomePage() {
   const router = useRouter();
   const t = useTranslations();
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  // Fetch current season from API
+  const { data: seasonData } = useQuery({
+    queryKey: ['leaderboard', 'current-season'],
+    queryFn: () => getLeaderboardWithSeason({ count: 1 }),
+    ...CACHE_PRESETS.LEADERBOARD,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes (override default)
+  });
+
+  // Get current season from API response, fallback to 9 if not available
+  const currentSeasonFromApi = seasonData?.season?.number;
+  const defaultSeason = currentSeasonFromApi ?? 9;
+
+  const [season, setSeason] = React.useState<number | null>(null);
+  const [country, setCountry] = React.useState('');
+
+  // Set season once we have the API data
+  React.useEffect(() => {
+    if (season === null && defaultSeason) {
+      setSeason(defaultSeason);
+    }
+  }, [defaultSeason, season]);
+
+  const { data: players, isLoading, error } = useLeaderboard({
+    count: MAX_USERS,
+    ...(season ? { season } : {}),
+    ...(country ? { country } : {} as any),
+  });
 
   const handleSearch = (query: string) => {
+    setSearchQuery(query);
     if (query) {
+      // Navigate to player profile
       router.push(`/player/${encodeURIComponent(query)}`);
     }
   };
 
   return (
-    <div className="space-y-8 sm:space-y-12 md:space-y-14">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden rounded-2xl mc-card p-6 sm:p-8 md:p-12">
-        <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full blur-3xl bg-emerald-500/20" />
-        <div className="absolute -bottom-10 -left-10 w-64 h-64 rounded-full blur-3xl bg-cyan-400/20" />
-
-        <div className="text-center relative">
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-3 sm:mb-4 bg-gradient-to-r from-emerald-300 via-cyan-200 to-sky-300 bg-clip-text text-transparent mc-title">
-            {t('home.title')}
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-white/70 max-w-3xl mx-auto px-2">
-            {t('home.subtitle')}
-          </p>
-
-          <div className="max-w-2xl mx-auto mt-8">
-            <SearchBar
-              value={searchValue}
-              onChange={setSearchValue}
-              onSearch={handleSearch}
-              autoSuggest
-              fetchSuggestions={async (q) => {
-                // Use client-side search (works in both web and Tauri)
-                return searchPlayers(q, 8);
-              }}
-              placeholder={t('home.searchPlaceholder')}
-            />
-            <p className="mt-3 text-xs text-white/50">
-              Tip: Search any IGN to view profile and recent matches.
-            </p>
+    <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="p-2 sm:p-3 bg-primary/10 rounded-lg">
+              <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl sm:text-3xl font-bold">{t('leaderboard.title')}</h1>
+              <p className="text-sm sm:text-base text-muted-foreground">
+                {t('leaderboard.description')}
+              </p>
+            </div>
           </div>
         </div>
-      </section>
+
+        {/* Search + Filters */}
+        <div className="flex flex-col gap-3">
+          <div className="flex-1">
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSearch={handleSearch}
+              autoSuggest
+              placeholder={t('leaderboard.searchPlaceholder')}
+            />
+          </div>
+          {/* Filters - Mobile: Full Width Stack, Desktop: Inline */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-start sm:items-center gap-2 sm:gap-3">
+            {/* Season Filter */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Season
+              </label>
+              <Select
+                value={season?.toString() ?? ''}
+                onValueChange={(value) => setSeason(Number(value))}
+                disabled={season === null}
+              >
+                <SelectTrigger
+                  className="h-9 w-full sm:w-32"
+                  allowClear={false}
+                >
+                  <SelectValue placeholder={season === null ? "Loading..." : "Select Season"} />
+                </SelectTrigger>
+                <SelectContent searchable searchPlaceholder="Search seasons...">
+                  {SEASONS.map((s) => (
+                    <SelectItem key={s.value} value={s.value.toString()}>
+                      {s.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Country Filter */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                Country
+              </label>
+              <Select
+                value={country || 'all'}
+                onValueChange={(value) => setCountry(value === 'all' ? '' : value)}
+              >
+                <SelectTrigger
+                  className="h-9 w-full sm:w-44"
+                  allowClear={country !== ''}
+                  showClearButton={country !== ''}
+                  onClear={() => setCountry('')}
+                >
+                  <SelectValue placeholder="All Countries" />
+                </SelectTrigger>
+                <SelectContent searchable searchPlaceholder="Search countries...">
+                  <SelectItem value="all">All Countries</SelectItem>
+                  {COUNTRIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code}>
+                      {c.flag} {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Banner Ad */}
-      <BannerAd />
+      <BannerAd className="mb-6" />
 
-      {/* Quick Navigation */}
-      <section>
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-6 sm:mb-8">Explore</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {/* Leaderboard */}
-          <Link href="/leaderboard">
-            <Card variant="mc" className="mc-card h-full transition-all hover:border-primary cursor-pointer">
-              <CardHeader>
-                <div className="p-3 bg-yellow-500/10 rounded-lg w-fit mb-2">
-                  <Trophy className="h-8 w-8 text-yellow-500" />
-                </div>
-                <CardTitle>{t('home.leaderboard.title')}</CardTitle>
-                <CardDescription>
-                  {t('home.leaderboard.description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="w-full justify-between">
-                  {t('home.leaderboard.button')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* Live Matches */}
-          <Link href="/live">
-            <Card variant="mc" className="mc-card h-full transition-all hover:border-primary cursor-pointer">
-              <CardHeader>
-                <div className="p-3 bg-red-500/10 rounded-lg w-fit mb-2 relative">
-                  <Radio className="h-8 w-8 text-red-500" />
-                  <span className="absolute top-2 right-2 flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                  </span>
-                </div>
-                <CardTitle>{t('home.liveMatches.title')}</CardTitle>
-                <CardDescription>
-                  {t('home.liveMatches.description')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button variant="ghost" className="w-full justify-between">
-                  {t('home.liveMatches.button')}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* Player Comparison */}
-          <Link href="/compare">
-          <Card variant="mc" className="mc-card h-full transition-all hover:border-primary cursor-pointer">
-            <CardHeader>
-              <div className="p-3 bg-purple-500/10 rounded-lg w-fit mb-2">
-                <Swords className="h-8 w-8 text-purple-500" />
-              </div>
-              <CardTitle>{t('home.playerComparison.title')}</CardTitle>
-              <CardDescription>
-                {t('home.playerComparison.description')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="ghost" className="w-full justify-between">
-                {t('home.playerComparison.title')}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-          </Link>
-        </div>
-      </section>
-
-      {/* In-Content Ad */}
-      <InContentAd />
-
-      {/* Features Section removed per request */}
-
-      {/* Built With section removed per request */}
-    </div>
-  );
-}
-
-interface FeatureCardProps {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}
-
-function FeatureCard({ icon, title, description }: FeatureCardProps) {
-  return (
-    <div className="mc-card flex gap-4 p-4 border border-white/10 rounded-xl hover:bg-white/5 transition-colors">
-      <div className="p-2 bg-primary/10 rounded-lg h-fit text-primary">
-        {icon}
-      </div>
-      <div>
-        <h3 className="font-semibold mb-1 text-white/90">{title}</h3>
-        <p className="text-sm text-white/60">{description}</p>
-      </div>
-    </div>
-  );
-}
-
-function TechBadge({ name }: { name: string }) {
-  return (
-    <div className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-center font-medium text-white/80">
-      {name}
-    </div>
-  );
-}
-
-function HeadToHeadLauncher() {
-  const router = useRouter();
-  const [player1, setPlayer1] = React.useState('');
-  const [player2, setPlayer2] = React.useState('');
-
-  const handlePlayer1Select = (username: string) => {
-    setPlayer1(username);
-  };
-
-  const handlePlayer2Select = (username: string) => {
-    setPlayer2(username);
-  };
-
-  const compare = () => {
-    const p1 = player1.trim();
-    const p2 = player2.trim();
-    if (!p1 || !p2) return;
-    if (!/^[A-Za-z0-9_]{1,16}$/.test(p1) || !/^[A-Za-z0-9_]{1,16}$/.test(p2)) return;
-    router.push(`/versus/${encodeURIComponent(p1)}/${encodeURIComponent(p2)}`);
-  };
-
-  const canCompare = player1.trim() && player2.trim() && 
-    /^[A-Za-z0-9_]{1,16}$/.test(player1.trim()) && 
-    /^[A-Za-z0-9_]{1,16}$/.test(player2.trim());
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label htmlFor="player1" className="text-sm font-medium text-white/80">
-            Player 1
-          </label>
-          <PlayerNameInput
-            value={player1}
-            onChange={setPlayer1}
-            onSelect={handlePlayer1Select}
-            placeholder="Enter player 1 username..."
-            showSuggestions={true}
-          />
-        </div>
-        <div className="space-y-2">
-          <label htmlFor="player2" className="text-sm font-medium text-white/80">
-            Player 2
-          </label>
-          <PlayerNameInput
-            value={player2}
-            onChange={setPlayer2}
-            onSelect={handlePlayer2Select}
-            placeholder="Enter player 2 username..."
-            showSuggestions={true}
-          />
-        </div>
-      </div>
-      <div className="flex gap-2">
-        <Button 
-          variant="ghost" 
-          className="ml-auto" 
-          disabled={!canCompare} 
-          onClick={compare}
-        >
-          Compare
-          <ArrowRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
+      {/* Leaderboard Table */}
+      {isLoading ? (
+        <LoadingState message={t('leaderboard.loading')} />
+      ) : error ? (
+        <ErrorState
+          title={t('leaderboard.error')}
+          message={error.message || t('leaderboard.errorMessage')}
+        />
+      ) : players && players.length > 0 ? (
+        <>
+          <LeaderboardTable players={players} />
+          {/* In-Content Ad after leaderboard */}
+          <InContentAd className="mt-6" />
+        </>
+      ) : (
+        <Card variant="mc">
+          <CardContent className="py-12 text-center text-muted-foreground">
+            {t('leaderboard.noPlayers')}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

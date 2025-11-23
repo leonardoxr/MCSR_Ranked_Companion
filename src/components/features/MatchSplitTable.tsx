@@ -11,7 +11,7 @@ import { CountryFlag } from './CountryFlag';
 import { MinecraftIcon } from './MinecraftIcon';
 import type { MinecraftIconName } from './MinecraftIcon';
 
-function PlayerName({ uuid, name, country, side }: { uuid: UUID; name: string; country: CountryCode | null; side: 'left'|'right' }) {
+function PlayerName({ uuid, name, country, side }: { uuid: UUID; name: string; country: CountryCode | null; side: 'left' | 'right' }) {
   return (
     <div className={cn('flex items-center gap-2', side === 'right' && 'flex-row-reverse')}>
       <PlayerAvatar uuid={uuid} username={name} size="xs" />
@@ -90,23 +90,26 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
   const chipRight = 'bg-diamond/70';
 
   return (
-    <Card variant="mc" className={className}>
-      <CardHeader>
-        <CardTitle className="text-lg sm:text-xl">{t('timeline.milestones.title')}</CardTitle>
+    <Card variant="mc" className={cn("overflow-hidden", className)}>
+      <CardHeader className="pb-4 border-b border-white/5 bg-black/20">
+        <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+          <MinecraftIcon name="ender-eye" size="sm" /> {/* Assuming clock icon exists or fallback */}
+          {t('timeline.milestones.title')}
+        </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         {/* Mobile View - Stacked Cards */}
-        <div className="md:hidden space-y-3">
+        <div className="md:hidden space-y-0 divide-y divide-white/5">
           {/* Player Header */}
-          <div className="flex justify-between items-center text-xs font-semibold px-2 pb-2 border-b border-border">
+          <div className="flex justify-between items-center text-xs font-semibold px-4 py-3 bg-muted/20">
             <div className="flex items-center gap-2">
-              <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
+              <span className={cn('inline-block h-2 w-2 rounded-full shadow-[0_0_8px_currentColor]', chipLeft)} />
               <span className="truncate max-w-[120px]">{left.nickname}</span>
             </div>
             {right && (
               <div className="flex items-center gap-2">
                 <span className="truncate max-w-[120px]">{right.nickname}</span>
-                <span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} />
+                <span className={cn('inline-block h-2 w-2 rounded-full shadow-[0_0_8px_currentColor]', chipRight)} />
               </div>
             )}
           </div>
@@ -115,59 +118,51 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
             const lTime = firstEventTime(match.timelines, left.uuid, type);
             const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
             const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
-            const isEven = idx % 2 === 0;
+
             return (
-              <div key={type} className={cn('p-3 rounded-md', isEven ? 'bg-background/40' : 'bg-background/20')}>
+              <div key={type} className="p-4 hover:bg-white/5 transition-colors relative group">
                 {/* Milestone Name */}
-                <div className="flex items-center justify-center gap-2 mb-3 font-semibold text-xs">
+                <div className="flex items-center justify-center gap-2 mb-3 font-semibold text-sm text-foreground/90">
                   {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
                   <span>{t(`timeline.milestones.${type}`)}</span>
                 </div>
 
                 {/* Times */}
-                <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="grid grid-cols-2 gap-4 text-sm">
                   {/* Left Player */}
-                  <div>
-                    <div className="font-mono mb-1">
+                  <div className="relative">
+                    <div className="font-mono font-medium text-lg leading-none mb-1">
                       {lTime !== null ? (
-                        <div className="flex items-center gap-1">
-                          <span className={cn('inline-block h-1 w-1 rounded-full', chipLeft)} />
-                          <span>{formatTime(lTime)}</span>
-                        </div>
+                        <span className={cn(delta !== null && delta < 0 ? "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]" : "text-foreground")}>
+                          {formatTime(lTime)}
+                        </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground/50">—</span>
                       )}
                     </div>
                     {delta !== null && lTime !== null && (
-                      <div className={cn('text-xs', delta > 0 ? 'pace-behind' : 'pace-ahead')}>
-                        {formatTimeDifference(delta)}
+                      <div className={cn('text-xs font-mono font-bold', delta < 0 ? 'text-emerald-500' : 'text-rose-500')}>
+                        {delta < 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
                       </div>
                     )}
-                    <div className="mt-2 progress-track">
-                      <div className="progress-fill" style={{ width: `${lTime && maxTime ? Math.min((lTime / maxTime) * 100, 100) : 0}%` }} />
-                    </div>
                   </div>
 
                   {/* Right Player */}
-                  <div className="text-right">
-                    <div className="font-mono mb-1">
+                  <div className="text-right relative">
+                    <div className="font-mono font-medium text-lg leading-none mb-1">
                       {rTime !== null ? (
-                        <div className="flex items-center justify-end gap-1">
-                          <span>{formatTime(rTime)}</span>
-                          <span className={cn('inline-block h-1 w-1 rounded-full', chipRight)} />
-                        </div>
+                        <span className={cn(delta !== null && delta > 0 ? "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]" : "text-foreground")}>
+                          {formatTime(rTime)}
+                        </span>
                       ) : (
-                        <span className="text-muted-foreground">—</span>
+                        <span className="text-muted-foreground/50">—</span>
                       )}
                     </div>
                     {delta !== null && rTime !== null && (
-                      <div className={cn('text-xs', delta < 0 ? 'pace-behind' : 'pace-ahead')}>
-                        {formatTimeDifference(-delta)}
+                      <div className={cn('text-xs font-mono font-bold', delta > 0 ? 'text-emerald-500' : 'text-rose-500')}>
+                        {delta > 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
                       </div>
                     )}
-                    <div className="mt-2 progress-track">
-                      <div className="progress-fill" style={{ width: `${rTime && maxTime ? Math.min((rTime / maxTime) * 100, 100) : 0}%` }} />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -175,77 +170,88 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
           })}
         </div>
 
-        {/* Desktop View - 3 Column Grid */}
-        <div className="hidden md:grid grid-cols-3 text-sm rounded-md overflow-hidden">
+        {/* Desktop View - 3 Column Grid with Timeline */}
+        <div className="hidden md:block">
           {/* Header row */}
-          <div className="px-3 py-2 bg-muted/40 font-semibold truncate flex items-center gap-2">
-            <span className={cn('inline-block h-2 w-2 rounded-full', chipLeft)} />
-            <span className="shrink-0"><PlayerName uuid={left.uuid} name={left.nickname} country={left.country} side="left" /></span>
-          </div>
-          <div className="px-3 py-2 bg-muted/40 text-center font-semibold">{t('timeline.milestones.event')}</div>
-          <div className="px-3 py-2 bg-muted/40 text-right font-semibold truncate flex items-center justify-end gap-2">
-            {right && <><span className="shrink-0"><PlayerName uuid={right.uuid} name={right.nickname} country={right.country} side="right" /></span><span className={cn('inline-block h-2 w-2 rounded-full', chipRight)} /></>}
+          <div className="grid grid-cols-[1fr_auto_1fr] items-center px-6 py-3 bg-black/40 border-b border-white/5 text-sm font-medium text-muted-foreground uppercase tracking-wider">
+            <div className="flex items-center gap-3">
+              <span className={cn('inline-block h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]', chipLeft)} />
+              <PlayerName uuid={left.uuid} name={left.nickname} country={left.country} side="left" />
+            </div>
+            <div className="text-center px-4">{t('timeline.milestones.event')}</div>
+            <div className="flex items-center justify-end gap-3">
+              {right && (
+                <>
+                  <PlayerName uuid={right.uuid} name={right.nickname} country={right.country} side="right" />
+                  <span className={cn('inline-block h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]', chipRight)} />
+                </>
+              )}
+            </div>
           </div>
 
-          {ORDER.map((type, idx) => {
-            const lTime = firstEventTime(match.timelines, left.uuid, type);
-            const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
-            const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
-            const isEven = idx % 2 === 0;
-            return (
-              <React.Fragment key={type}>
-                {/* Left time */}
-                <div className={cn('px-3 py-3 font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {lTime !== null ? (
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="flex items-center gap-2">
-                        <span className={cn('inline-block h-1.5 w-1.5 rounded-full', chipLeft)} />
-                        {formatTime(lTime)}
+          <div className="relative">
+            {/* Vertical Timeline Line */}
+            <div className="absolute left-1/2 top-4 bottom-4 w-px bg-white/10 -translate-x-1/2 z-0" />
+
+            {ORDER.map((type, idx) => {
+              const lTime = firstEventTime(match.timelines, left.uuid, type);
+              const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
+              const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
+
+              return (
+                <div key={type} className="grid grid-cols-[1fr_auto_1fr] items-center group hover:bg-white/[0.02] transition-colors relative z-10">
+                  {/* Left time */}
+                  <div className="px-6 py-4 text-right flex items-center justify-end gap-4">
+                    {delta !== null && (
+                      <span className={cn('text-xs font-mono font-bold px-2 py-0.5 rounded bg-black/40 border border-white/5', delta < 0 ? 'text-emerald-400 border-emerald-500/20' : 'text-rose-400 border-rose-500/20')}>
+                        {delta < 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
                       </span>
-                      {delta !== null && (
-                        <span className={cn('text-xs', delta > 0 ? 'pace-behind' : 'pace-ahead')}>
-                          ({formatTimeDifference(delta)})
+                    )}
+                    <div className="font-mono text-lg font-medium">
+                      {lTime !== null ? (
+                        <span className={cn(delta !== null && delta < 0 ? "text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.3)]" : "text-foreground")}>
+                          {formatTime(lTime)}
                         </span>
+                      ) : (
+                        <span className="text-muted-foreground/30">—</span>
                       )}
                     </div>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                  <div className="mt-2 progress-track">
-                    <div className="progress-fill" style={{ width: `${lTime && maxTime ? Math.min((lTime / maxTime) * 100, 100) : 0}%` }} />
                   </div>
-                </div>
 
-                {/* Label */}
-                <div className={cn('px-3 py-3 text-center font-semibold flex items-center justify-center gap-2', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
-                  <span>{t(`timeline.milestones.${type}`)}</span>
-                </div>
-
-                {/* Right time */}
-                <div className={cn('px-3 py-3 text-right font-mono', isEven ? 'bg-background/40' : 'bg-background/20')}>
-                  {rTime !== null ? (
-                    <div className="flex items-center justify-end gap-3">
-                      {delta !== null && (
-                        <span className={cn('text-xs', delta < 0 ? 'pace-behind' : 'pace-ahead')}>
-                          ({formatTimeDifference(-delta)})
-                        </span>
-                      )}
-                      <span className="flex items-center gap-2">
-                        {right && <span className={cn('inline-block h-1.5 w-1.5 rounded-full', chipRight)} />}
-                        {formatTime(rTime)}
-                      </span>
+                  {/* Label / Center Icon */}
+                  <div className="px-4 py-4 flex flex-col items-center justify-center gap-1 min-w-[140px]">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-background rounded-full blur-sm opacity-50" />
+                      <div className="relative bg-card border border-white/10 p-2 rounded-lg shadow-lg group-hover:border-primary/50 group-hover:shadow-[0_0_15px_rgba(0,229,255,0.15)] transition-all duration-300">
+                        {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
+                      </div>
                     </div>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
-                  <div className="mt-2 progress-track">
-                    <div className="progress-fill" style={{ width: `${rTime && maxTime ? Math.min((rTime / maxTime) * 100, 100) : 0}%` }} />
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-medium mt-1 group-hover:text-primary transition-colors">
+                      {t(`timeline.milestones.${type}`)}
+                    </span>
+                  </div>
+
+                  {/* Right time */}
+                  <div className="px-6 py-4 text-left flex items-center justify-start gap-4">
+                    <div className="font-mono text-lg font-medium">
+                      {rTime !== null ? (
+                        <span className={cn(delta !== null && delta > 0 ? "text-emerald-400 drop-shadow-[0_0_5px_rgba(52,211,153,0.3)]" : "text-foreground")}>
+                          {formatTime(rTime)}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground/30">—</span>
+                      )}
+                    </div>
+                    {delta !== null && (
+                      <span className={cn('text-xs font-mono font-bold px-2 py-0.5 rounded bg-black/40 border border-white/5', delta > 0 ? 'text-emerald-400 border-emerald-500/20' : 'text-rose-400 border-rose-500/20')}>
+                        {delta > 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
+                      </span>
+                    )}
                   </div>
                 </div>
-              </React.Fragment>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </CardContent>
     </Card>

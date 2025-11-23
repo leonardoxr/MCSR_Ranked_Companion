@@ -15,13 +15,13 @@ const badgeVariants = cva(
           'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
         outline: 'text-foreground',
         // Rank colors
-        // Rank colors (Neon/Glass Style)
-        coal: 'border-rank-coal/50 bg-rank-coal/10 text-rank-coal hover:bg-rank-coal/20',
-        iron: 'border-rank-iron/50 bg-rank-iron/10 text-rank-iron hover:bg-rank-iron/20',
-        gold: 'border-rank-gold/50 bg-rank-gold/10 text-rank-gold hover:bg-rank-gold/20 shadow-[0_0_10px_rgba(255,215,0,0.1)]',
-        emerald: 'border-rank-emerald/50 bg-rank-emerald/10 text-rank-emerald hover:bg-rank-emerald/20 shadow-[0_0_10px_rgba(0,255,157,0.1)]',
-        diamond: 'border-rank-diamond/50 bg-rank-diamond/10 text-rank-diamond hover:bg-rank-diamond/20 shadow-[0_0_10px_rgba(0,229,255,0.1)]',
-        netherite: 'border-rank-netherite/50 bg-rank-netherite/10 text-rank-netherite hover:bg-rank-netherite/20 shadow-[0_0_10px_rgba(160,32,240,0.1)]',
+        // Rank colors (Material Theme)
+        coal: 'border-white/10 bg-rank-coal text-white hover:bg-rank-coal/90',
+        iron: 'border-black/10 bg-rank-iron text-black hover:bg-rank-iron/90',
+        gold: 'border-black/10 bg-rank-gold text-black hover:bg-rank-gold/90',
+        emerald: 'border-black/10 bg-rank-emerald text-black hover:bg-rank-emerald/90',
+        diamond: 'border-black/10 bg-rank-diamond text-black hover:bg-rank-diamond/90',
+        netherite: 'border-white/10 bg-rank-netherite text-white hover:bg-rank-netherite/90',
         // Match types
         ranked: 'border-transparent bg-[hsl(var(--emerald))] text-black',
         casual: 'border-transparent bg-[hsl(var(--diamond))] text-black',

@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/react';
 import { Providers } from '@/components/providers';
 import { cn } from '@/lib/utils';
 import Header from '@/components/layout/Header';
@@ -42,19 +43,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-mono antialiased bg-cave')}>
-        {adsenseId && (
-          <Script
-            id="adsense-init"
-            strategy="afterInteractive"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        )}
+        <Script
+          id="adsense-init"
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4130479240951623"
+          crossOrigin="anonymous"
+        />
         <Providers>
           <div className="relative min-h-screen bg-background">
             <Header />
@@ -63,6 +60,7 @@ export default function RootLayout({
             </main>
           </div>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

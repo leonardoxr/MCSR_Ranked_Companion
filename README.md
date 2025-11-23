@@ -46,39 +46,12 @@ cd MCSR_Ranked_Companion
 npm install
 ```
 
-3. Create a `.env.local` file with the following configuration:
-
-```env
-# Google AdSense Configuration (optional)
-# Get your publisher ID from https://www.google.com/adsense
-# Format: ca-pub-XXXXXXXXXXXXXXXX
-NEXT_PUBLIC_ADSENSE_PUBLISHER_ID=ca-pub-XXXXXXXXXXXXXXXX
-
-# Ad Unit Slot IDs (optional)
-# Create ad units in your AdSense dashboard and get the slot IDs
-# Format: publisher-id/ad-unit-id
-# Example: ca-pub-1234567890123456/1234567890
-NEXT_PUBLIC_ADSENSE_AD_SLOT_BANNER=your-banner-ad-slot-id
-NEXT_PUBLIC_ADSENSE_AD_SLOT_RECTANGLE=your-rectangle-ad-slot-id
-NEXT_PUBLIC_ADSENSE_AD_SLOT_SIDEBAR=your-sidebar-ad-slot-id
-```
-
-To set up ads:
-- Sign up for [Google AdSense](https://www.google.com/adsense)
-- Get your publisher ID (format: `ca-pub-XXXXXXXXXXXXXXXX`)
-- Create ad units in your AdSense dashboard:
-  - **Banner ad** (728x90): For banner placements at top of pages
-  - **Rectangle ad** (300x250): For in-content placements
-  - **Sidebar ad** (160x600): For sidebar placements (optional)
-- Copy the ad unit slot IDs and add them to your `.env.local` file
-- The ads will automatically appear on all configured pages once the environment variables are set
-
-4. Run the development server:
+3. Run the development server:
 ```bash
 npm run dev
 ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Build for Production
 

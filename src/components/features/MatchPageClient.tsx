@@ -5,11 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useMatch } from '@/lib/api/hooks/useMatches';
 import { MatchCard } from '@/components/features/MatchCard';
-import { MatchTimeline } from '@/components/features/MatchTimeline';
 import { MatchSplitTable } from '@/components/features/MatchSplitTable';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
-import { MinecraftIcon } from '@/components/features/MinecraftIcon';
+import { MinecraftIcon, MinecraftIconName } from '@/components/features/MinecraftIcon';
 import { getOverworldIcon, getBastionIcon } from '@/lib/utils/seedIcons';
 import { Card, CardContent, CardHeader, CardTitle, Button } from '@/components/ui';
 import {
@@ -24,6 +23,15 @@ import {
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils/formatters';
 import { RankBadge } from '@/components/features/RankBadge';
+
+function getVariationIcon(variation: string): MinecraftIconName | null {
+  if (variation.includes('lava')) return 'obsidian'; // Approximate
+  if (variation.includes('plains')) return 'grass-block';
+  if (variation.includes('soul_sand_valley')) return 'netherrack'; // Approximate
+  if (variation.includes('buried')) return 'grass-block'; // Fallback for sand
+  if (variation.includes('caged')) return 'iron-block'; // Fallback for iron-bars
+  return null;
+}
 
 export function MatchPageClient() {
   const params = useParams();
@@ -192,9 +200,8 @@ export function MatchPageClient() {
                   </div>
                   {eloChange && (
                     <div className="text-right">
-                      <div className={`flex items-center gap-1 font-semibold ${
-                        eloChange.change > 0 ? 'text-green-500' : 'text-destructive'
-                      }`}>
+                      <div className={`flex items-center gap-1 font-semibold ${eloChange.change > 0 ? 'text-green-500' : 'text-destructive'
+                        }`}>
                         {eloChange.change > 0 ? (
                           <TrendingUp className="h-4 w-4" />
                         ) : (
@@ -222,62 +229,53 @@ export function MatchPageClient() {
             {t('match.seedInformation')}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="p-0">
+          <div className="p-6 space-y-6">
             <div>
               <p className="text-sm text-muted-foreground mb-1">{t('match.seedId')}</p>
-              <p className="font-mono font-semibold">{match.seed.id}</p>
+              <p className="font-mono font-semibold text-lg">{match.seed.id}</p>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MinecraftIcon name={getOverworldIcon(match.seed.overworld)} size="sm" />
-                {t('match.overworldType')}
-              </p>
-              <p className="font-semibold capitalize">{match.seed.overworld}</p>
+            {match.seed.variations && match.seed.variations.length > 0 && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-3">{t('match.variations')}</p>
+                <div className="flex flex-wrap gap-2">
+                  {match.seed.variations.map((variation, idx) => {
+                    const icon = getVariationIcon(variation);
+                    return (
+                      <span
+                        key={idx}
+                        className="px-3 py-1.5 bg-secondary/50 border border-white/5 rounded-full text-xs font-mono text-secondary-foreground/80 flex items-center gap-2"
+                      >
+                        {icon && <MinecraftIcon name={icon} size="sm" />}
+                        {variation}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer-style Seed Info Bar */}
+          <div className="bg-black/20 border-t border-white/5 p-4 flex flex-wrap items-center gap-6 text-sm font-monocraft">
+            <div className="flex items-center gap-3">
+              <MinecraftIcon name={getOverworldIcon(match.seed.overworld)} size="sm" />
+              <span className="text-muted-foreground uppercase tracking-wider text-xs">SEED:</span>
+              <span className="font-bold uppercase tracking-wide">{match.seed.overworld.replace(/_/g, ' ')}</span>
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MinecraftIcon name={getBastionIcon(match.seed.nether)} size="sm" />
-                {t('match.bastionType')}
-              </p>
-              <p className="font-semibold capitalize">{match.seed.nether}</p>
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground mb-2 flex items-center gap-1.5">
-                <MinecraftIcon name="end-stone" size="sm" />
-                {t('match.endTowerHeights')}
-              </p>
-              <p className="font-mono text-sm">
-                {match.seed.endTowers.join(', ')}
-              </p>
+
+            <div className="flex items-center gap-3">
+              <MinecraftIcon name={getBastionIcon(match.seed.nether)} size="sm" />
+              <span className="text-muted-foreground uppercase tracking-wider text-xs">BASTION:</span>
+              <span className="font-bold uppercase tracking-wide">{match.seed.nether}</span>
             </div>
           </div>
-          {match.seed.variations && match.seed.variations.length > 0 && (
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">{t('match.variations')}</p>
-              <div className="flex flex-wrap gap-2">
-                {match.seed.variations.map((variation, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 bg-muted rounded-full text-sm font-medium"
-                  >
-                    {variation}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
 
       {/* Per-event split table (2-player view) */}
       {match.timelines && match.timelines.length > 0 && (
         <MatchSplitTable match={match} />
-      )}
-
-      {/* Timeline */}
-      {match.timelines && match.timelines.length > 0 && (
-        <MatchTimeline events={match.timelines} players={match.players} />
       )}
 
       {/* Completions */}

@@ -60,12 +60,12 @@ const config: Config = {
         },
         // Rank colors
         rank: {
-          coal: '#3d3d3d',
-          iron: '#d8d8d8',
-          gold: '#ffd700',
-          emerald: '#00ff9d',
-          diamond: '#00e5ff',
-          netherite: '#a020f0', // More vibrant purple
+          coal: '#2b2b2b',
+          iron: '#e5e5e5',
+          gold: '#fad64e',
+          emerald: '#41f384',
+          diamond: '#3de4ff',
+          netherite: '#423d40',
         },
         // Pace colors
         pace: {

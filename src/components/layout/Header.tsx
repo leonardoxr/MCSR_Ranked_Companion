@@ -110,9 +110,9 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="ml-4 hidden md:flex items-center gap-1">
-              <NavLink href="/" label="Home" />
-              <NavLink href="/leaderboard" label="Leaderboard" />
+              <NavLink href="/" label="Leaderboard" />
               <NavLink href="/live" label="Live" />
+              <NavLink href="/compare" label="Compare" />
               {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
             </nav>
 
@@ -218,9 +218,9 @@ export default function Header() {
 
               {/* Mobile Navigation Links */}
               <nav className="py-4 space-y-2">
-                <MobileNavLink href="/" label="Home" />
-                <MobileNavLink href="/leaderboard" label="Leaderboard" />
+                <MobileNavLink href="/" label="Leaderboard" />
                 <MobileNavLink href="/live" label="Live Matches" />
+                <MobileNavLink href="/compare" label="Compare Players" />
                 {isAuthenticated && <MobileNavLink href="/my-stats" label="My Stats" />}
               </nav>
 

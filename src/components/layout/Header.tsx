@@ -68,7 +68,7 @@ export default function Header() {
             if (!cancelled) queryClient.setQueryData(key as any, data);
           }
         }
-      } catch {}
+      } catch { }
     })();
     return () => { cancelled = true; };
   }, [queryClient]);
@@ -86,9 +86,9 @@ export default function Header() {
   }, [pathname]);
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b border-white/10 backdrop-blur supports-[backdrop-filter]:bg-black/40">
+      <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-obsidian/80 backdrop-blur-md supports-[backdrop-filter]:bg-obsidian/60">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex h-14 items-center gap-2 sm:gap-3">
+          <div className="flex h-16 items-center gap-2 sm:gap-3">
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"
@@ -101,15 +101,21 @@ export default function Header() {
             </Button>
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
-              <span className="icon-minecraft-grass block text-xl sm:text-2xl glow-emerald" />
-              <span className="font-monocraft text-sm sm:text-base text-white group-hover:glow-diamond transition">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 transition-transform group-hover:scale-110 duration-300">
+                <img
+                  src="/logo.png"
+                  alt="MCSR Ranked"
+                  className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"
+                />
+              </div>
+              <span className="font-monocraft text-sm sm:text-lg text-white group-hover:text-minecraft-diamond transition-colors drop-shadow-md">
                 MCSR Ranked
               </span>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="ml-4 hidden md:flex items-center gap-1">
+            <nav className="ml-6 hidden md:flex items-center gap-1">
               <NavLink href="/" label="Leaderboard" />
               <NavLink href="/live" label="Live" />
               <NavLink href="/compare" label="Compare" />
@@ -117,8 +123,8 @@ export default function Header() {
             </nav>
 
             {/* Desktop Search & Actions */}
-            <div className="ml-auto flex items-center gap-2">
-              <div className="hidden sm:flex items-center">
+            <div className="ml-auto flex items-center gap-3">
+              <div className="hidden sm:flex items-center w-64 transition-all focus-within:w-72">
                 <PlayerNameInput
                   value={query}
                   onChange={setQuery}
@@ -132,14 +138,14 @@ export default function Header() {
               {/* Desktop Auth Buttons */}
               {isAuthenticated ? (
                 <div className="hidden sm:flex items-center gap-2">
-                  <span className="text-sm text-white/80 hidden lg:inline">
-                    <User className="inline h-4 w-4 mr-1" />
+                  <span className="text-sm text-white/80 hidden lg:inline font-monocraft text-xs">
+                    <User className="inline h-3 w-3 mr-1" />
                     {username}
                   </span>
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-white/80 hover:text-white"
+                    className="text-white/70 hover:text-white hover:bg-white/5"
                     onClick={() => {
                       logout();
                       router.push('/');
@@ -153,7 +159,7 @@ export default function Header() {
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="hidden sm:flex text-white/80 hover:text-white"
+                  className="hidden sm:flex text-white/80 hover:text-white hover:bg-white/5"
                   onClick={() => router.push('/login')}
                 >
                   <User className="h-4 w-4" />
@@ -168,7 +174,7 @@ export default function Header() {
           </div>
         </div>
         {/* Decorative thin gradient bar */}
-        <div className="h-[2px] w-full bg-gradient-to-r from-minecraft-emerald/60 via-cyan-400/60 to-minecraft-diamond/60" />
+        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-minecraft-diamond/50 to-transparent shadow-[0_0_10px_rgba(0,229,255,0.5)]" />
       </header>
 
       {/* Mobile Menu Overlay */}
@@ -186,7 +192,7 @@ export default function Header() {
               {/* Header with close button */}
               <div className="flex h-14 items-center justify-between border-b border-white/10">
                 <span className="font-monocraft text-white flex items-center gap-2">
-                  <span className="icon-minecraft-grass block text-xl glow-emerald" />
+                  <img src="/logo.png" alt="Logo" className="w-6 h-6 object-contain drop-shadow-[0_0_5px_rgba(0,229,255,0.5)]" />
                   Menu
                 </span>
                 <Button

@@ -43,33 +43,35 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        // Minecraft-inspired color palette
+        // Minecraft-inspired color palette (Revamped for Modern/Glossy look)
         minecraft: {
           grass: '#7cbd56',
           dirt: '#8b6d47',
-          stone: '#7d7d7d',
-          diamond: '#4fc3f7',
-          emerald: '#2ecc71',
-          gold: '#f4d03f',
-          redstone: '#e74c3c',
+          stone: '#1e1e1e', // Darker stone
+          diamond: '#00e5ff', // Vibrant Cyan/Diamond
+          emerald: '#00ff9d', // Neon Emerald
+          gold: '#ffd700', // Bright Gold
+          redstone: '#ff3333', // Bright Red
           netherrack: '#8b3a3a',
           endstone: '#e3e8a0',
-          obsidian: '#1a1a2e',
+          obsidian: '#0a0a12', // Deepest Obsidian
+          'obsidian-light': '#1a1a2e',
+          'obsidian-lighter': '#2a2a40',
         },
         // Rank colors
         rank: {
           coal: '#3d3d3d',
           iron: '#d8d8d8',
-          gold: '#f4d03f',
-          emerald: '#2ecc71',
-          diamond: '#4fc3f7',
-          netherite: '#8b4789',
+          gold: '#ffd700',
+          emerald: '#00ff9d',
+          diamond: '#00e5ff',
+          netherite: '#a020f0', // More vibrant purple
         },
         // Pace colors
         pace: {
-          ahead: 'rgba(128, 255, 128, 1)',
-          behind: 'rgba(255, 128, 128, 1)',
-          even: 'rgba(255, 255, 255, 0.8)',
+          ahead: '#00ff9d',
+          behind: '#ff3333',
+          even: '#e0e0e0',
         },
       },
       borderRadius: {

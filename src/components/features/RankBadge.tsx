@@ -55,7 +55,7 @@ export function RankBadge({ elo, className, showElo = false, showText = true }: 
         } as React.CSSProperties}
       />
       {showText && (
-        <span style={{ color: spriteTier.color }}>
+        <span>
           {spriteTier.name}
           {spriteTier.level ? ` ${spriteTier.level}` : ''}
         </span>

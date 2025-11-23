@@ -149,7 +149,7 @@ export function PlayerNameInput({
             {suggestions.map((user, idx) => (
               <div
                 key={`${user.uuid || user.nickname}-${idx}`}
-                className="px-3 py-2 text-sm hover:bg-accent cursor-pointer flex items-center gap-2 font-monocraft transition-colors"
+                className="px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer flex items-center gap-2 font-monocraft transition-colors"
                 onMouseDown={(e) => {
                   // Prevent blur event
                   e.preventDefault();

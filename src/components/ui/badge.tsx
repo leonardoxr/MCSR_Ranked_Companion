@@ -15,12 +15,13 @@ const badgeVariants = cva(
           'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
         outline: 'text-foreground',
         // Rank colors
-        coal: 'border-transparent bg-rank-coal text-white',
-        iron: 'border-transparent bg-rank-iron text-white',
-        gold: 'border-transparent bg-rank-gold text-white',
-        emerald: 'border-transparent bg-rank-emerald text-white',
-        diamond: 'border-transparent bg-rank-diamond text-white',
-        netherite: 'border-transparent bg-rank-netherite text-white',
+        // Rank colors (Neon/Glass Style)
+        coal: 'border-rank-coal/50 bg-rank-coal/10 text-rank-coal hover:bg-rank-coal/20',
+        iron: 'border-rank-iron/50 bg-rank-iron/10 text-rank-iron hover:bg-rank-iron/20',
+        gold: 'border-rank-gold/50 bg-rank-gold/10 text-rank-gold hover:bg-rank-gold/20 shadow-[0_0_10px_rgba(255,215,0,0.1)]',
+        emerald: 'border-rank-emerald/50 bg-rank-emerald/10 text-rank-emerald hover:bg-rank-emerald/20 shadow-[0_0_10px_rgba(0,255,157,0.1)]',
+        diamond: 'border-rank-diamond/50 bg-rank-diamond/10 text-rank-diamond hover:bg-rank-diamond/20 shadow-[0_0_10px_rgba(0,229,255,0.1)]',
+        netherite: 'border-rank-netherite/50 bg-rank-netherite/10 text-rank-netherite hover:bg-rank-netherite/20 shadow-[0_0_10px_rgba(160,32,240,0.1)]',
         // Match types
         ranked: 'border-transparent bg-[hsl(var(--emerald))] text-black',
         casual: 'border-transparent bg-[hsl(var(--diamond))] text-black',
@@ -36,7 +37,7 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+  VariantProps<typeof badgeVariants> { }
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

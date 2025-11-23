@@ -26,6 +26,11 @@ export const metadata: Metadata = {
     title: 'MCSR Ranked Companion',
     description: 'Track statistics, view leaderboards, and watch live matches for MCSR (Minecraft Speedrun) Ranked players.',
   },
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
 };
 
 export const viewport: Viewport = {
@@ -45,7 +50,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('font-mono antialiased bg-cave')}>
+      <body className={cn('font-mono antialiased bg-obsidian')}>
         <Script
           id="adsense-init"
           strategy="afterInteractive"

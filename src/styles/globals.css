@@ -19,55 +19,68 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 146 62% 28%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.4rem;
-    /* Minecraft accents */
-    --emerald: 146 62% 45%;
-    --diamond: 196 82% 50%;
-    --gold: 48 95% 55%;
-    --redstone: 6 78% 50%;
+    /* Modern Obsidian Theme */
+    --background: 240 10% 4%; /* Very dark, almost black */
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 180 100% 50%; /* Diamond Blue */
+    --primary-foreground: 240 10% 4%;
+    
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 157 100% 50%; /* Emerald Green */
+    --accent-foreground: 240 10% 4%;
+    
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 180 100% 50%;
+    
+    --radius: 0.5rem;
+    
+    /* Minecraft accents (Vibrant) */
+    --emerald: 157 100% 50%;
+    --diamond: 180 100% 50%;
+    --gold: 51 100% 50%;
+    --redstone: 0 100% 60%;
+    
     /* App-wide monospace stack */
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   }
 
   .dark {
-    --background: 220 50% 4%;
-    --foreground: 210 25% 96%;
-    --card: 222 48% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 146 62% 45%;
-    --primary-foreground: 0 0% 6%;
-    --secondary: 217 25% 14%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 25% 18%;
-    --input: 217 25% 18%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Same as root for now, enforcing dark mode feel */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 180 100% 50%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 157 100% 50%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 180 100% 50%;
   }
 }
 
@@ -78,34 +91,30 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    /* Subtle Minecraft-like textured background */
-    background-attachment: fixed;
     background-color: hsl(var(--background));
-    background-image:
-      radial-gradient(1200px 600px at 10% -10%, rgba(79, 195, 247, 0.06), transparent 60%),
-      radial-gradient(900px 500px at 90% -20%, rgba(46, 204, 113, 0.06), transparent 60%),
-      radial-gradient(1000px 600px at 50% 120%, rgba(231, 76, 60, 0.04), transparent 60%),
-      linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 6px);
   }
 }
 
 @layer utilities {
-  /* Subtle textured background inspired by Minecraft caves */
-  .bg-cave {
-    background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(79, 195, 247, 0.08), transparent 60%),
-      radial-gradient(900px 500px at 90% -20%, rgba(46, 204, 113, 0.08), transparent 60%),
-      radial-gradient(1000px 600px at 50% 120%, rgba(231, 76, 60, 0.06), transparent 60%),
-      linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0 2px, transparent 2px 6px);
+  /* Sleek Obsidian Background */
+  .bg-obsidian {
+    background-color: #050505;
+    background-image: 
+      /* Subtle grid */
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      /* Deep glow spots */
+      radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(0, 255, 157, 0.06), transparent 25%);
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+    background-attachment: fixed;
   }
 
   /* Neon title glow */
   .mc-title {
     text-shadow:
-      0 0 6px rgba(79, 195, 247, 0.6),
-      0 0 18px rgba(46, 204, 113, 0.4);
+      0 0 10px rgba(0, 229, 255, 0.5),
+      0 0 20px rgba(0, 255, 157, 0.3);
   }
 
   /* Pixel-art rendering helper */
@@ -127,114 +136,58 @@
     will-change: transform;
   }
 
-  /* Minecraft-style panel with inner/outer glow */
+  /* Modern Glassy Card */
   .mc-card {
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-      var(--tw-gradient-to, rgba(14, 18, 28, 0.9));
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.06),
-      0 10px 30px rgba(0,0,0,0.35),
-      0 0 0 1px rgba(79, 195, 247, 0.08),
-      0 0 24px rgba(46, 204, 113, 0.08);
+    @apply bg-card/40 backdrop-blur-md border border-white/10;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     border-radius: 12px;
-    position: relative;
+    transition: all 0.3s ease;
   }
 
-  .mc-card:before {
-    content: "";
-    position: absolute; inset: 0; border-radius: 12px; pointer-events: none;
-    background:
-      linear-gradient(180deg, rgba(79,195,247,0.25), rgba(46,204,113,0.15));
-    mask:
-      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    padding: 1px;
-    -webkit-mask-composite: xor; mask-composite: exclude;
+  .mc-card:hover {
+    @apply border-white/20 bg-card/60;
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.6),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 15px rgba(0, 229, 255, 0.1); /* Subtle diamond glow on hover */
   }
 
-  /* Shimmer sweep on hover */
-  /* Removed shimmer sweep to reduce distracting transitions */
-  .mc-card::after { display: none; }
-
-  /* Pixel frame for icons */
+  /* Pixel frame for icons - Modernized */
   .pixel-frame {
-    border: 2px solid rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.1);
     border-radius: 8px;
     box-shadow:
-      0 0 0 1px rgba(255,255,255,0.06) inset,
-      0 0 0 2px rgba(0,0,0,0.35) inset,
-      0 6px 16px rgba(0,0,0,0.4);
-    background:
-      linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 4px 12px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
   }
 
-  .glow-emerald { filter: drop-shadow(0 0 10px rgba(46,204,113,0.45)); }
-  .glow-diamond { filter: drop-shadow(0 0 10px rgba(79,195,247,0.45)); }
-  .glow-gold { filter: drop-shadow(0 0 10px rgba(244,208,63,0.45)); }
-  .glow-redstone { filter: drop-shadow(0 0 10px rgba(231,76,60,0.5)); }
+  /* Glow Utilities */
+  .glow-emerald { filter: drop-shadow(0 0 8px rgba(0, 255, 157, 0.6)); }
+  .glow-diamond { filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); }
+  .glow-gold { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)); }
+  .glow-redstone { filter: drop-shadow(0 0 8px rgba(255, 51, 51, 0.6)); }
 
-  /* Pace colors for ahead/behind */
-  .pace-ahead { color: rgba(46,204,113,1); }
-  .pace-behind { color: rgba(231,76,60,1); }
-  .pace-even { color: rgba(255,255,255,0.85); }
+  /* Pace colors */
+  .pace-ahead { color: #00ff9d; text-shadow: 0 0 10px rgba(0, 255, 157, 0.3); }
+  .pace-behind { color: #ff3333; text-shadow: 0 0 10px rgba(255, 51, 51, 0.3); }
+  .pace-even { color: rgba(255,255,255,0.9); }
 
-  /* Disable global pulsing glow */
-  .pulse-glow { text-shadow: none; }
+  /* Progress track */
+  .progress-track { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #00ff9d, #00e5ff); box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
 
-  /* Progress track used in split rows */
-  .progress-track { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.08); overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, rgba(46,204,113,.65), rgba(79,195,247,.75)); }
-
-  /* Disable badge sparkle animation */
-  .badge-sparkle { }
-
-  /* PaceWidget-like walk animation for tiny avatars */
-  /* Disable walk animation utility */
-  .mcsr-walk { }
-
-  /* Texture-like tracks (PaceWidget inspired). Pure CSS approximations. */
-  .tex-overworld {
-    background-image:
-      repeating-linear-gradient(45deg, rgba(60,120,60,0.35) 0 8px, rgba(40,60,40,0.35) 8px 16px),
-      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
-    background-size: 60px 60px, auto;
-  }
-  .tex-netherrack {
-    background-image:
-      repeating-linear-gradient(45deg, rgba(120,40,40,0.5) 0 8px, rgba(70,20,20,0.5) 8px 16px),
-      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
-    background-size: 60px 60px, auto;
-  }
-  .tex-netherbrick {
-    background-image:
-      repeating-linear-gradient(0deg, rgba(60,20,30,0.6) 0 6px, rgba(40,15,25,0.6) 6px 12px),
-      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
-    background-size: 60px 60px, auto;
-  }
-  .tex-stone {
-    background-image:
-      repeating-linear-gradient(45deg, rgba(90,90,90,0.45) 0 8px, rgba(55,55,55,0.45) 8px 16px),
-      linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.25));
-    background-size: 60px 60px, auto;
-  }
-  .tex-endstone {
-    background-image:
-      repeating-linear-gradient(45deg, rgba(210,210,120,0.35) 0 8px, rgba(170,170,90,0.35) 8px 16px),
-      linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
-    background-size: 60px 60px, auto;
-  }
-
-  /* Monocraft font utility - with proper fallback chain */
+  /* Monocraft font utility */
   .font-monocraft {
     font-family: 'Monocraft', 'Courier New', 'Courier', 'Lucida Console', 'Monaco', monospace;
     font-variant-numeric: tabular-nums;
     letter-spacing: 0.02em;
   }
 
-  /* Headings use Monocraft accent by default; override if needed */
   .mc-heading { font-family: 'Monocraft', var(--font-mono); letter-spacing: 0.015em; }
-  .mc-accent { color: hsl(146 62% 45% / 1); }
-  .mc-accent-diamond { color: hsl(196 82% 50% / 1); }
+  .mc-accent { color: #00ff9d; }
+  .mc-accent-diamond { color: #00e5ff; }
 }

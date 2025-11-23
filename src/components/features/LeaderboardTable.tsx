@@ -234,7 +234,7 @@ interface RankChangeIndicatorProps {
 function RankChangeIndicator({ change }: RankChangeIndicatorProps) {
   if (change > 0) {
     return (
-      <div className="flex items-center gap-1 text-xs text-green-500">
+      <div className="flex items-center gap-1 text-xs text-minecraft-emerald">
         <TrendingUp className="h-3 w-3" />+{change}
       </div>
     );

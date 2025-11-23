@@ -42,19 +42,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_PUBLISHER_ID;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-mono antialiased bg-cave')}>
-        {adsenseId && (
-          <Script
-            id="adsense-init"
-            strategy="afterInteractive"
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
-            crossOrigin="anonymous"
-          />
-        )}
+        <Script
+          id="adsense-init"
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4130479240951623"
+          crossOrigin="anonymous"
+        />
         <Providers>
           <div className="relative min-h-screen bg-background">
             <Header />

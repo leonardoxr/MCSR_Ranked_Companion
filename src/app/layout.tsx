@@ -1,6 +1,7 @@
 import '../styles/globals.css';
 import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/react';
 import { Providers } from '@/components/providers';
 import { cn } from '@/lib/utils';
 import Header from '@/components/layout/Header';
@@ -63,6 +64,7 @@ export default function RootLayout({
             </main>
           </div>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );

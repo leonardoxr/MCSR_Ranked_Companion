@@ -23,7 +23,6 @@ import { AchievementCard } from '@/components/features/AchievementIcon';
 import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
 import type { EloDataPoint } from '@/components/features/EloChart';
 import { MatchType } from '@/types/api';
-import { InContentAd } from '@/components/features/AdUnit';
 
 export default function PlayerPage() {
   const params = useParams();
@@ -244,9 +243,6 @@ export default function PlayerPage() {
           />
         )}
       </div>
-
-      {/* In-Content Ad */}
-      <InContentAd />
 
       {/* Achievements */}
       {Array.isArray(player.achievements?.display) && player.achievements.display.length > 0 && (

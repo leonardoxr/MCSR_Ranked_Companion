@@ -23,22 +23,38 @@ export function PlayerHead3D({
   className,
 }: PlayerHead3DProps) {
   const [rotation, setRotation] = React.useState({ x: 0, y: 0 });
+  const [skinUrlIndex, setSkinUrlIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Generate Crafatar URL for the full skin texture
-  // Using skins endpoint to get the full texture (base + overlay layers)
-  // Note: Crafatar /skins/ endpoint returns the raw skin texture
-  // For modern skins, this should include both layers if the skin has an overlay
-  const skinUrl = uuid
-    ? `https://crafatar.com/skins/${uuid}`
-    : null;
-  
-  // Debug: log the skin URL to verify
+  // Generate skin URLs - primary Crafatar, fallback Cloudhaven
+  const skinUrls = React.useMemo(() => {
+    if (!uuid) return [];
+    return [
+      `https://crafatar.com/skins/${uuid}`,
+      `https://avatars.cloudhaven.gg/skins/${uuid}`,
+    ];
+  }, [uuid]);
+
+  const skinUrl = skinUrls[skinUrlIndex] || null;
+
+  // Reset skin URL index when uuid changes
   React.useEffect(() => {
-    if (skinUrl) {
-      console.log('Skin URL:', skinUrl);
-    }
-  }, [skinUrl]);
+    setSkinUrlIndex(0);
+  }, [uuid]);
+
+  // Preload skin and handle fallback on error
+  React.useEffect(() => {
+    if (!skinUrl) return;
+
+    const img = new Image();
+    img.src = skinUrl;
+    img.onerror = () => {
+      // Try next URL if available
+      if (skinUrlIndex < skinUrls.length - 1) {
+        setSkinUrlIndex(prev => prev + 1);
+      }
+    };
+  }, [skinUrl, skinUrlIndex, skinUrls.length]);
 
   // Global mouse tracking - head always follows mouse cursor
   // Rotation is clamped to ensure eyes/front of face always look at mouse

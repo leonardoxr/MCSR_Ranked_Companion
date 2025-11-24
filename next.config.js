@@ -32,6 +32,11 @@ const nextConfig = {
         hostname: 'flagcdn.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'avatars.cloudhaven.gg',
+        pathname: '/**',
+      },
     ],
     formats: ['image/avif', 'image/webp'],
   },

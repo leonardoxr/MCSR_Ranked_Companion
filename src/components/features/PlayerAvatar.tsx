@@ -16,7 +16,7 @@ export interface PlayerAvatarProps {
 
 /**
  * PlayerAvatar component for displaying Minecraft player avatars
- * Uses Crafatar API for rendering player heads
+ * Uses Crafatar API for rendering player heads with Cloudhaven as fallback
  */
 export function PlayerAvatar({
   uuid,
@@ -26,13 +26,20 @@ export function PlayerAvatar({
   showOverlay = true,
 }: PlayerAvatarProps) {
   const t = useTranslations();
+
+  // Primary: Crafatar, Fallback: Cloudhaven
   const avatarUrl = uuid
     ? `https://crafatar.com/avatars/${uuid}?overlay=${showOverlay}`
     : undefined;
 
+  const fallbackUrls = uuid
+    ? [`https://avatars.cloudhaven.gg/${uuid}`]
+    : [];
+
   return (
     <Avatar
       src={avatarUrl}
+      fallbackSrcs={fallbackUrls}
       alt={username || t('common.player')}
       fallback={username?.[0]?.toUpperCase()}
       size={size}

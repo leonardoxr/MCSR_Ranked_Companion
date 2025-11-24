@@ -3,6 +3,8 @@ import { cn } from '@/lib/utils';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   src?: string;
+  /** Fallback image URLs to try if the primary src fails */
+  fallbackSrcs?: string[];
   alt?: string;
   fallback?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -17,8 +19,30 @@ const sizeMap = {
 };
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  ({ className, src, alt, fallback, size = 'md', ...props }, ref) => {
-    const [imgError, setImgError] = React.useState(false);
+  ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', ...props }, ref) => {
+    // Build array of all image sources to try
+    const allSrcs = React.useMemo(() => {
+      const sources: string[] = [];
+      if (src) sources.push(src);
+      sources.push(...fallbackSrcs);
+      return sources;
+    }, [src, fallbackSrcs]);
+
+    // Track which source index we're currently trying
+    const [srcIndex, setSrcIndex] = React.useState(0);
+
+    // Reset source index when sources change
+    React.useEffect(() => {
+      setSrcIndex(0);
+    }, [src, fallbackSrcs]);
+
+    const currentSrc = allSrcs[srcIndex];
+    const allSourcesFailed = srcIndex >= allSrcs.length;
+
+    const handleError = () => {
+      // Try next source in the list
+      setSrcIndex((prev) => prev + 1);
+    };
 
     return (
       <div
@@ -30,13 +54,13 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         )}
         {...props}
       >
-        {src && !imgError ? (
+        {currentSrc && !allSourcesFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={src}
+            src={currentSrc}
             alt={alt || 'Avatar'}
             className="aspect-square h-full w-full object-cover image-pixelated"
-            onError={() => setImgError(true)}
+            onError={handleError}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald to-diamond text-white font-semibold">

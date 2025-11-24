@@ -33,7 +33,7 @@ export function PlayerAvatar({
     : undefined;
 
   const fallbackUrls = uuid
-    ? [`https://avatars.cloudhaven.gg/${uuid}`]
+    ? [`https://avatars.cloudhaven.gg/avatars/${uuid}?overlay=${showOverlay}`]
     : [];
 
   return (

@@ -33,6 +33,7 @@
   "nav": {
     "home": "Home",
     "leaderboard": "Leaderboard",
+    "eloTimeline": "ELO Timeline",
     "liveMatches": "Live Matches",
     "whosLive": "Who's Live?",
     "playerComparison": "Player Comparison"
@@ -294,6 +295,26 @@
     "best": "Best:",
     "matches": "matches",
     "tier": "Tier"
+  },
+  "eloTimeline": {
+    "title": "ELO Timeline",
+    "description": "Track ELO progression of top players over time",
+    "bannerTitle": "ELO Timeline",
+    "bannerDescription": "Visualize ELO progression of top players over time",
+    "new": "NEW",
+    "loading": "Loading ELO timeline...",
+    "loadingMatches": "Loading match history...",
+    "error": "Failed to Load Timeline",
+    "chartTitle": "ELO Progression",
+    "selectPlayers": "Select Players",
+    "playersSelected": "players selected",
+    "selectAll": "All",
+    "selectNone": "None",
+    "timeRange": "Time Range",
+    "week": "Last Week",
+    "month": "Last Month",
+    "season": "Full Season",
+    "noData": "No data available for selected players"
   },
   "ranks": {
     "coal": "Coal",

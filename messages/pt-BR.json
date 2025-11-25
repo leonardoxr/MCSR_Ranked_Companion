@@ -293,7 +293,11 @@
     "week": "Última Semana",
     "month": "Último Mês",
     "season": "Temporada Completa",
-    "noData": "Nenhum dado disponível para os jogadores selecionados"
+    "noData": "Nenhum dado disponível para os jogadores selecionados",
+    "smoothGraph": "Gráfico Suave",
+    "showTop1": "Mostrar #1",
+    "currentTop1": "#1 Atual",
+    "viewProfile": "Ver Perfil"
   },
   "ranks": {
     "coal": "Carvão",

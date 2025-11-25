@@ -293,7 +293,11 @@
     "week": "最近一周",
     "month": "最近一月",
     "season": "整个赛季",
-    "noData": "所选玩家暂无数据"
+    "noData": "所选玩家暂无数据",
+    "smoothGraph": "平滑图表",
+    "showTop1": "显示第一",
+    "currentTop1": "当前第一",
+    "viewProfile": "查看资料"
   },
   "ranks": {
     "coal": "煤炭",

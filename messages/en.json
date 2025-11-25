@@ -314,7 +314,11 @@
     "week": "Last Week",
     "month": "Last Month",
     "season": "Full Season",
-    "noData": "No data available for selected players"
+    "noData": "No data available for selected players",
+    "smoothGraph": "Smooth Graph",
+    "showTop1": "Show #1",
+    "currentTop1": "Current #1",
+    "viewProfile": "View Profile"
   },
   "ranks": {
     "coal": "Coal",

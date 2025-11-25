@@ -556,6 +556,8 @@
       "jingleFeature2": "带安全缓冲的世界清理",
       "jingleFeature3": "可自定义热键",
       "jingleFeature4": "OBS 集成",
+      "jinglePlugin": "E Counter 插件",
+      "jinglePluginDesc": "使用此 Jingle 插件追踪您的进入次数，在 OBS 覆盖层上显示 E（进入次数）和 E/H（每小时进入次数）。",
       "ninjabrain": "Ninjabrain Bot",
       "ninjabrainSubtitle": "要塞计算器",
       "ninjabrainDesc": "通过末影之眼投掷进行三角测量计算要塞位置。",

@@ -556,6 +556,8 @@
       "jingleFeature2": "Limpeza de mundos com buffer de segurança",
       "jingleFeature3": "Atalhos de teclado personalizáveis",
       "jingleFeature4": "Integração com OBS",
+      "jinglePlugin": "Plugin E Counter",
+      "jinglePluginDesc": "Acompanhe suas contagens de entradas com este plugin do Jingle que exibe E (entradas) e E/H (entradas por hora) no seu overlay do OBS.",
       "ninjabrain": "Ninjabrain Bot",
       "ninjabrainSubtitle": "Calculadora de Fortaleza",
       "ninjabrainDesc": "Calcula localizações de fortalezas através de triangulação usando lançamentos de olhos de ender.",

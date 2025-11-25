@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, TrendingUp, Target, AlertCircle, CheckCircle } from 'lucide-react';
@@ -17,7 +18,8 @@ interface Insight {
 }
 
 export function PlayerInsights({ player }: PlayerInsightsProps) {
-  const insights = generateInsights(player);
+  const t = useTranslations();
+  const insights = generateInsights(player, t);
 
   if (insights.length === 0) {
     return null;
@@ -28,19 +30,19 @@ export function PlayerInsights({ player }: PlayerInsightsProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Lightbulb className="h-5 w-5 text-primary" />
-          Personalized Insights & Tips
+          {t('player.insights.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {insights.map((insight, index) => (
-          <InsightCard key={index} insight={insight} />
+          <InsightCard key={index} insight={insight} t={t} />
         ))}
       </CardContent>
     </Card>
   );
 }
 
-function InsightCard({ insight }: { insight: Insight }) {
+function InsightCard({ insight, t }: { insight: Insight; t: ReturnType<typeof useTranslations> }) {
   const getBadgeVariant = (type: Insight['type']): 'default' | 'secondary' | 'emerald' | 'gold' | 'diamond' => {
     switch (type) {
       case 'strength':
@@ -57,13 +59,13 @@ function InsightCard({ insight }: { insight: Insight }) {
   const getTypeLabel = (type: Insight['type']) => {
     switch (type) {
       case 'strength':
-        return 'Strength';
+        return t('player.insights.strength');
       case 'improvement':
-        return 'Area to Improve';
+        return t('player.insights.improvement');
       case 'milestone':
-        return 'Milestone';
+        return t('player.insights.milestone');
       default:
-        return 'Tip';
+        return t('player.insights.tip');
     }
   };
 
@@ -83,7 +85,7 @@ function InsightCard({ insight }: { insight: Insight }) {
   );
 }
 
-function generateInsights(player: UserInfo): Insight[] {
+function generateInsights(player: UserInfo, t: ReturnType<typeof useTranslations>): Insight[] {
   const insights: Insight[] = [];
 
   const seasonStats = player.statistics?.season;
@@ -94,134 +96,236 @@ function generateInsights(player: UserInfo): Insight[] {
   }
 
   const seasonWins = seasonStats.wins.ranked;
-  const seasonLosses = seasonStats.loses.ranked;
   const seasonMatches = seasonStats.playedMatches.ranked;
   const seasonWinRate = seasonMatches > 0 ? (seasonWins / seasonMatches) * 100 : 0;
 
-  const totalWins = totalStats.wins.ranked;
-  const totalLosses = totalStats.loses.ranked;
   const totalMatches = totalStats.playedMatches.ranked;
-  const totalWinRate = totalMatches > 0 ? (totalWins / totalMatches) * 100 : 0;
 
   const completions = totalStats.completions.ranked;
   const forfeits = totalStats.forfeits.ranked;
   const completionRate = (completions + forfeits) > 0 ? (completions / (completions + forfeits)) * 100 : 0;
 
-  const currentStreak = seasonStats.currentWinStreak.ranked;
   const highestStreak = totalStats.highestWinStreak.ranked;
 
   const avgCompletionTime = completions > 0 ? totalStats.completionTime.ranked / completions : 0;
   const bestTime = totalStats.bestTime.ranked;
 
-  // Win Rate Insights
-  if (seasonWinRate >= 60) {
-    insights.push({
-      type: 'strength',
-      title: 'Excellent Win Rate',
-      description: `You have a ${seasonWinRate.toFixed(1)}% win rate this season! You're performing above average and should consider pushing for higher ranks.`,
-      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
-    });
-  } else if (seasonWinRate >= 45 && seasonWinRate < 60) {
-    insights.push({
-      type: 'tip',
-      title: 'Solid Performance',
-      description: `Your ${seasonWinRate.toFixed(1)}% win rate is decent. Focus on consistency and learning from losses to push towards 60%+.`,
-      icon: <TrendingUp className="h-5 w-5 text-blue-500" />,
-    });
-  } else if (seasonMatches >= 10) {
-    insights.push({
-      type: 'improvement',
-      title: 'Win Rate Needs Work',
-      description: `Your ${seasonWinRate.toFixed(1)}% win rate suggests room for improvement. Focus on practicing specific routes and decision-making.`,
-      icon: <AlertCircle className="h-5 w-5 text-orange-500" />,
-    });
-  }
+  // Helper to format time
+  const formatTimeStr = (ms: number) => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   // Completion Rate Insights
-  if (completionRate < 50 && (completions + forfeits) >= 10) {
-    insights.push({
-      type: 'improvement',
-      title: 'High Forfeit Rate',
-      description: `You forfeit ${(100 - completionRate).toFixed(1)}% of your matches. Consider finishing more games to improve your skills and gain experience in all phases.`,
-      icon: <AlertCircle className="h-5 w-5 text-orange-500" />,
-    });
-  } else if (completionRate >= 80) {
+  if (completionRate >= 80) {
     insights.push({
       type: 'strength',
-      title: 'Great Persistence',
-      description: `You complete ${completionRate.toFixed(1)}% of your matches. This persistence helps you learn and improve even in difficult situations.`,
+      title: t('player.stats.completions'),
+      description: t('player.insights.completionMaster', { rate: completionRate.toFixed(1) }),
       icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+    });
+  } else if (completionRate < 50 && (completions + forfeits) >= 10) {
+    insights.push({
+      type: 'improvement',
+      title: t('player.stats.completions'),
+      description: t('player.insights.needMoreCompletions', { rate: completionRate.toFixed(1) }),
+      icon: <AlertCircle className="h-5 w-5 text-orange-500" />,
     });
   }
 
   // Streak Insights
-  if (currentStreak >= 5) {
-    insights.push({
-      type: 'milestone',
-      title: `${currentStreak} Win Streak!`,
-      description: `You're on fire! Keep up the momentum and maintain your focus. Your best streak is ${highestStreak} wins.`,
-      icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
-    });
-  }
-
   if (highestStreak >= 10) {
     insights.push({
       type: 'strength',
-      title: 'Proven Consistency',
-      description: `Your highest win streak of ${highestStreak} shows you can maintain high-level performance over multiple games.`,
+      title: t('player.stats.highestStreak'),
+      description: t('player.insights.streakChampion', { streak: highestStreak }),
       icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+    });
+  } else if (highestStreak < 5 && totalMatches >= 20) {
+    insights.push({
+      type: 'improvement',
+      title: t('player.stats.highestStreak'),
+      description: t('player.insights.buildMomentum', { streak: highestStreak }),
+      icon: <Target className="h-5 w-5 text-blue-500" />,
     });
   }
 
   // Performance Time Insights
   if (bestTime && bestTime < 600000) { // Under 10 minutes
-    const minutes = Math.floor(bestTime / 60000);
-    const seconds = Math.floor((bestTime % 60000) / 1000);
     insights.push({
       type: 'strength',
-      title: 'Fast Finisher',
-      description: `Your best time of ${minutes}:${seconds.toString().padStart(2, '0')} is impressive! This shows strong mechanical skill and route knowledge.`,
+      title: t('player.stats.bestTime'),
+      description: t('player.insights.speedDemon', { time: formatTimeStr(bestTime) }),
       icon: <CheckCircle className="h-5 w-5 text-green-500" />,
     });
-  }
-
-  if (avgCompletionTime && bestTime && avgCompletionTime > bestTime * 1.5) {
+  } else if (bestTime) {
     insights.push({
       type: 'tip',
-      title: 'Consistency Opportunity',
-      description: `Your average completion time is significantly higher than your best. Focus on applying your best strategies more consistently.`,
+      title: t('player.stats.bestTime'),
+      description: t('player.insights.practiceSpeed', { time: formatTimeStr(bestTime) }),
       icon: <Target className="h-5 w-5 text-blue-500" />,
     });
   }
 
-  // General Tips
-  if (totalMatches < 50) {
+  // Experience Insights
+  if (totalMatches >= 500) {
+    insights.push({
+      type: 'milestone',
+      title: t('player.stats.totalMatches'),
+      description: t('player.insights.veteranPlayer', { matches: totalMatches }),
+      icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
+    });
+  } else if (totalMatches < 50) {
     insights.push({
       type: 'tip',
-      title: 'Keep Playing',
-      description: `You've played ${totalMatches} ranked matches. The more you play, the better you'll understand your strengths and weaknesses.`,
+      title: t('player.stats.totalMatches'),
+      description: t('player.insights.keepPlaying', { matches: totalMatches }),
       icon: <Lightbulb className="h-5 w-5 text-blue-500" />,
     });
   }
 
-  // Elo-based insights
-  if (player.eloRate) {
-    if (player.eloRate >= 1800) {
+  // Rank insights
+  if (player.eloRank) {
+    const totalPlayers = 50000; // Approximate active player base
+    const percentile = ((totalPlayers - player.eloRank) / totalPlayers) * 100;
+    if (percentile >= 95) {
       insights.push({
         type: 'milestone',
-        title: 'High ELO Achievement',
-        description: `At ${Math.round(player.eloRate)} ELO, you're in the top tier of players. Consider sharing your knowledge with the community!`,
+        title: t('player.rank'),
+        description: t('player.insights.eliteRank', { percent: percentile.toFixed(1) }),
         icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
       });
-    } else if (player.eloRate >= 1400 && player.eloRate < 1800) {
+    } else if (percentile >= 50) {
+      insights.push({
+        type: 'strength',
+        title: t('player.rank'),
+        description: t('player.insights.risingPlayer', { percent: percentile.toFixed(0) }),
+        icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+      });
+    }
+  }
+
+  // Win Rate Insights
+  if (seasonWinRate >= 60 && seasonMatches >= 10) {
+    insights.push({
+      type: 'strength',
+      title: t('player.stats.winRate'),
+      description: t('player.insights.consistentWinner', { rate: seasonWinRate.toFixed(1) }),
+      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+    });
+  } else if (seasonWinRate < 45 && seasonMatches >= 10) {
+    insights.push({
+      type: 'improvement',
+      title: t('player.stats.winRate'),
+      description: t('player.insights.improveWinRate', { rate: seasonWinRate.toFixed(1) }),
+      icon: <AlertCircle className="h-5 w-5 text-orange-500" />,
+    });
+  }
+
+  // Season win milestones
+  const winMilestones = [10, 25, 50, 100, 250, 500];
+  const nextMilestone = winMilestones.find(m => seasonWins < m);
+  if (nextMilestone) {
+    const remaining = nextMilestone - seasonWins;
+    if (remaining <= 5) {
+      insights.push({
+        type: 'milestone',
+        title: t('player.stats.wins'),
+        description: t('player.insights.reachMilestone', { remaining, target: nextMilestone }),
+        icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
+      });
+    } else if (seasonWins >= 10) {
       insights.push({
         type: 'tip',
-        title: 'Pushing for Higher Ranks',
-        description: `You're at ${Math.round(player.eloRate)} ELO. Focus on advanced techniques and consistent execution to break into the elite tier.`,
+        title: t('player.stats.wins'),
+        description: t('player.insights.seasonStrong', { wins: seasonWins }),
+        icon: <Lightbulb className="h-5 w-5 text-blue-500" />,
+      });
+    }
+  } else if (seasonWins >= 500) {
+    insights.push({
+      type: 'milestone',
+      title: t('player.stats.wins'),
+      description: t('player.insights.reachedMilestone', { wins: seasonWins }),
+      icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
+    });
+  } else if (seasonWins === 0) {
+    insights.push({
+      type: 'tip',
+      title: t('player.stats.wins'),
+      description: t('player.insights.firstMilestone'),
+      icon: <Lightbulb className="h-5 w-5 text-blue-500" />,
+    });
+  }
+
+  // Consistency check between best and average time
+  if (avgCompletionTime && bestTime && avgCompletionTime > bestTime * 1.3) {
+    const diff = formatTimeStr(avgCompletionTime - bestTime);
+    insights.push({
+      type: 'tip',
+      title: t('player.stats.avgCompletion'),
+      description: t('player.insights.workOnConsistency', { avg: formatTimeStr(avgCompletionTime), best: formatTimeStr(bestTime) }),
+      icon: <Target className="h-5 w-5 text-blue-500" />,
+    });
+  } else if (avgCompletionTime && bestTime && avgCompletionTime <= bestTime * 1.15) {
+    const diff = formatTimeStr(avgCompletionTime - bestTime);
+    insights.push({
+      type: 'strength',
+      title: t('player.stats.avgCompletion'),
+      description: t('player.insights.fasterThanAverage', { best: formatTimeStr(bestTime), diff }),
+      icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+    });
+  }
+
+  // ELO progression tips
+  if (player.eloRate) {
+    const elo = player.eloRate;
+    if (elo >= 2000) {
+      insights.push({
+        type: 'milestone',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.netheriteElite'),
+        icon: <TrendingUp className="h-5 w-5 text-yellow-500" />,
+      });
+    } else if (elo >= 1600) {
+      insights.push({
+        type: 'tip',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.diamondPush', { points: 2000 - elo }),
+        icon: <Target className="h-5 w-5 text-blue-500" />,
+      });
+    } else if (elo >= 1250) {
+      insights.push({
+        type: 'tip',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.emeraldClimb', { points: 1600 - elo }),
+        icon: <Target className="h-5 w-5 text-blue-500" />,
+      });
+    } else if (elo >= 950) {
+      insights.push({
+        type: 'tip',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.goldProgress', { points: 1250 - elo }),
+        icon: <Target className="h-5 w-5 text-blue-500" />,
+      });
+    } else if (elo >= 700) {
+      insights.push({
+        type: 'tip',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.ironJourney', { points: 950 - elo }),
+        icon: <Target className="h-5 w-5 text-blue-500" />,
+      });
+    } else {
+      insights.push({
+        type: 'tip',
+        title: t('player.stats.eloRating'),
+        description: t('player.insights.coalClimb', { points: 700 - elo }),
         icon: <Target className="h-5 w-5 text-blue-500" />,
       });
     }
   }
 
-  return insights;
+  // Limit to top 5 insights to not overwhelm
+  return insights.slice(0, 5);
 }

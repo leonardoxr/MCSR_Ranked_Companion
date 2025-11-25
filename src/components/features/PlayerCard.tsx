@@ -168,7 +168,7 @@ export function PlayerCard({
                 <div className="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/20">
                   <Trophy className="h-4 w-4 text-primary" />
                   <span className="font-semibold">#{eloRank.toLocaleString()}</span>
-                  <span className="text-sm text-muted-foreground">{t('player.globalRank', { defaultValue: 'Global' })}</span>
+                  <span className="text-sm text-muted-foreground">{t('player.globalRank')}</span>
                 </div>
               )}
             </div>
@@ -225,7 +225,7 @@ export function PlayerCard({
                 }}
               >
                 <Swords className="h-4 w-4" />
-                {t('player.latestMatch', { defaultValue: 'Latest Match' })}
+                {t('player.latestMatch')}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </div>
@@ -248,21 +248,21 @@ export function PlayerCard({
               icon={<Trophy className="h-5 w-5 text-yellow-500" />}
               label={t('player.stats.wins')}
               value={statistics.total.wins.ranked.toLocaleString()}
-              subValue={`${statistics.season.wins.ranked} ${t('player.stats.thisSeason', { defaultValue: 'this season' })}`}
+              subValue={`${statistics.season.wins.ranked} ${t('player.stats.thisSeason')}`}
               gradient="from-yellow-500/10 to-amber-500/5"
             />
             <StatCard
               icon={<Target className="h-5 w-5 text-emerald" />}
               label={t('player.stats.winRate')}
               value={winRate ? `${winRate}%` : t('common.notAvailable')}
-              subValue={`${statistics.total.playedMatches.ranked} ${t('player.stats.matches', { defaultValue: 'matches' })}`}
+              subValue={`${statistics.total.playedMatches.ranked} ${t('player.stats.matches')}`}
               gradient="from-emerald/10 to-green-500/5"
             />
             <StatCard
               icon={<Flame className="h-5 w-5 text-orange-500" />}
               label={t('player.stats.highestStreak')}
               value={statistics.total.highestWinStreak.ranked?.toLocaleString() || '0'}
-              subValue={currentStreak > 0 ? `${currentStreak} ${t('player.stats.current', { defaultValue: 'current' })}` : ''}
+              subValue={currentStreak > 0 ? `${currentStreak} ${t('player.stats.current')}` : ''}
               gradient="from-orange-500/10 to-red-500/5"
             />
             <StatCard
@@ -283,7 +283,7 @@ export function PlayerCard({
                     <Zap className="h-6 w-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">{t('player.stats.personalBest', { defaultValue: 'Personal Best' })}</p>
+                    <p className="text-sm text-muted-foreground">{t('player.stats.personalBest')}</p>
                     <p className="text-2xl font-bold font-mono text-primary">
                       {formatTime(statistics.total.bestTime.ranked)}
                     </p>

@@ -168,8 +168,8 @@ export function EloTimelinePageClient() {
     }
   }, [playerTimelines, selectedPlayers.size]);
 
-  // Filter data by time range
-  const filteredTimelines = React.useMemo(() => {
+  // Filter data by time range - ALL players (for Top 1 reference)
+  const allTimelinesFiltered = React.useMemo(() => {
     const now = Date.now();
     let cutoff: number;
 
@@ -185,14 +185,16 @@ export function EloTimelinePageClient() {
         cutoff = 0;
     }
 
-    // Include only selected players
-    const playersToShow = playerTimelines.filter((p) => selectedPlayers.has(p.uuid));
-
-    return playersToShow.map((player) => ({
+    return playerTimelines.map((player) => ({
       ...player,
       data: player.data.filter((d) => d.date >= cutoff),
     }));
-  }, [playerTimelines, selectedPlayers, timeRange]);
+  }, [playerTimelines, timeRange]);
+
+  // Filter data by time range - SELECTED players only (for player lines)
+  const filteredTimelines = React.useMemo(() => {
+    return allTimelinesFiltered.filter((p) => selectedPlayers.has(p.uuid));
+  }, [allTimelinesFiltered, selectedPlayers]);
 
   // Get smoothing interval based on time range
   const smoothingInterval = React.useMemo(() => {
@@ -209,9 +211,10 @@ export function EloTimelinePageClient() {
 
   // Transform data for recharts
   const chartData = React.useMemo(() => {
+    // Use ALL players for date collection (so Top 1 line always has data)
     const allDates = new Set<number>();
 
-    filteredTimelines.forEach((player) => {
+    allTimelinesFiltered.forEach((player) => {
       player.data.forEach((point) => {
         allDates.add(point.date);
       });
@@ -219,9 +222,11 @@ export function EloTimelinePageClient() {
 
     const sortedDates = Array.from(allDates).sort((a, b) => a - b);
 
+    // Build data points with ALL players (for Top 1) and selected players (for lines)
     const data: ChartDataPoint[] = sortedDates.map((date) => {
       const point: ChartDataPoint = { date };
 
+      // Add selected player data
       filteredTimelines.forEach((player) => {
         const playerPoint = player.data.find((d) => d.date === date);
         if (playerPoint) {
@@ -232,7 +237,7 @@ export function EloTimelinePageClient() {
       return point;
     });
 
-    // Fill in gaps with previous values
+    // Fill in gaps with previous values for selected players
     const filledData: ChartDataPoint[] = [];
     const lastValues: Record<string, number> = {};
 
@@ -251,7 +256,7 @@ export function EloTimelinePageClient() {
       filledData.push(newPoint);
     });
 
-    // Apply smoothing if enabled
+    // Apply smoothing if enabled (only to selected players)
     let processedData = filledData;
     if (smoothGraph && filledData.length > 2) {
       processedData = smoothData(
@@ -261,16 +266,62 @@ export function EloTimelinePageClient() {
       );
     }
 
-    // Calculate Top 1 at each point if enabled
-    if (showTop1) {
-      processedData = calculateTop1AtEachPoint(
-        processedData,
-        filteredTimelines.map((p) => p.uuid)
+    // Calculate Top 1 at each point using ALL players (not just selected)
+    if (showTop1 && allTimelinesFiltered.length > 0) {
+      // Build separate data for Top 1 calculation using ALL players
+      const allPlayersData: ChartDataPoint[] = sortedDates.map((date) => {
+        const point: ChartDataPoint = { date };
+        allTimelinesFiltered.forEach((player) => {
+          const playerPoint = player.data.find((d) => d.date === date);
+          if (playerPoint) {
+            point[player.uuid] = playerPoint.elo;
+          }
+        });
+        return point;
+      });
+
+      // Fill gaps for all players
+      const allLastValues: Record<string, number> = {};
+      const allFilledData: ChartDataPoint[] = [];
+      allPlayersData.forEach((point) => {
+        const newPoint: ChartDataPoint = { date: point.date };
+        allTimelinesFiltered.forEach((player) => {
+          if (point[player.uuid] !== undefined) {
+            allLastValues[player.uuid] = point[player.uuid] as number;
+            newPoint[player.uuid] = point[player.uuid];
+          } else if (allLastValues[player.uuid] !== undefined) {
+            newPoint[player.uuid] = allLastValues[player.uuid];
+          }
+        });
+        allFilledData.push(newPoint);
+      });
+
+      // Apply smoothing to all players data for Top 1
+      let top1Data = allFilledData;
+      if (smoothGraph && allFilledData.length > 2) {
+        top1Data = smoothData(
+          allFilledData,
+          allTimelinesFiltered.map((p) => p.uuid),
+          smoothingInterval
+        );
+      }
+
+      // Calculate Top 1 from all players
+      const top1Calculated = calculateTop1AtEachPoint(
+        top1Data,
+        allTimelinesFiltered.map((p) => p.uuid)
       );
+
+      // Merge Top 1 data into processed data
+      processedData = processedData.map((point, i) => ({
+        ...point,
+        top1Elo: top1Calculated[i]?.top1Elo,
+        top1Uuid: top1Calculated[i]?.top1Uuid,
+      }));
     }
 
     return processedData;
-  }, [filteredTimelines, smoothGraph, smoothingInterval, showTop1]);
+  }, [allTimelinesFiltered, filteredTimelines, smoothGraph, smoothingInterval, showTop1]);
 
   // Responsive chart height
   React.useEffect(() => {

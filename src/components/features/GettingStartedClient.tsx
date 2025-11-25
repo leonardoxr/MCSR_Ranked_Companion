@@ -16,7 +16,10 @@ import {
   CheckCircle2,
   Monitor,
   Cpu,
-  Users
+  Users,
+  Sparkles,
+  Shuffle,
+  Layers
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -104,6 +107,8 @@ export function GettingStartedClient() {
               { href: "#requirements", label: t('quickNav.requirements') },
               { href: "#installation", label: t('quickNav.installation') },
               { href: "#how-to-play", label: t('quickNav.howToPlay') },
+              { href: "#filtered-seeds", label: t('quickNav.filteredSeeds'), featured: true },
+              { href: "#rng-standard", label: t('quickNav.rngStandard'), featured: true },
               { href: "#ranking-system", label: t('quickNav.rankingSystem') },
               { href: "#tools", label: t('quickNav.tools') },
               { href: "#resources", label: t('quickNav.resources') },
@@ -111,7 +116,11 @@ export function GettingStartedClient() {
               <a
                 key={item.href}
                 href={item.href}
-                className="px-3 py-1.5 rounded-md text-xs font-monocraft text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                className={`px-3 py-1.5 rounded-md text-xs font-monocraft transition-colors ${
+                  'featured' in item && item.featured
+                    ? "text-minecraft-gold bg-minecraft-gold/10 hover:bg-minecraft-gold/20 hover:text-minecraft-gold"
+                    : "text-white/70 hover:text-white hover:bg-white/10"
+                }`}
               >
                 {item.label}
               </a>
@@ -354,6 +363,213 @@ export function GettingStartedClient() {
                 <li><strong className="text-white">{t('howToPlay.balanced')}:</strong> {t('howToPlay.balancedDesc')}</li>
                 <li><strong className="text-white">{t('howToPlay.fast')}:</strong> {t('howToPlay.fastDesc')}</li>
               </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Filtered Seeds - Featured Section */}
+      <section>
+        <div id="filtered-seeds" className="scroll-mt-20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-minecraft-gold/20 text-minecraft-gold">
+              <Layers className="h-5 w-5" />
+            </div>
+            <h2 className="font-monocraft text-xl text-white">{t('filteredSeeds.title')}</h2>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-minecraft-gold/20 text-minecraft-gold text-xs font-monocraft">
+              <Sparkles className="h-3 w-3" />
+              {t('filteredSeeds.featured')}
+            </span>
+          </div>
+        </div>
+        <Card className="border-minecraft-gold/30 bg-gradient-to-br from-minecraft-gold/5 to-transparent">
+          <CardContent className="p-6 space-y-6">
+            <div className="space-y-3">
+              <p className="text-white/80 leading-relaxed">{t('filteredSeeds.description')}</p>
+              <p className="text-white/80 leading-relaxed">{t('filteredSeeds.description2')}</p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-monocraft text-sm text-minecraft-gold">{t('filteredSeeds.categories')}</h3>
+              <div className="grid gap-3">
+                {[
+                  { key: 'village', color: 'bg-green-500' },
+                  { key: 'shipwreck', color: 'bg-blue-500' },
+                  { key: 'desertTemple', color: 'bg-yellow-600' },
+                  { key: 'ruinedPortal', color: 'bg-purple-500' },
+                  { key: 'buriedTreasure', color: 'bg-orange-500' },
+                ].map((seed) => (
+                  <div key={seed.key} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-3 h-3 rounded-sm ${seed.color}`} />
+                      <span className="font-monocraft text-sm text-white">
+                        {t(`filteredSeeds.${seed.key}` as const)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-white/60 ml-5">
+                      {t(`filteredSeeds.${seed.key}Desc` as const)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="font-monocraft text-sm text-minecraft-gold">{t('filteredSeeds.distribution')}</h3>
+              <p className="text-sm text-white/70">{t('filteredSeeds.distributionDesc')}</p>
+              <div className="grid gap-3">
+                <div className="p-3 rounded-lg bg-gray-600/20 border border-gray-600/30">
+                  <div className="font-monocraft text-sm text-gray-300 mb-1">{t('filteredSeeds.distributionCoal')}</div>
+                  <p className="text-xs text-white/60">{t('filteredSeeds.distributionCoalDesc')}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-gray-400/20 border border-gray-400/30">
+                  <div className="font-monocraft text-sm text-gray-200 mb-1">{t('filteredSeeds.distributionIron')}</div>
+                  <p className="text-xs text-white/60">{t('filteredSeeds.distributionIronDesc')}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-emerald-500/20 border border-emerald-500/30">
+                  <div className="font-monocraft text-sm text-emerald-300 mb-1">{t('filteredSeeds.distributionEmerald')}</div>
+                  <p className="text-xs text-white/60">{t('filteredSeeds.distributionEmeraldDesc')}</p>
+                </div>
+              </div>
+              <p className="text-xs text-white/50 italic">{t('filteredSeeds.distributionPrivate')}</p>
+            </div>
+
+            <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+              <h4 className="font-monocraft text-sm text-red-400 mb-2">{t('filteredSeeds.nether')}</h4>
+              <p className="text-xs text-white/70 mb-2">{t('filteredSeeds.netherDesc')}</p>
+              <ul className="text-xs text-white/60 space-y-1">
+                <li className="flex items-start gap-2">
+                  <ChevronRight className="h-3 w-3 mt-0.5 text-red-400 flex-shrink-0" />
+                  {t('filteredSeeds.netherBastion')}
+                </li>
+                <li className="flex items-start gap-2">
+                  <ChevronRight className="h-3 w-3 mt-0.5 text-red-400 flex-shrink-0" />
+                  {t('filteredSeeds.netherFortress')}
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* RNG Standardization - Featured Section */}
+      <section>
+        <div id="rng-standard" className="scroll-mt-20">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-minecraft-gold/20 text-minecraft-gold">
+              <Shuffle className="h-5 w-5" />
+            </div>
+            <h2 className="font-monocraft text-xl text-white">{t('rngStandard.title')}</h2>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-minecraft-gold/20 text-minecraft-gold text-xs font-monocraft">
+              <Sparkles className="h-3 w-3" />
+              {t('rngStandard.featured')}
+            </span>
+          </div>
+        </div>
+        <Card className="border-minecraft-gold/30 bg-gradient-to-br from-minecraft-gold/5 to-transparent">
+          <CardContent className="p-6 space-y-6">
+            <div className="space-y-3">
+              <p className="text-white/80 leading-relaxed">{t('rngStandard.description')}</p>
+              <p className="text-white/80 leading-relaxed">{t('rngStandard.description2')}</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Piglin Barters */}
+              <div className="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                <h4 className="font-monocraft text-sm text-yellow-400 mb-2">{t('rngStandard.piglinBarters')}</h4>
+                <p className="text-xs text-white/70 mb-2">{t('rngStandard.piglinBartersDesc')}</p>
+                <ul className="text-xs text-white/60 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-yellow-400 flex-shrink-0" />
+                    {t('rngStandard.piglinObsidian')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-yellow-400 flex-shrink-0" />
+                    {t('rngStandard.piglinPearls')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-yellow-400 flex-shrink-0" />
+                    {t('rngStandard.piglinSync')}
+                  </li>
+                </ul>
+              </div>
+
+              {/* Entity Drops */}
+              <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                <h4 className="font-monocraft text-sm text-white mb-2">{t('rngStandard.entityDrops')}</h4>
+                <p className="text-xs text-white/70 mb-2">{t('rngStandard.entityDropsDesc')}</p>
+                <ul className="text-xs text-white/60 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.entityBlaze')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.entityEnderman')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.entityGolem')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.entityFood')}
+                  </li>
+                </ul>
+              </div>
+
+              {/* Block Drops */}
+              <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                <h4 className="font-monocraft text-sm text-white mb-2">{t('rngStandard.blockDrops')}</h4>
+                <p className="text-xs text-white/70 mb-2">{t('rngStandard.blockDropsDesc')}</p>
+                <ul className="text-xs text-white/60 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.blockFlint')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.blockSticks')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-minecraft-emerald flex-shrink-0" />
+                    {t('rngStandard.blockApples')}
+                  </li>
+                </ul>
+              </div>
+
+              {/* Other Mechanics */}
+              <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                <h4 className="font-monocraft text-sm text-purple-400 mb-2">{t('rngStandard.otherMechanics')}</h4>
+                <p className="text-xs text-white/70 mb-2">{t('rngStandard.otherMechanicsDesc')}</p>
+                <ul className="text-xs text-white/60 space-y-1">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-purple-400 flex-shrink-0" />
+                    {t('rngStandard.otherEye')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-purple-400 flex-shrink-0" />
+                    {t('rngStandard.otherDragon')}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-3 w-3 mt-0.5 text-purple-400 flex-shrink-0" />
+                    {t('rngStandard.otherBlaze')}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <a
+                href={t('rngStandard.learnMoreLink')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-minecraft-gold/20 text-minecraft-gold font-monocraft text-sm hover:bg-minecraft-gold/30 transition-colors"
+              >
+                <BookOpen className="h-4 w-4" />
+                {t('rngStandard.learnMore')}
+                <ExternalLink className="h-3 w-3" />
+              </a>
             </div>
           </CardContent>
         </Card>

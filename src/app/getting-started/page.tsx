@@ -4,46 +4,62 @@ import { GettingStartedClient } from '@/components/features/GettingStartedClient
 const BASE_URL = 'https://mcsr-ranked-companion.vercel.app';
 
 export const metadata: Metadata = {
-  title: 'Getting Started - MCSR Ranked Guide for Beginners',
+  title: 'MCSR Ranked Guide - How to Play, RNG, Seeds, ELO & Installation',
   description:
-    'Learn how to get started with MCSR Ranked. Complete guide covering installation, requirements, gameplay, ranking system, and essential tools for Minecraft speedrunning.',
+    'Complete MCSR Ranked guide: Learn about filtered seeds, RNG standardization, ELO ranking system, installation, and gameplay. Understand how piglin barters, blaze drops, and seed types work. Essential tools: Jingle, Ninjabrain Bot.',
   keywords: [
     'MCSR Ranked',
-    'Minecraft Speedrun',
-    'Getting Started',
-    'Installation Guide',
-    'Speedrun Tutorial',
-    'Minecraft Ranked',
-    'ELO Rating',
-    'Beginner Guide',
-    'Jingle',
-    'Ninjabrain Bot',
+    'MCSR Ranked mod',
+    'MCSR Ranked guide',
+    'MCSR Ranked tutorial',
+    'Minecraft Speedrun Ranked',
+    'Minecraft competitive speedrun',
+    'MCSR filtered seeds',
+    'MCSR RNG standardization',
+    'MCSR seed types',
+    'MCSR piglin barters',
+    'MCSR blaze drops',
+    'MCSR ELO system',
+    'MCSR ranking system',
+    'MCSR installation',
+    'how to play MCSR Ranked',
+    'MCSR Ranked download',
+    'Minecraft 1.16.1 speedrun',
+    'Fabric speedrun mod',
+    'Jingle speedrun tool',
+    'Ninjabrain Bot stronghold calculator',
+    'MCSR village seeds',
+    'MCSR shipwreck seeds',
+    'MCSR buried treasure',
+    'MCSR ruined portal',
+    'speedrun ELO rating',
+    'Coal Iron Gold Emerald Diamond Netherite rank',
   ],
   alternates: {
     canonical: `${BASE_URL}/getting-started`,
   },
   openGraph: {
-    title: 'Getting Started with MCSR Ranked - Beginner Guide',
+    title: 'MCSR Ranked Complete Guide - Seeds, RNG, ELO & How to Play',
     description:
-      'Complete guide to getting started with MCSR Ranked. Learn installation, gameplay, ranking system, and essential speedrunning tools.',
+      'Everything you need to know about MCSR Ranked: filtered seeds explained, RNG standardization system, ELO ranking, installation guide, and essential speedrunning tools.',
     url: `${BASE_URL}/getting-started`,
     siteName: 'MCSR Ranked Companion',
-    type: 'website',
+    type: 'article',
     locale: 'en_US',
     images: [
       {
         url: `${BASE_URL}/icon.png`,
         width: 512,
         height: 512,
-        alt: 'MCSR Ranked Companion Logo',
+        alt: 'MCSR Ranked Companion - Minecraft Speedrun Statistics',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Getting Started with MCSR Ranked - Beginner Guide',
+    title: 'MCSR Ranked Guide - Seeds, RNG, ELO & Installation',
     description:
-      'Complete guide to getting started with MCSR Ranked. Learn installation, gameplay, and essential tools.',
+      'Complete MCSR Ranked guide: filtered seeds, RNG standardization, ranking system, and essential tools for Minecraft speedrunning.',
     images: [`${BASE_URL}/icon.png`],
   },
 };
@@ -51,40 +67,90 @@ export const metadata: Metadata = {
 // JSON-LD structured data for the getting started guide
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'HowTo',
-  name: 'Getting Started with MCSR Ranked',
+  '@type': 'Article',
+  headline: 'MCSR Ranked Complete Guide - Seeds, RNG, ELO & How to Play',
   description:
-    'Learn how to set up and play MCSR Ranked, the competitive Minecraft speedrunning platform.',
-  step: [
+    'Comprehensive guide to MCSR Ranked covering filtered seeds, RNG standardization, ELO ranking system, installation, and essential speedrunning tools.',
+  author: {
+    '@type': 'Organization',
+    name: 'MCSR Ranked Companion',
+    url: 'https://mcsr-ranked-companion.vercel.app',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'MCSR Ranked Companion',
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': 'https://mcsr-ranked-companion.vercel.app/getting-started',
+  },
+  about: [
     {
-      '@type': 'HowToStep',
-      name: 'Check Requirements',
-      text: 'Ensure you have a legitimate Minecraft Java Edition account and meet the technical requirements (Minecraft 1.16.1, Fabric, 64-bit Java).',
+      '@type': 'Thing',
+      name: 'MCSR Ranked',
+      description: 'Competitive matchmaking system for Minecraft speedrunning',
     },
     {
-      '@type': 'HowToStep',
-      name: 'Install the Mod',
-      text: 'Download and install the MCSR Ranked modpack using Prism/MultiMC, Modrinth App, or the vanilla launcher.',
+      '@type': 'Thing',
+      name: 'Filtered Seeds',
+      description: 'Specially filtered seeds ensuring fair competition with guaranteed structures and loot',
     },
     {
-      '@type': 'HowToStep',
-      name: 'Complete Placement Matches',
-      text: 'Play your first matches to establish your initial ELO rating.',
-    },
-    {
-      '@type': 'HowToStep',
-      name: 'Start Competing',
-      text: 'Queue for ranked matches and climb the ladder from Coal to Netherite rank.',
+      '@type': 'Thing',
+      name: 'RNG Standardization',
+      description: 'System that synchronizes random events like piglin barters and mob drops between players',
     },
   ],
-  tool: [
+  articleSection: [
+    'What is MCSR Ranked',
+    'Requirements',
+    'Installation',
+    'How to Play',
+    'Filtered Seeds',
+    'RNG Standardization',
+    'Ranking System',
+    'Essential Tools',
+    'Resources',
+  ],
+  keywords: 'MCSR Ranked, Minecraft speedrun, filtered seeds, RNG standardization, ELO ranking, piglin barters, Jingle, Ninjabrain Bot',
+};
+
+// Additional FAQ schema for common questions
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
     {
-      '@type': 'HowToTool',
-      name: 'Jingle',
+      '@type': 'Question',
+      name: 'What is MCSR Ranked?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'MCSR Ranked is a competitive matchmaking system for Minecraft speedrunning that pairs players of similar skill levels using an ELO rating system. It runs on Minecraft 1.16.1 with filtered seeds and standardized RNG.',
+      },
     },
     {
-      '@type': 'HowToTool',
-      name: 'Ninjabrain Bot',
+      '@type': 'Question',
+      name: 'How do filtered seeds work in MCSR Ranked?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'MCSR Ranked uses specially filtered seeds categorized by starting structure (Village, Shipwreck, Desert Temple, Ruined Portal, Buried Treasure). Both players receive the same seed. Higher ELO ranks unlock more seed types.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is RNG standardization in MCSR Ranked?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'RNG standardization ensures all players experience identical random events in the same order. This includes guaranteed piglin barter results (6 obsidian and 3 ender pearl trades in first 72 barters), synchronized mob drops, and standardized block drop rates.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What are the MCSR Ranked rank tiers?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'MCSR Ranked has 6 rank tiers: Coal (0-599 ELO), Iron (600-899), Gold (900-1199), Emerald (1200-1499), Diamond (1500-1999), and Netherite (2000+). Higher ranks unlock more seed types.',
+      },
     },
   ],
 };
@@ -95,6 +161,10 @@ export default function GettingStartedPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <GettingStartedClient />
     </>

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { getSkinUrls } from '@/lib/api/avatar-cache';
 import type { UUID } from '@/types/api';
 
 export interface PlayerHead3DProps {
@@ -15,6 +16,7 @@ export interface PlayerHead3DProps {
  * PlayerHead3D component for displaying a 3D rotating Minecraft player head
  * Uses CSS 3D transforms to create a beautiful rotating cube effect
  * Similar to the reference site's "outer front" implementation
+ * Implements smart caching with daily rotation for efficient loading
  */
 export function PlayerHead3D({
   uuid,
@@ -26,13 +28,11 @@ export function PlayerHead3D({
   const [skinUrlIndex, setSkinUrlIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Generate skin URLs - primary Crafatar, fallback Cloudhaven
+  // Generate skin URLs with cache versioning - primary Crafatar, fallback Cloudhaven
   const skinUrls = React.useMemo(() => {
     if (!uuid) return [];
-    return [
-      `https://crafatar.com/skins/${uuid}`,
-      `https://avatars.cloudhaven.gg/skins/${uuid}`,
-    ];
+    const urls = getSkinUrls(uuid);
+    return [urls.primary, urls.fallback];
   }, [uuid]);
 
   const skinUrl = skinUrls[skinUrlIndex] || null;

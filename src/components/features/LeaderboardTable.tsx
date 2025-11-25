@@ -216,6 +216,7 @@ function TopPlayerCard({ player, rank, isHighlighted, playerUrl, showRankChange,
                 uuid={player.uuid}
                 username={player.nickname}
                 size="lg"
+                priority // Top 3 are above the fold, load eagerly
               />
             </div>
           </div>

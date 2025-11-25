@@ -100,9 +100,10 @@ export function MinecraftIcon({
   return (
     <i
       className={cn(baseClass, iconClass, scaleClass, 'inline-block', className)}
-      title={title}
+      title={title || name}
       aria-label={title || name}
       role="img"
+      data-icon={name}
     />
   );
 }

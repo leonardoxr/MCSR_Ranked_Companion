@@ -148,6 +148,7 @@ export function EloTimelinePageClient() {
   const [chartHeight, setChartHeight] = React.useState(450);
   const [smoothGraph, setSmoothGraph] = React.useState(true);
   const [showTop1, setShowTop1] = React.useState(true);
+  const hasInitializedSelection = React.useRef(false);
 
   // Fetch data
   const {
@@ -160,13 +161,14 @@ export function EloTimelinePageClient() {
   // Get current top 1 player
   const currentTop1Player = playerTimelines.length > 0 ? playerTimelines[0] : null;
 
-  // Initialize selected players with top 10 on first load
+  // Initialize selected players with top 10 on first load only
   React.useEffect(() => {
-    if (playerTimelines.length > 0 && selectedPlayers.size === 0) {
+    if (playerTimelines.length > 0 && !hasInitializedSelection.current) {
       const top10 = playerTimelines.slice(0, 10).map((p) => p.uuid);
       setSelectedPlayers(new Set(top10));
+      hasInitializedSelection.current = true;
     }
-  }, [playerTimelines, selectedPlayers.size]);
+  }, [playerTimelines]);
 
   // Filter data by time range - ALL players (for Top 1 reference)
   const allTimelinesFiltered = React.useMemo(() => {

@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separa
 import { Button } from '@/components/ui/button';
 import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User } from 'lucide-react';
 import { PrivateKeyManager } from '@/components/features/PrivateKeyManager';
-import { formatRelativeTime } from '@/lib/utils/formatters';
+import { formatRelativeTime, formatTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
 import { filterMatches, paginateItems, getTotalPages } from '@/lib/utils/matchFilters';
 import type { EloDataPoint } from '@/components/features/EloChart';
@@ -214,13 +214,13 @@ export function PlayerPageClient() {
           <CardContent className="space-y-4">
             <StatRow
               label={t('player.stats.bestTime')}
-              value={totalStats.bestTime ? formatTime(totalStats.bestTime) : t('common.notAvailable')}
+              value={totalStats.bestTime ? formatTime(totalStats.bestTime, true) : t('common.notAvailable')}
             />
             <StatRow
               label={t('player.stats.avgCompletion')}
               value={
                 totalStats.completions > 0
-                  ? formatTime(totalStats.completionTime / totalStats.completions)
+                  ? formatTime(totalStats.completionTime / totalStats.completions, true)
                   : t('common.notAvailable')
               }
             />
@@ -389,13 +389,6 @@ function StatRow({ label, value }: StatRowProps) {
       <span className="font-semibold">{value}</span>
     </div>
   );
-}
-
-function formatTime(milliseconds: number): string {
-  const totalSeconds = Math.floor(milliseconds / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
 function formatPlaytime(milliseconds: number): string {

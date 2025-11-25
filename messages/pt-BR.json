@@ -111,7 +111,7 @@
     }
   },
   "live": {
-    "title": "Partidas Ao Vivo",
+    "title": "Quem Está Ao Vivo?",
     "description": "Assista partidas em andamento em tempo real",
     "count": "{count} Ao Vivo",
     "loading": "Carregando partidas ao vivo...",

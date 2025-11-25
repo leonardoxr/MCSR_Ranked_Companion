@@ -111,7 +111,7 @@
     }
   },
   "live": {
-    "title": "Live Matches",
+    "title": "Who's Live?",
     "description": "Watch ongoing matches in real-time",
     "count": "{count} Live",
     "loading": "Loading live matches...",

@@ -10,7 +10,7 @@ import { PlayerAvatar } from './PlayerAvatar';
 import { CountryFlag } from './CountryFlag';
 import { MinecraftIcon } from './MinecraftIcon';
 import type { MinecraftIconName } from './MinecraftIcon';
-import { Crown, Clock, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Crown, Clock, TrendingUp, TrendingDown, Minus, Trophy } from 'lucide-react';
 
 interface PlayerNameProps {
   uuid: UUID;
@@ -168,16 +168,33 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
           </div>
 
           {ORDER.map((type, idx) => {
-            const lTime = firstEventTime(match.timelines, left.uuid, type);
-            const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
+            const isFinish = type === 'finish';
+            // For finish milestone, fall back to completionTime if no timeline event
+            const lTime = isFinish
+              ? (firstEventTime(match.timelines, left.uuid, type) ?? completionTime(match, left.uuid))
+              : firstEventTime(match.timelines, left.uuid, type);
+            const rTime = right
+              ? (isFinish
+                ? (firstEventTime(match.timelines, right.uuid, type) ?? completionTime(match, right.uuid))
+                : firstEventTime(match.timelines, right.uuid, type))
+              : null;
             const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
+            const leftWonFinish = isFinish && leftIsWinner;
+            const rightWonFinish = isFinish && rightIsWinner;
 
             return (
-              <div key={type} className="p-4 hover:bg-white/5 transition-colors relative group">
+              <div key={type} className={cn(
+                "p-4 hover:bg-white/5 transition-colors relative group",
+                isFinish && "bg-gradient-to-r from-emerald/10 via-transparent to-emerald/10"
+              )}>
                 {/* Milestone Name */}
-                <div className="flex items-center justify-center gap-2 mb-3 font-semibold text-sm text-foreground/90">
+                <div className={cn(
+                  "flex items-center justify-center gap-2 mb-3 font-semibold text-sm",
+                  isFinish ? "text-pink-400" : "text-foreground/90"
+                )}>
                   {milestoneIcons[type] && <MinecraftIcon name={milestoneIcons[type]} size="sm" />}
                   <span>{t(`timeline.milestones.${type}`)}</span>
+                  {isFinish && <Trophy className="h-4 w-4 text-yellow-500" />}
                 </div>
 
                 {/* Times */}
@@ -186,14 +203,24 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                   <div className="relative">
                     <div className="font-mono font-medium text-lg leading-none mb-1">
                       {lTime !== null ? (
-                        <span className={cn(delta !== null && delta < 0 ? "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]" : "text-foreground")}>
+                        <span className={cn(
+                          leftWonFinish && "text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.7)] font-bold",
+                          !leftWonFinish && delta !== null && delta < 0 && "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]",
+                          !leftWonFinish && (delta === null || delta >= 0) && "text-foreground"
+                        )}>
                           {formatTime(lTime)}
                         </span>
                       ) : (
                         <span className="text-muted-foreground/50">—</span>
                       )}
                     </div>
-                    {delta !== null && lTime !== null && (
+                    {leftWonFinish && lTime !== null && (
+                      <div className="flex items-center gap-1 text-xs font-bold text-yellow-500">
+                        <Crown className="h-3 w-3" />
+                        {t('match.winner', { defaultValue: 'WINNER' })}
+                      </div>
+                    )}
+                    {!leftWonFinish && delta !== null && lTime !== null && (
                       <div className={cn('text-xs font-mono font-bold', delta < 0 ? 'text-emerald-500' : 'text-rose-500')}>
                         {delta < 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
                       </div>
@@ -204,14 +231,24 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                   <div className="text-right relative">
                     <div className="font-mono font-medium text-lg leading-none mb-1">
                       {rTime !== null ? (
-                        <span className={cn(delta !== null && delta > 0 ? "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]" : "text-foreground")}>
+                        <span className={cn(
+                          rightWonFinish && "text-emerald-400 drop-shadow-[0_0_6px_rgba(52,211,153,0.7)] font-bold",
+                          !rightWonFinish && delta !== null && delta > 0 && "text-emerald-400 drop-shadow-[0_0_3px_rgba(52,211,153,0.5)]",
+                          !rightWonFinish && (delta === null || delta <= 0) && "text-foreground"
+                        )}>
                           {formatTime(rTime)}
                         </span>
                       ) : (
                         <span className="text-muted-foreground/50">—</span>
                       )}
                     </div>
-                    {delta !== null && rTime !== null && (
+                    {rightWonFinish && rTime !== null && (
+                      <div className="flex items-center justify-end gap-1 text-xs font-bold text-yellow-500">
+                        <Crown className="h-3 w-3" />
+                        {t('match.winner', { defaultValue: 'WINNER' })}
+                      </div>
+                    )}
+                    {!rightWonFinish && delta !== null && rTime !== null && (
                       <div className={cn('text-xs font-mono font-bold', delta > 0 ? 'text-emerald-500' : 'text-rose-500')}>
                         {delta > 0 ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
                       </div>
@@ -251,26 +288,42 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500/50 via-yellow-500/50 to-pink-500/50 -translate-x-1/2 z-0" />
 
             {ORDER.map((type, idx) => {
-              const lTime = firstEventTime(match.timelines, left.uuid, type);
-              const rTime = right ? firstEventTime(match.timelines, right.uuid, type) : null;
+              const isFinish = type === 'finish';
+              // For finish milestone, fall back to completionTime if no timeline event
+              const lTime = isFinish
+                ? (firstEventTime(match.timelines, left.uuid, type) ?? completionTime(match, left.uuid))
+                : firstEventTime(match.timelines, left.uuid, type);
+              const rTime = right
+                ? (isFinish
+                  ? (firstEventTime(match.timelines, right.uuid, type) ?? completionTime(match, right.uuid))
+                  : firstEventTime(match.timelines, right.uuid, type))
+                : null;
               const delta = lTime !== null && rTime !== null ? lTime - rTime : null;
               const config = milestoneConfig[type] || { icon: 'ender-eye' as MinecraftIconName, color: 'text-muted-foreground' };
               const leftAhead = delta !== null && delta < 0;
               const rightAhead = delta !== null && delta > 0;
-              const isFinish = type === 'finish';
+              const leftWonFinish = isFinish && leftIsWinner;
+              const rightWonFinish = isFinish && rightIsWinner;
 
               return (
                 <div
                   key={type}
                   className={cn(
                     "grid grid-cols-[1fr_auto_1fr] items-center group hover:bg-white/[0.03] transition-all relative z-10",
-                    isFinish && "bg-gradient-to-r from-emerald/5 via-transparent to-emerald/5"
+                    isFinish && "bg-gradient-to-r from-emerald/10 via-yellow-500/5 to-emerald/10"
                   )}
                 >
                   {/* Left time */}
                   <div className="px-6 py-5 text-right flex items-center justify-end gap-3">
-                    {/* Delta badge */}
-                    {delta !== null && (
+                    {/* Winner badge for finish */}
+                    {leftWonFinish && lTime !== null && (
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/20 border border-yellow-500/30">
+                        <Crown className="h-4 w-4 text-yellow-500" />
+                        <span className="text-xs font-bold text-yellow-500">{t('match.winner', { defaultValue: 'WINNER' })}</span>
+                      </div>
+                    )}
+                    {/* Delta badge - hide for winner on finish */}
+                    {delta !== null && !leftWonFinish && (
                       <div className={cn(
                         'flex items-center gap-1 text-xs font-mono font-bold px-2 py-1 rounded-md',
                         leftAhead ? 'bg-emerald/20 text-emerald border border-emerald/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
@@ -282,9 +335,10 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                     {/* Time */}
                     <div className={cn(
                       "font-mono text-lg font-semibold tabular-nums",
-                      lTime !== null && leftAhead && "text-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]",
-                      lTime !== null && !leftAhead && delta !== null && "text-muted-foreground",
-                      lTime !== null && delta === null && "text-foreground"
+                      leftWonFinish && "text-emerald text-xl drop-shadow-[0_0_12px_rgba(52,211,153,0.6)]",
+                      !leftWonFinish && lTime !== null && leftAhead && "text-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]",
+                      !leftWonFinish && lTime !== null && !leftAhead && delta !== null && "text-muted-foreground",
+                      !leftWonFinish && lTime !== null && delta === null && "text-foreground"
                     )}>
                       {lTime !== null ? formatTime(lTime) : <span className="text-muted-foreground/30">—</span>}
                     </div>
@@ -294,23 +348,31 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                   <div className="px-4 py-5 flex flex-col items-center justify-center gap-2 min-w-[160px]">
                     <div className="relative">
                       {/* Glow effect */}
-                      <div className={cn("absolute inset-0 rounded-xl blur-md opacity-30 group-hover:opacity-50 transition-opacity", config.color.replace('text-', 'bg-'))} />
+                      <div className={cn(
+                        "absolute inset-0 rounded-xl blur-md transition-opacity",
+                        isFinish ? "opacity-50 bg-gradient-to-r from-yellow-500 to-emerald" : "opacity-30 group-hover:opacity-50",
+                        !isFinish && config.color.replace('text-', 'bg-')
+                      )} />
                       {/* Icon container */}
                       <div className={cn(
                         "relative bg-card/80 backdrop-blur border-2 p-3 rounded-xl shadow-lg transition-all duration-300",
                         "group-hover:scale-110 group-hover:shadow-xl",
-                        isFinish ? "border-pink-500/50 shadow-pink-500/20" : "border-white/10 group-hover:border-white/20"
+                        isFinish ? "border-yellow-500/50 shadow-yellow-500/30" : "border-white/10 group-hover:border-white/20"
                       )}>
-                        <MinecraftIcon
-                          name={config.icon}
-                          size="md"
-                          className="image-pixelated"
-                        />
+                        {isFinish ? (
+                          <Trophy className="h-8 w-8 text-yellow-500" />
+                        ) : (
+                          <MinecraftIcon
+                            name={config.icon}
+                            size="md"
+                            className="image-pixelated"
+                          />
+                        )}
                       </div>
                     </div>
                     <span className={cn(
                       "text-xs uppercase tracking-wider font-semibold transition-colors",
-                      isFinish ? "text-pink-400" : "text-muted-foreground group-hover:text-foreground"
+                      isFinish ? "text-yellow-500" : "text-muted-foreground group-hover:text-foreground"
                     )}>
                       {t(`timeline.milestones.${type}`, { defaultValue: type.replace('enter_', '').replace('_', ' ') })}
                     </span>
@@ -321,20 +383,28 @@ export function MatchSplitTable({ match, className }: MatchSplitTableProps) {
                     {/* Time */}
                     <div className={cn(
                       "font-mono text-lg font-semibold tabular-nums",
-                      rTime !== null && rightAhead && "text-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]",
-                      rTime !== null && !rightAhead && delta !== null && "text-muted-foreground",
-                      rTime !== null && delta === null && "text-foreground"
+                      rightWonFinish && "text-emerald text-xl drop-shadow-[0_0_12px_rgba(52,211,153,0.6)]",
+                      !rightWonFinish && rTime !== null && rightAhead && "text-emerald drop-shadow-[0_0_8px_rgba(52,211,153,0.4)]",
+                      !rightWonFinish && rTime !== null && !rightAhead && delta !== null && "text-muted-foreground",
+                      !rightWonFinish && rTime !== null && delta === null && "text-foreground"
                     )}>
                       {rTime !== null ? formatTime(rTime) : <span className="text-muted-foreground/30">—</span>}
                     </div>
-                    {/* Delta badge */}
-                    {delta !== null && (
+                    {/* Delta badge - hide for winner on finish */}
+                    {delta !== null && !rightWonFinish && (
                       <div className={cn(
                         'flex items-center gap-1 text-xs font-mono font-bold px-2 py-1 rounded-md',
                         rightAhead ? 'bg-emerald/20 text-emerald border border-emerald/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                       )}>
                         {rightAhead ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {rightAhead ? '-' : '+'}{formatTimeDifference(Math.abs(delta))}
+                      </div>
+                    )}
+                    {/* Winner badge for finish */}
+                    {rightWonFinish && rTime !== null && (
+                      <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-yellow-500/20 border border-yellow-500/30">
+                        <Crown className="h-4 w-4 text-yellow-500" />
+                        <span className="text-xs font-bold text-yellow-500">{t('match.winner', { defaultValue: 'WINNER' })}</span>
                       </div>
                     )}
                   </div>

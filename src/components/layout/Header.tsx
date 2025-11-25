@@ -174,9 +174,10 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className="ml-6 hidden md:flex items-center gap-1">
               <NavLink href="/" label={t('nav.leaderboard')} />
-              <LiveNavLink href="/live" label={t('nav.whosLive')} />
+              <NavLink href="/elo-timeline" label={t('nav.eloTimeline')} />
               <NavLink href="/compare" label={t('nav.playerComparison')} />
               {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
+              <LiveNavLink href="/live" label={t('nav.whosLive')} />
             </nav>
 
             {/* Desktop Search & Actions */}
@@ -282,9 +283,10 @@ export default function Header() {
               {/* Mobile Navigation Links */}
               <nav className="py-4 space-y-2">
                 <MobileNavLink href="/" label={t('nav.leaderboard')} />
-                <MobileLiveNavLink href="/live" label={t('nav.whosLive')} />
+                <MobileNavLink href="/elo-timeline" label={t('nav.eloTimeline')} />
                 <MobileNavLink href="/compare" label={t('nav.playerComparison')} />
                 {isAuthenticated && <MobileNavLink href="/my-stats" label="My Stats" />}
+                <MobileLiveNavLink href="/live" label={t('nav.whosLive')} />
               </nav>
 
               {/* Mobile Auth Section */}

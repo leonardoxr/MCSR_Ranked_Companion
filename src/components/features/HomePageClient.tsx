@@ -19,9 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui';
-import { Trophy } from 'lucide-react';
+import { Trophy, TrendingUp, ChevronRight } from 'lucide-react';
 import { COUNTRIES, SEASONS } from '@/lib/constants/filters';
 import { CACHE_PRESETS } from '@/lib/api/cache-config';
+import Link from 'next/link';
 
 const MAX_USERS = 150;
 
@@ -83,6 +84,32 @@ export function HomePageClient() {
             </div>
           </div>
         </div>
+
+        {/* ELO Timeline Banner */}
+        <Link href="/elo-timeline" className="block">
+          <div className="group relative overflow-hidden rounded-lg border border-primary/20 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="relative flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-primary/20 rounded-lg group-hover:bg-primary/30 transition-colors">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                    {t('eloTimeline.bannerTitle', { defaultValue: 'ELO Timeline' })}
+                    <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                      {t('eloTimeline.new', { defaultValue: 'NEW' })}
+                    </span>
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    {t('eloTimeline.bannerDescription', { defaultValue: 'Visualize ELO progression of top players over time' })}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="h-5 w-5 text-primary group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </Link>
 
         {/* Search + Filters */}
         <div className="flex flex-col gap-3">

@@ -33,6 +33,7 @@
   "nav": {
     "home": "首页",
     "leaderboard": "排行榜",
+    "eloTimeline": "ELO 历史",
     "liveMatches": "实时比赛",
     "whosLive": "谁在直播？",
     "playerComparison": "玩家对比"
@@ -273,6 +274,30 @@
     "best": "最佳：",
     "matches": "比赛",
     "tier": "等级"
+  },
+  "eloTimeline": {
+    "title": "ELO 历史",
+    "description": "追踪顶级玩家的 ELO 变化",
+    "bannerTitle": "ELO 历史",
+    "bannerDescription": "可视化顶级玩家的 ELO 进展",
+    "new": "新功能",
+    "loading": "加载 ELO 历史中...",
+    "loadingMatches": "加载比赛历史中...",
+    "error": "加载历史失败",
+    "chartTitle": "ELO 进展",
+    "selectPlayers": "选择玩家",
+    "playersSelected": "位玩家已选择",
+    "selectAll": "全选",
+    "selectNone": "取消",
+    "timeRange": "时间范围",
+    "week": "最近一周",
+    "month": "最近一月",
+    "season": "整个赛季",
+    "noData": "所选玩家暂无数据",
+    "smoothGraph": "平滑图表",
+    "showTop1": "显示第一",
+    "currentTop1": "当前第一",
+    "viewProfile": "查看资料"
   },
   "ranks": {
     "coal": "煤炭",

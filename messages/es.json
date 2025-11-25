@@ -33,6 +33,7 @@
   "nav": {
     "home": "Inicio",
     "leaderboard": "Tabla de clasificación",
+    "eloTimeline": "Historial de ELO",
     "liveMatches": "Partidas en Vivo",
     "whosLive": "¿Quién Está en Vivo?",
     "playerComparison": "Comparación de Jugadores"
@@ -273,6 +274,30 @@
     "best": "Mejor:",
     "matches": "partidas",
     "tier": "Nivel"
+  },
+  "eloTimeline": {
+    "title": "Historial de ELO",
+    "description": "Rastrea la progresión de ELO de los mejores jugadores a lo largo del tiempo",
+    "bannerTitle": "Historial de ELO",
+    "bannerDescription": "Visualiza la progresión de ELO de los mejores jugadores a lo largo del tiempo",
+    "new": "NUEVO",
+    "loading": "Cargando historial de ELO...",
+    "loadingMatches": "Cargando historial de partidas...",
+    "error": "Error al Cargar el Historial",
+    "chartTitle": "Progresión de ELO",
+    "selectPlayers": "Seleccionar Jugadores",
+    "playersSelected": "jugadores seleccionados",
+    "selectAll": "Todos",
+    "selectNone": "Ninguno",
+    "timeRange": "Rango de Tiempo",
+    "week": "Última Semana",
+    "month": "Último Mes",
+    "season": "Temporada Completa",
+    "noData": "No hay datos disponibles para los jugadores seleccionados",
+    "smoothGraph": "Gráfico Suave",
+    "showTop1": "Mostrar #1",
+    "currentTop1": "#1 Actual",
+    "viewProfile": "Ver Perfil"
   },
   "ranks": {
     "coal": "Carbón",

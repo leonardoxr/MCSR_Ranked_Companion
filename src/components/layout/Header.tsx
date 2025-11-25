@@ -11,7 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '@/lib/api/endpoints';
 import { leaderboardKeys } from '@/lib/api/hooks/useLeaderboard';
 import { useAuthStore } from '@/lib/store/useAuthStore';
-import { LogOut, User, Menu, X, Search } from 'lucide-react';
+import { LogOut, User, Menu, X, Search, BookOpen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 const NavLink = ({ href, label }: { href: string; label: string }) => {
@@ -176,6 +176,7 @@ export default function Header() {
               <NavLink href="/" label={t('nav.leaderboard')} />
               <LiveNavLink href="/live" label={t('nav.whosLive')} />
               <NavLink href="/compare" label={t('nav.playerComparison')} />
+              <NavLink href="/getting-started" label="Guide" />
               {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
             </nav>
 
@@ -284,6 +285,7 @@ export default function Header() {
                 <MobileNavLink href="/" label={t('nav.leaderboard')} />
                 <MobileLiveNavLink href="/live" label={t('nav.whosLive')} />
                 <MobileNavLink href="/compare" label={t('nav.playerComparison')} />
+                <MobileNavLink href="/getting-started" label="Getting Started" />
                 {isAuthenticated && <MobileNavLink href="/my-stats" label="My Stats" />}
               </nav>
 

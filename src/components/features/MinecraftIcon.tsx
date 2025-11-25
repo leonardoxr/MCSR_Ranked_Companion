@@ -76,15 +76,14 @@ export interface MinecraftIconProps {
   title?: string;
 }
 
-const sizeClasses = {
-  sm: 'w-4 h-4',
-  md: 'w-8 h-8',
-  lg: 'w-12 h-12',
-};
-
 /**
  * MinecraftIcon component that displays Minecraft item/block icons using the sprite sheet
  * Uses the icons-minecraft-229 CSS sprite sheet from public/icons
+ *
+ * Sizes:
+ * - sm: 16x16px (uses icon-minecraft-sm class)
+ * - md: 32x32px (uses icon-minecraft class)
+ * - lg: 32x32px scaled to 48px (uses icon-minecraft class with transform)
  */
 export function MinecraftIcon({
   name,
@@ -93,12 +92,14 @@ export function MinecraftIcon({
   title,
 }: MinecraftIconProps) {
   // Determine whether to use small or regular icon class based on size
+  // sm = 16px, md/lg = 32px base (lg gets scaled)
   const baseClass = size === 'sm' ? 'icon-minecraft-sm' : 'icon-minecraft';
-  const iconClass = `${baseClass} icon-minecraft-${name}`;
+  const iconClass = `icon-minecraft-${name}`;
+  const scaleClass = size === 'lg' ? 'scale-150' : '';
 
   return (
     <i
-      className={cn(iconClass, sizeClasses[size], 'inline-block', className)}
+      className={cn(baseClass, iconClass, scaleClass, 'inline-block', className)}
       title={title}
       aria-label={title || name}
       role="img"

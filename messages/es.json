@@ -128,7 +128,13 @@
     "inProgress": "En curso",
     "matchTime": "Tiempo de Partida",
     "players": "Jugadores",
-    "watchStream": "Ver Transmisión"
+    "watchStream": "Ver Transmisión",
+    "watch": "Ver",
+    "noStream": "Sin stream",
+    "highElo": "Alto ELO",
+    "sortEloHigh": "Mayor ELO primero",
+    "sortEloLow": "Menor ELO primero",
+    "sortTime": "Duración de partida"
   },
   "player": {
     "loading": "Cargando perfil del jugador...",

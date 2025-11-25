@@ -128,7 +128,13 @@
     "inProgress": "进行中",
     "matchTime": "比赛时间",
     "players": "玩家",
-    "watchStream": "观看直播"
+    "watchStream": "观看直播",
+    "watch": "观看",
+    "noStream": "无直播",
+    "highElo": "高分段",
+    "sortEloHigh": "最高分优先",
+    "sortEloLow": "最低分优先",
+    "sortTime": "比赛时长"
   },
   "player": {
     "loading": "加载玩家档案中...",

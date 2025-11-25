@@ -680,6 +680,20 @@ export function GettingStartedClient() {
                     <span>{t('tools.jingleFeature4')}</span>
                   </div>
                 </div>
+                <div className="mt-3 p-2 rounded bg-minecraft-diamond/10 border border-minecraft-diamond/20">
+                  <p className="text-xs text-white/70">
+                    <span className="text-minecraft-diamond font-medium">{t('tools.jinglePlugin')}: </span>
+                    {t('tools.jinglePluginDesc')}{' '}
+                    <a
+                      href="https://github.com/leonardoxr/jingle-e-counter-plugin"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-minecraft-diamond hover:underline inline-flex items-center gap-1"
+                    >
+                      GitHub <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </p>
+                </div>
               </div>
 
               {/* Ninjabrain Bot */}

@@ -607,6 +607,8 @@
       "jingleFeature2": "World clearing with safety buffer",
       "jingleFeature3": "Customizable hotkeys",
       "jingleFeature4": "OBS integration",
+      "jinglePlugin": "E Counter Plugin",
+      "jinglePluginDesc": "Track your enter counts with this Jingle plugin that displays E (enters) and E/H (enters per hour) on your OBS overlay.",
       "ninjabrain": "Ninjabrain Bot",
       "ninjabrainSubtitle": "Stronghold Calculator",
       "ninjabrainDesc": "Calculates stronghold locations through triangulation using ender eye throws. Accounts for measurement accuracy and provides confidence percentages.",

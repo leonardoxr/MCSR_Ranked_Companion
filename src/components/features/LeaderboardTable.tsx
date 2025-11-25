@@ -10,6 +10,7 @@ import { CountryFlag } from './CountryFlag';
 import { cn } from '@/lib/utils';
 import type { LeaderboardUser } from '@/types/api';
 import { Crown, Medal, TrendingUp, TrendingDown, Minus, Flame } from 'lucide-react';
+import { SupporterBadge } from './SupporterBadge';
 
 export interface LeaderboardTableProps {
   players: LeaderboardUser[];
@@ -231,6 +232,7 @@ function TopPlayerCard({ player, rank, isHighlighted, playerUrl, showRankChange,
               )}>
                 {player.nickname}
               </span>
+              <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
             </div>
           </div>
 
@@ -322,6 +324,7 @@ function LeaderboardRow({
               <span className="font-semibold truncate group-hover:text-primary transition-colors">
                 {player.nickname}
               </span>
+              <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
             </div>
             {showRankChange && player.eloRank && (
               <RankChangeIndicator change={0} />
@@ -387,6 +390,7 @@ function LeaderboardRow({
               <span className="font-semibold truncate">
                 {player.nickname}
               </span>
+              <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {player.eloRate ? (

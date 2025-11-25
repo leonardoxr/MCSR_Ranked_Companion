@@ -51,6 +51,7 @@ function getTimelineEventKey(type: string): string {
     'finish': 'finish',
     'died': 'died',
     'blind_travel': 'blind_travel',
+    'follow_ender_eye': 'follow_ender_eye',
     'iron_tools': 'story_iron_tools',
     'mine_stone': 'story_mine_stone',
     'upgrade_tools': 'story_upgrade_tools',
@@ -58,6 +59,7 @@ function getTimelineEventKey(type: string): string {
     'mine_diamond': 'story_mine_diamond',
     'obtain_armor': 'story_obtain_armor',
     'lava_bucket': 'story_lava_bucket',
+    'root': 'overworld',
   };
 
   return eventMap[cleanType] || cleanType;
@@ -85,11 +87,14 @@ function getTimelineIcon(type: string): React.ReactNode {
   if (cleanType.includes('stronghold')) {
     return <MinecraftIcon name="stone-bricks" size="sm" />;
   }
-  if (cleanType.includes('end') || cleanType === 'enter_the_end') {
-    return <MinecraftIcon name="end-portal" size="sm" />;
+  if (cleanType.includes('enter_end') || cleanType === 'enter_the_end') {
+    return <MinecraftIcon name="end-portal-frame" size="sm" />;
+  }
+  if (cleanType.includes('ender_eye') || cleanType === 'follow_ender_eye') {
+    return <MinecraftIcon name="ender-eye" size="sm" />;
   }
   if (cleanType.includes('portal') || cleanType === 'blind_travel') {
-    return <MinecraftIcon name="ender-eye" size="sm" />;
+    return <MinecraftIcon name="ender-pearl" size="sm" />;
   }
   if (cleanType === 'finish') {
     return <MinecraftIcon name="dragon-egg" size="sm" />;

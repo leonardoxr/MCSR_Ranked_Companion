@@ -44,6 +44,8 @@ type TimeRange = 'week' | 'month' | 'season';
 
 interface ChartDataPoint {
   date: number;
+  top1Elo?: number;
+  top1Uuid?: string;
   [key: string]: number | string | undefined;
 }
 
@@ -52,12 +54,12 @@ const TOP1_COLOR = '#FFD700'; // Gold
 
 /**
  * Smooth data by interpolating values at regular intervals
- * This creates a smoother visualization when players have irregular match schedules
+ * Only interpolates between known points - does NOT extrapolate beyond data range
  */
 function smoothData(
   data: ChartDataPoint[],
   playerUuids: string[],
-  intervalMs: number = 24 * 60 * 60 * 1000 // Default: 1 day
+  intervalMs: number = 24 * 60 * 60 * 1000
 ): ChartDataPoint[] {
   if (data.length < 2) return data;
 
@@ -87,7 +89,7 @@ function smoothData(
         }
       }
 
-      // Interpolate
+      // Only interpolate when we have BOTH surrounding points (no extrapolation)
       if (beforePoint && afterPoint) {
         if (beforePoint.date === afterPoint.date) {
           point[uuid] = beforePoint.elo;
@@ -96,17 +98,41 @@ function smoothData(
           const ratio = (date - beforePoint.date) / (afterPoint.date - beforePoint.date);
           point[uuid] = Math.round(beforePoint.elo + ratio * (afterPoint.elo - beforePoint.elo));
         }
-      } else if (beforePoint) {
-        point[uuid] = beforePoint.elo;
-      } else if (afterPoint) {
-        point[uuid] = afterPoint.elo;
       }
+      // If only beforePoint or only afterPoint exists, don't set value (no extrapolation)
     });
 
     smoothedData.push(point);
   }
 
   return smoothedData;
+}
+
+/**
+ * Calculate who was #1 at each data point based on ELO values
+ */
+function calculateTop1AtEachPoint(
+  data: ChartDataPoint[],
+  playerUuids: string[]
+): ChartDataPoint[] {
+  return data.map((point) => {
+    let maxElo = -1;
+    let top1Uuid: string | undefined;
+
+    playerUuids.forEach((uuid) => {
+      const elo = point[uuid] as number | undefined;
+      if (elo !== undefined && elo > maxElo) {
+        maxElo = elo;
+        top1Uuid = uuid;
+      }
+    });
+
+    return {
+      ...point,
+      top1Elo: maxElo > 0 ? maxElo : undefined,
+      top1Uuid,
+    };
+  });
 }
 
 export function EloTimelinePageClient() {
@@ -131,13 +157,13 @@ export function EloTimelinePageClient() {
     leaderboardError,
   } = useEloTimeline({ playerCount: 20 });
 
-  // Get top 1 player (current leader)
-  const top1Player = playerTimelines.length > 0 ? playerTimelines[0] : null;
+  // Get current top 1 player
+  const currentTop1Player = playerTimelines.length > 0 ? playerTimelines[0] : null;
 
-  // Initialize selected players with top 10 on first load (excluding top1 since it's always shown)
+  // Initialize selected players with top 10 on first load
   React.useEffect(() => {
     if (playerTimelines.length > 0 && selectedPlayers.size === 0) {
-      const top10 = playerTimelines.slice(1, 11).map((p) => p.uuid);
+      const top10 = playerTimelines.slice(0, 10).map((p) => p.uuid);
       setSelectedPlayers(new Set(top10));
     }
   }, [playerTimelines, selectedPlayers.size]);
@@ -156,48 +182,43 @@ export function EloTimelinePageClient() {
         break;
       case 'season':
       default:
-        cutoff = 0; // Show all data
+        cutoff = 0;
     }
 
-    // Include selected players plus top1 if showTop1 is enabled
-    const playersToShow = playerTimelines.filter(
-      (p) => selectedPlayers.has(p.uuid) || (showTop1 && top1Player && p.uuid === top1Player.uuid)
-    );
+    // Include only selected players
+    const playersToShow = playerTimelines.filter((p) => selectedPlayers.has(p.uuid));
 
     return playersToShow.map((player) => ({
       ...player,
       data: player.data.filter((d) => d.date >= cutoff),
     }));
-  }, [playerTimelines, selectedPlayers, timeRange, showTop1, top1Player]);
+  }, [playerTimelines, selectedPlayers, timeRange]);
 
   // Get smoothing interval based on time range
   const smoothingInterval = React.useMemo(() => {
     switch (timeRange) {
       case 'week':
-        return 6 * 60 * 60 * 1000; // 6 hours for week view
+        return 6 * 60 * 60 * 1000;
       case 'month':
-        return 12 * 60 * 60 * 1000; // 12 hours for month view
+        return 12 * 60 * 60 * 1000;
       case 'season':
       default:
-        return 24 * 60 * 60 * 1000; // 1 day for season view
+        return 24 * 60 * 60 * 1000;
     }
   }, [timeRange]);
 
-  // Transform data for recharts (combine all player data points)
+  // Transform data for recharts
   const chartData = React.useMemo(() => {
     const allDates = new Set<number>();
 
-    // Collect all unique dates
     filteredTimelines.forEach((player) => {
       player.data.forEach((point) => {
         allDates.add(point.date);
       });
     });
 
-    // Sort dates
     const sortedDates = Array.from(allDates).sort((a, b) => a - b);
 
-    // Create data points with player ELO values
     const data: ChartDataPoint[] = sortedDates.map((date) => {
       const point: ChartDataPoint = { date };
 
@@ -211,7 +232,7 @@ export function EloTimelinePageClient() {
       return point;
     });
 
-    // Fill in gaps with previous values (for continuous lines)
+    // Fill in gaps with previous values
     const filledData: ChartDataPoint[] = [];
     const lastValues: Record<string, number> = {};
 
@@ -231,22 +252,31 @@ export function EloTimelinePageClient() {
     });
 
     // Apply smoothing if enabled
+    let processedData = filledData;
     if (smoothGraph && filledData.length > 2) {
-      return smoothData(
+      processedData = smoothData(
         filledData,
         filteredTimelines.map((p) => p.uuid),
         smoothingInterval
       );
     }
 
-    return filledData;
-  }, [filteredTimelines, smoothGraph, smoothingInterval]);
+    // Calculate Top 1 at each point if enabled
+    if (showTop1) {
+      processedData = calculateTop1AtEachPoint(
+        processedData,
+        filteredTimelines.map((p) => p.uuid)
+      );
+    }
+
+    return processedData;
+  }, [filteredTimelines, smoothGraph, smoothingInterval, showTop1]);
 
   // Responsive chart height
   React.useEffect(() => {
     const updateHeight = () => {
       if (window.innerWidth < 640) {
-        setChartHeight(350);
+        setChartHeight(300);
       } else if (window.innerWidth < 1024) {
         setChartHeight(400);
       } else {
@@ -270,7 +300,7 @@ export function EloTimelinePageClient() {
   };
 
   const selectAll = () => {
-    setSelectedPlayers(new Set(playerTimelines.slice(1).map((p) => p.uuid)));
+    setSelectedPlayers(new Set(playerTimelines.map((p) => p.uuid)));
   };
 
   const selectNone = () => {
@@ -278,9 +308,7 @@ export function EloTimelinePageClient() {
   };
 
   const selectTop10 = () => {
-    setSelectedPlayers(
-      new Set(playerTimelines.slice(1, 11).map((p) => p.uuid))
-    );
+    setSelectedPlayers(new Set(playerTimelines.slice(0, 10).map((p) => p.uuid)));
   };
 
   // Rank tier reference lines
@@ -312,134 +340,125 @@ export function EloTimelinePageClient() {
   }
 
   const displayedPlayers = showAllPlayers
-    ? playerTimelines.slice(1)
-    : playerTimelines.slice(1, 11);
+    ? playerTimelines
+    : playerTimelines.slice(0, 10);
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3 sm:gap-4">
         <div className="flex items-center gap-2">
           <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-1">
+            <Button variant="ghost" size="sm" className="gap-1 h-8 px-2 sm:px-3">
               <ChevronLeft className="h-4 w-4" />
-              {t('common.back')}
+              <span className="hidden xs:inline">{t('common.back')}</span>
             </Button>
           </Link>
         </div>
 
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-2 sm:p-3 bg-primary/10 rounded-lg">
-              <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-3xl font-bold">
-                {t('eloTimeline.title', { defaultValue: 'ELO Timeline' })}
-              </h1>
-              <p className="text-sm sm:text-base text-muted-foreground">
-                {t('eloTimeline.description', {
-                  defaultValue: 'Track ELO progression of top players over time',
-                })}
-              </p>
-            </div>
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+            <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-bold truncate">
+              {t('eloTimeline.title', { defaultValue: 'ELO Timeline' })}
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
+              {t('eloTimeline.description', {
+                defaultValue: 'Track ELO progression of top players over time',
+              })}
+            </p>
           </div>
         </div>
 
-        {/* Filters Row */}
-        <div className="flex flex-wrap items-center gap-4">
+        {/* Filters - Mobile Friendly Layout */}
+        <div className="flex flex-col gap-3">
           {/* Time Range Filter */}
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              {t('eloTimeline.timeRange', { defaultValue: 'Time Range' })}:
-            </span>
-            <div className="flex gap-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <div className="flex gap-1 flex-wrap">
               {(['week', 'month', 'season'] as TimeRange[]).map((range) => (
                 <Button
                   key={range}
                   variant={timeRange === range ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => setTimeRange(range)}
-                  className="text-xs"
+                  className="text-xs h-7 px-2 sm:px-3"
                 >
                   {t(`eloTimeline.${range}`, {
                     defaultValue:
-                      range === 'week'
-                        ? 'Last Week'
-                        : range === 'month'
-                        ? 'Last Month'
-                        : 'Full Season',
+                      range === 'week' ? '1W' : range === 'month' ? '1M' : 'All',
                   })}
                 </Button>
               ))}
             </div>
           </div>
 
-          {/* Smooth Graph Checkbox */}
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <div
-              className={cn(
-                'w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors',
-                smoothGraph ? 'bg-primary' : 'bg-muted/50 border border-border'
-              )}
-              onClick={() => setSmoothGraph(!smoothGraph)}
-            >
-              {smoothGraph && <Check className="h-3 w-3 text-primary-foreground" />}
-            </div>
-            <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <Sparkles className="h-3 w-3" />
-              {t('eloTimeline.smoothGraph', { defaultValue: 'Smooth Graph' })}
-            </span>
-          </label>
+          {/* Checkboxes Row */}
+          <div className="flex flex-wrap gap-3 sm:gap-4">
+            {/* Smooth Graph Checkbox */}
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
+              <div
+                className={cn(
+                  'w-4 h-4 sm:w-5 sm:h-5 rounded flex items-center justify-center shrink-0 transition-colors',
+                  smoothGraph ? 'bg-primary' : 'bg-muted/50 border border-border'
+                )}
+                onClick={() => setSmoothGraph(!smoothGraph)}
+              >
+                {smoothGraph && <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />}
+              </div>
+              <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                <Sparkles className="h-3 w-3" />
+                <span className="hidden xs:inline">{t('eloTimeline.smoothGraph', { defaultValue: 'Smooth' })}</span>
+              </span>
+            </label>
 
-          {/* Show Top 1 Checkbox */}
-          <label className="flex items-center gap-2 cursor-pointer select-none">
-            <div
-              className={cn(
-                'w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors',
-                showTop1 ? 'bg-yellow-500' : 'bg-muted/50 border border-border'
-              )}
-              onClick={() => setShowTop1(!showTop1)}
-            >
-              {showTop1 && <Check className="h-3 w-3 text-primary-foreground" />}
-            </div>
-            <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <Crown className="h-3 w-3 text-yellow-500" />
-              {t('eloTimeline.showTop1', { defaultValue: 'Show #1' })}
-              {top1Player && (
-                <span className="text-xs text-yellow-500 font-medium">({top1Player.nickname})</span>
-              )}
-            </span>
-          </label>
+            {/* Show Top 1 Checkbox */}
+            <label className="flex items-center gap-1.5 cursor-pointer select-none">
+              <div
+                className={cn(
+                  'w-4 h-4 sm:w-5 sm:h-5 rounded flex items-center justify-center shrink-0 transition-colors',
+                  showTop1 ? 'bg-yellow-500' : 'bg-muted/50 border border-border'
+                )}
+                onClick={() => setShowTop1(!showTop1)}
+              >
+                {showTop1 && <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-primary-foreground" />}
+              </div>
+              <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1">
+                <Crown className="h-3 w-3 text-yellow-500" />
+                <span>{t('eloTimeline.showTop1', { defaultValue: '#1 Ref' })}</span>
+              </span>
+            </label>
+          </div>
         </div>
       </div>
 
       {/* Main Chart */}
       <Card variant="mc" className="overflow-hidden">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base sm:text-lg flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              {t('eloTimeline.chartTitle', { defaultValue: 'ELO Progression' })}
+        <CardHeader className="pb-2 px-3 sm:px-6">
+          <CardTitle className="text-sm sm:text-base flex items-center justify-between gap-2">
+            <span className="flex items-center gap-2 min-w-0">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
+              <span className="truncate">{t('eloTimeline.chartTitle', { defaultValue: 'ELO Progression' })}</span>
             </span>
-            <span className="text-sm text-muted-foreground font-normal">
-              {selectedPlayers.size + (showTop1 && top1Player ? 1 : 0)} {t('eloTimeline.playersSelected', { defaultValue: 'players selected' })}
+            <span className="text-xs text-muted-foreground font-normal whitespace-nowrap">
+              {selectedPlayers.size} {t('eloTimeline.playersSelected', { defaultValue: 'selected' })}
             </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-2">
+        <CardContent className="pt-2 px-1 sm:px-4">
           {isLoading ? (
             <div className="flex items-center justify-center" style={{ height: chartHeight }}>
-              <LoadingState message={t('eloTimeline.loadingMatches', { defaultValue: 'Loading match history...' })} />
+              <LoadingState message={t('eloTimeline.loadingMatches', { defaultValue: 'Loading...' })} />
             </div>
           ) : chartData.length === 0 ? (
-            <div className="flex items-center justify-center text-muted-foreground" style={{ height: chartHeight }}>
-              {t('eloTimeline.noData', { defaultValue: 'No data available for selected players' })}
+            <div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: chartHeight }}>
+              {t('eloTimeline.noData', { defaultValue: 'No data available' })}
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={chartHeight}>
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
                 <defs>
                   {filteredTimelines.map((player) => (
                     <linearGradient
@@ -450,16 +469,8 @@ export function EloTimelinePageClient() {
                       x2="0"
                       y2="1"
                     >
-                      <stop
-                        offset="5%"
-                        stopColor={showTop1 && top1Player && player.uuid === top1Player.uuid ? TOP1_COLOR : player.color}
-                        stopOpacity={0.3}
-                      />
-                      <stop
-                        offset="95%"
-                        stopColor={showTop1 && top1Player && player.uuid === top1Player.uuid ? TOP1_COLOR : player.color}
-                        stopOpacity={0}
-                      />
+                      <stop offset="5%" stopColor={player.color} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={player.color} stopOpacity={0} />
                     </linearGradient>
                   ))}
                 </defs>
@@ -469,20 +480,23 @@ export function EloTimelinePageClient() {
                   type="number"
                   domain={['dataMin', 'dataMax']}
                   tickFormatter={(value) => formatDate(new Date(value), 'MM/dd')}
-                  tick={{ fontSize: 10 }}
+                  tick={{ fontSize: 9 }}
                   stroke="hsl(var(--muted-foreground))"
                   strokeOpacity={0.5}
+                  tickMargin={8}
                 />
                 <YAxis
                   domain={['dataMin - 100', 'dataMax + 100']}
-                  tick={{ fontSize: 10 }}
+                  tick={{ fontSize: 9 }}
                   stroke="hsl(var(--muted-foreground))"
                   strokeOpacity={0.5}
+                  tickMargin={4}
+                  width={45}
                 />
-                <Tooltip content={<CustomTooltip players={filteredTimelines} top1Uuid={top1Player?.uuid} />} />
+                <Tooltip content={<CustomTooltip players={filteredTimelines} showTop1={showTop1} />} />
                 <Legend
-                  content={<CustomLegend players={filteredTimelines} top1Uuid={top1Player?.uuid} />}
-                  wrapperStyle={{ paddingTop: 20 }}
+                  content={<CustomLegend players={filteredTimelines} showTop1={showTop1} />}
+                  wrapperStyle={{ paddingTop: 10 }}
                 />
 
                 {/* Rank tier reference lines */}
@@ -492,126 +506,131 @@ export function EloTimelinePageClient() {
                     y={tier.elo}
                     stroke={tier.color}
                     strokeDasharray="3 3"
-                    strokeOpacity={0.4}
-                    label={{
-                      value: tier.name,
-                      position: 'right',
-                      fill: tier.color,
-                      fontSize: 9,
-                    }}
+                    strokeOpacity={0.3}
                   />
                 ))}
 
-                {/* Player lines - Top 1 first with special styling */}
-                {filteredTimelines.map((player) => {
-                  const isTop1 = showTop1 && top1Player && player.uuid === top1Player.uuid;
-                  return (
-                    <Line
-                      key={player.uuid}
-                      type={smoothGraph ? 'monotone' : 'linear'}
-                      dataKey={player.uuid}
-                      name={player.nickname}
-                      stroke={isTop1 ? TOP1_COLOR : player.color}
-                      strokeWidth={isTop1 ? 3 : 2}
-                      dot={false}
-                      connectNulls
-                      strokeDasharray={isTop1 ? undefined : undefined}
-                      activeDot={{
-                        r: isTop1 ? 8 : 6,
-                        fill: isTop1 ? TOP1_COLOR : player.color,
-                        stroke: 'hsl(var(--background))',
-                        strokeWidth: 2,
-                      }}
-                    />
-                  );
-                })}
+                {/* Top 1 reference line - shows who was #1 at each moment */}
+                {showTop1 && (
+                  <Line
+                    type={smoothGraph ? 'monotone' : 'linear'}
+                    dataKey="top1Elo"
+                    name="Top 1"
+                    stroke={TOP1_COLOR}
+                    strokeWidth={3}
+                    dot={false}
+                    connectNulls
+                    strokeDasharray="5 5"
+                    activeDot={{
+                      r: 6,
+                      fill: TOP1_COLOR,
+                      stroke: 'hsl(var(--background))',
+                      strokeWidth: 2,
+                    }}
+                  />
+                )}
+
+                {/* Player lines */}
+                {filteredTimelines.map((player) => (
+                  <Line
+                    key={player.uuid}
+                    type={smoothGraph ? 'monotone' : 'linear'}
+                    dataKey={player.uuid}
+                    name={player.nickname}
+                    stroke={player.color}
+                    strokeWidth={2}
+                    dot={false}
+                    connectNulls
+                    activeDot={{
+                      r: 5,
+                      fill: player.color,
+                      stroke: 'hsl(var(--background))',
+                      strokeWidth: 2,
+                    }}
+                  />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           )}
         </CardContent>
       </Card>
 
-      {/* Top 1 Player Card */}
-      {top1Player && (
+      {/* Current Top 1 Info Card - Mobile Friendly */}
+      {showTop1 && currentTop1Player && (
         <Card variant="mc" className="border-yellow-500/30 bg-gradient-to-r from-yellow-500/5 to-transparent">
-          <CardContent className="py-3">
-            <div className="flex items-center gap-3">
-              <Crown className="h-5 w-5 text-yellow-500" />
-              <span className="text-sm font-semibold text-yellow-500">
-                {t('eloTimeline.currentTop1', { defaultValue: 'Current #1' })}
+          <CardContent className="py-2.5 px-3 sm:px-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Crown className="h-4 w-4 text-yellow-500 shrink-0" />
+              <span className="text-xs sm:text-sm font-semibold text-yellow-500">
+                {t('eloTimeline.currentTop1', { defaultValue: 'Current #1' })}:
               </span>
-              <div className="flex items-center gap-2 ml-2">
-                <div
-                  className="w-4 h-4 rounded-full"
-                  style={{ backgroundColor: TOP1_COLOR }}
-                />
-                <PlayerAvatar uuid={top1Player.uuid} size="xs" />
-                <span className="font-medium">{top1Player.nickname}</span>
-                <RankBadge elo={top1Player.eloRate} className="text-xs" />
+              <div className="flex items-center gap-1.5">
+                <PlayerAvatar uuid={currentTop1Player.uuid} size="xs" />
+                <span className="text-xs sm:text-sm font-medium">{currentTop1Player.nickname}</span>
+                <RankBadge elo={currentTop1Player.eloRate} className="text-xs" />
               </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="ml-auto h-7"
-                onClick={() => router.push(`/player/${top1Player.nickname}`)}
+                className="ml-auto h-6 text-xs px-2"
+                onClick={() => router.push(`/player/${currentTop1Player.nickname}`)}
               >
-                <ExternalLink className="h-3 w-3 mr-1" />
-                {t('eloTimeline.viewProfile', { defaultValue: 'View Profile' })}
+                <ExternalLink className="h-3 w-3" />
               </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Player Selection */}
+      {/* Player Selection - Mobile Friendly */}
       <Card variant="mc">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base sm:text-lg flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" />
-              {t('eloTimeline.selectPlayers', { defaultValue: 'Select Players' })}
-            </span>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={selectTop10}>
-                Top 2-11
+        <CardHeader className="pb-2 px-3 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <CardTitle className="text-sm sm:text-base flex items-center gap-2">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+              {t('eloTimeline.selectPlayers', { defaultValue: 'Players' })}
+            </CardTitle>
+            <div className="flex gap-1.5 flex-wrap">
+              <Button variant="outline" size="sm" onClick={selectTop10} className="h-7 text-xs px-2">
+                Top 10
               </Button>
-              <Button variant="outline" size="sm" onClick={selectAll}>
+              <Button variant="outline" size="sm" onClick={selectAll} className="h-7 text-xs px-2">
                 {t('eloTimeline.selectAll', { defaultValue: 'All' })}
               </Button>
-              <Button variant="outline" size="sm" onClick={selectNone}>
+              <Button variant="outline" size="sm" onClick={selectNone} className="h-7 text-xs px-2">
                 {t('eloTimeline.selectNone', { defaultValue: 'None' })}
               </Button>
             </div>
-          </CardTitle>
+          </div>
         </CardHeader>
-        <CardContent className="pt-2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        <CardContent className="pt-2 px-3 sm:px-6">
+          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1.5 sm:gap-2">
             {displayedPlayers.map((player, index) => (
               <PlayerToggle
                 key={player.uuid}
                 player={player}
-                rank={index + 2}
+                rank={index + 1}
                 selected={selectedPlayers.has(player.uuid)}
                 onToggle={() => togglePlayer(player.uuid)}
               />
             ))}
           </div>
 
-          {playerTimelines.length > 11 && (
+          {playerTimelines.length > 10 && (
             <Button
               variant="ghost"
-              className="w-full mt-4"
+              className="w-full mt-3 h-8 text-xs"
               onClick={() => setShowAllPlayers(!showAllPlayers)}
             >
               {showAllPlayers ? (
                 <>
-                  <ChevronUp className="h-4 w-4 mr-1" />
+                  <ChevronUp className="h-3 w-3 mr-1" />
                   {t('common.showLess')}
                 </>
               ) : (
                 <>
-                  <ChevronDown className="h-4 w-4 mr-1" />
-                  {t('common.showAll')} ({playerTimelines.length - 1})
+                  <ChevronDown className="h-3 w-3 mr-1" />
+                  {t('common.showAll')} ({playerTimelines.length})
                 </>
               )}
             </Button>
@@ -635,7 +654,7 @@ function PlayerToggle({ player, rank, selected, onToggle }: PlayerToggleProps) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all',
+        'flex items-center gap-1.5 p-1.5 sm:p-2 rounded-lg border cursor-pointer transition-all min-w-0',
         selected
           ? 'border-primary/50 bg-primary/5'
           : 'border-border/50 bg-muted/10 hover:border-border'
@@ -644,36 +663,34 @@ function PlayerToggle({ player, rank, selected, onToggle }: PlayerToggleProps) {
     >
       <div
         className={cn(
-          'w-5 h-5 rounded flex items-center justify-center shrink-0',
+          'w-4 h-4 rounded flex items-center justify-center shrink-0',
           selected ? 'bg-primary' : 'bg-muted/50 border border-border'
         )}
       >
-        {selected && <Check className="h-3 w-3 text-primary-foreground" />}
+        {selected && <Check className="h-2.5 w-2.5 text-primary-foreground" />}
       </div>
 
       <div
-        className="w-4 h-4 rounded-full shrink-0"
+        className="w-3 h-3 rounded-full shrink-0"
         style={{ backgroundColor: player.color }}
       />
 
-      <span className="text-xs text-muted-foreground shrink-0">#{rank}</span>
+      <span className="text-[10px] text-muted-foreground shrink-0">#{rank}</span>
 
       <PlayerAvatar uuid={player.uuid} size="xs" className="shrink-0" />
 
-      <span className="text-sm font-medium truncate flex-1">{player.nickname}</span>
-
-      <RankBadge elo={player.eloRate} className="shrink-0 text-xs" />
+      <span className="text-xs font-medium truncate flex-1 min-w-0">{player.nickname}</span>
 
       <Button
         variant="ghost"
         size="sm"
-        className="h-6 w-6 p-0 shrink-0"
+        className="h-5 w-5 p-0 shrink-0 hidden xs:flex"
         onClick={(e) => {
           e.stopPropagation();
           router.push(`/player/${player.nickname}`);
         }}
       >
-        <ExternalLink className="h-3 w-3" />
+        <ExternalLink className="h-2.5 w-2.5" />
       </Button>
     </div>
   );
@@ -688,37 +705,56 @@ interface CustomTooltipProps {
   }>;
   label?: number;
   players: PlayerEloTimeline[];
-  top1Uuid?: string;
+  showTop1: boolean;
 }
 
-function CustomTooltip({ active, payload, label, players, top1Uuid }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, players, showTop1 }: CustomTooltipProps) {
   if (!active || !payload || !payload.length || !label) {
     return null;
   }
 
+  // Find Top 1 entry and regular player entries
+  const top1Entry = payload.find((p) => p.dataKey === 'top1Elo');
+  const playerEntries = payload.filter((p) => p.dataKey !== 'top1Elo' && p.dataKey !== 'top1Uuid');
+
   // Sort by ELO descending
-  const sortedPayload = [...payload].sort((a, b) => (b.value || 0) - (a.value || 0));
+  const sortedPayload = [...playerEntries].sort((a, b) => (b.value || 0) - (a.value || 0));
+
+  // Find current top1 uuid from data
+  const dataPoint = payload.find((p) => p.dataKey === 'top1Uuid');
 
   return (
-    <div className="bg-background/95 backdrop-blur border border-border rounded-lg p-3 shadow-xl max-w-xs">
-      <p className="text-xs text-muted-foreground mb-2 font-semibold">
-        {formatDate(new Date(label), 'PPP')}
+    <div className="bg-background/95 backdrop-blur border border-border rounded-lg p-2 sm:p-3 shadow-xl max-w-[200px] sm:max-w-xs">
+      <p className="text-[10px] sm:text-xs text-muted-foreground mb-1.5 font-semibold">
+        {formatDate(new Date(label), 'PP')}
       </p>
-      <div className="space-y-1 max-h-64 overflow-y-auto">
+
+      {/* Top 1 at this moment */}
+      {showTop1 && top1Entry && top1Entry.value !== undefined && (
+        <div className="flex items-center gap-1.5 mb-1.5 pb-1.5 border-b border-border/50">
+          <Crown className="h-3 w-3 text-yellow-500 shrink-0" />
+          <div
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ backgroundColor: TOP1_COLOR }}
+          />
+          <span className="text-[10px] sm:text-xs text-yellow-500 font-medium">Top 1</span>
+          <span className="text-[10px] sm:text-xs font-semibold ml-auto">{Math.round(top1Entry.value)}</span>
+        </div>
+      )}
+
+      <div className="space-y-0.5 max-h-48 overflow-y-auto">
         {sortedPayload.map((entry) => {
           const player = players.find((p) => p.uuid === entry.dataKey);
           if (!player || entry.value === undefined) return null;
-          const isTop1 = entry.dataKey === top1Uuid;
 
           return (
-            <div key={entry.dataKey} className={cn("flex items-center gap-2", isTop1 && "font-semibold")}>
-              {isTop1 && <Crown className="h-3 w-3 text-yellow-500 shrink-0" />}
+            <div key={entry.dataKey} className="flex items-center gap-1.5">
               <div
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: isTop1 ? TOP1_COLOR : entry.color }}
+                style={{ backgroundColor: entry.color }}
               />
-              <span className="text-xs truncate flex-1">{player.nickname}</span>
-              <span className="text-xs font-semibold">{Math.round(entry.value)}</span>
+              <span className="text-[10px] sm:text-xs truncate flex-1">{player.nickname}</span>
+              <span className="text-[10px] sm:text-xs font-semibold">{Math.round(entry.value)}</span>
             </div>
           );
         })}
@@ -734,40 +770,46 @@ interface CustomLegendProps {
     dataKey: string;
   }>;
   players: PlayerEloTimeline[];
-  top1Uuid?: string;
+  showTop1: boolean;
 }
 
-function CustomLegend({ payload, players, top1Uuid }: CustomLegendProps) {
+function CustomLegend({ payload, players, showTop1 }: CustomLegendProps) {
   if (!payload || payload.length === 0) return null;
 
-  // Sort to show Top 1 first
-  const sortedPayload = [...payload].sort((a, b) => {
-    if (a.dataKey === top1Uuid) return -1;
-    if (b.dataKey === top1Uuid) return 1;
-    return 0;
-  });
+  // Filter out top1Elo and top1Uuid entries
+  const playerPayload = payload.filter((p) => p.dataKey !== 'top1Elo' && p.dataKey !== 'top1Uuid');
 
   return (
-    <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 px-4">
-      {sortedPayload.slice(0, 10).map((entry) => {
+    <div className="flex flex-wrap justify-center gap-x-2 sm:gap-x-3 gap-y-1 px-2">
+      {/* Top 1 reference legend */}
+      {showTop1 && (
+        <div className="flex items-center gap-1">
+          <Crown className="h-2.5 w-2.5 text-yellow-500" />
+          <div
+            className="w-3 h-0.5 rounded"
+            style={{ backgroundColor: TOP1_COLOR }}
+          />
+          <span className="text-[10px] sm:text-xs text-yellow-500 font-medium">Top 1</span>
+        </div>
+      )}
+
+      {playerPayload.slice(0, 8).map((entry) => {
         const player = players.find((p) => p.uuid === entry.dataKey);
-        const isTop1 = entry.dataKey === top1Uuid;
         return (
           <div key={entry.dataKey} className="flex items-center gap-1">
-            {isTop1 && <Crown className="h-3 w-3 text-yellow-500" />}
             <div
-              className="w-3 h-0.5 rounded"
-              style={{ backgroundColor: isTop1 ? TOP1_COLOR : entry.color }}
+              className="w-2 sm:w-3 h-0.5 rounded"
+              style={{ backgroundColor: entry.color }}
             />
-            <span className={cn("text-xs text-muted-foreground", isTop1 && "text-yellow-500 font-medium")}>
+            <span className="text-[10px] sm:text-xs text-muted-foreground">
               {player?.nickname || entry.value}
             </span>
           </div>
         );
       })}
-      {sortedPayload.length > 10 && (
-        <span className="text-xs text-muted-foreground">
-          +{sortedPayload.length - 10} more
+      {playerPayload.length > 8 && (
+        <span className="text-[10px] sm:text-xs text-muted-foreground">
+          +{playerPayload.length - 8}
         </span>
       )}
     </div>

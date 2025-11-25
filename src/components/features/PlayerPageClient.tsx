@@ -12,11 +12,12 @@ import { ErrorState } from '@/components/features/ErrorState';
 import { EloChart } from '@/components/features/EloChart';
 import { WinRateChart } from '@/components/features/WinRateChart';
 import { PlayerInsights } from '@/components/features/PlayerInsights';
+import { DetailedStatsModal } from '@/components/features/DetailedStatsModal';
 import { MatchFilters, defaultFilters, type MatchFiltersState } from '@/components/features/MatchFilters';
 import { Pagination } from '@/components/features/Pagination';
 import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
 import { Button } from '@/components/ui/button';
-import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User, Swords, ChevronRight } from 'lucide-react';
+import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User, Swords, ChevronRight, BarChart3 } from 'lucide-react';
 import { PrivateKeyManager } from '@/components/features/PrivateKeyManager';
 import { formatRelativeTime, formatTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
@@ -32,6 +33,7 @@ export function PlayerPageClient() {
   const { username: authUsername, isAuthenticated, logout } = useAuthStore();
 
   const [showAllAchievements, setShowAllAchievements] = React.useState(false);
+  const [showDetailedStats, setShowDetailedStats] = React.useState(false);
   const [filters, setFilters] = React.useState<MatchFiltersState>(defaultFilters);
   const [currentPage, setCurrentPage] = React.useState(1);
   const MATCHES_PER_PAGE = 10;
@@ -143,13 +145,13 @@ export function PlayerPageClient() {
           <div className="flex items-center gap-3">
             <User className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">My Stats</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">Logged in as {authUsername}</p>
+              <h1 className="text-2xl sm:text-3xl font-bold">{t('player.myStats')}</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">{t('player.loggedInAs', { username: authUsername })}</p>
             </div>
           </div>
           <Button onClick={handleLogout} variant="outline" className="w-full sm:w-auto">
             <LogOut className="mr-2 h-4 w-4" />
-            Logout
+            {t('common.logout')}
           </Button>
         </div>
       )}
@@ -159,6 +161,30 @@ export function PlayerPageClient() {
 
       {/* Personalized Insights (only shown when viewing own profile) */}
       {isOwnProfile && <PlayerInsights player={player} />}
+
+      {/* Detailed Stats Button */}
+      {Array.isArray(matches) && matches.length > 0 && (
+        <div className="flex justify-center">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowDetailedStats(true)}
+          >
+            <BarChart3 className="h-4 w-4" />
+            {t('player.viewDetailedStats')}
+          </Button>
+        </div>
+      )}
+
+      {/* Detailed Stats Modal */}
+      {Array.isArray(matches) && (
+        <DetailedStatsModal
+          open={showDetailedStats}
+          onOpenChange={setShowDetailedStats}
+          player={player}
+          matches={matches}
+        />
+      )}
 
       {/* Private Key Management (only shown when viewing own profile) */}
       {isOwnProfile && <PrivateKeyManager />}
@@ -255,14 +281,14 @@ export function PlayerPageClient() {
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2">
                   <Award className="h-5 w-5 text-primary" />
-                  {t('player.highlightedAchievements', { defaultValue: 'Highlighted Achievements' })} ({player.achievements.display.length})
+                  {t('player.highlightedAchievements')} ({player.achievements.display.length})
                 </CardTitle>
                 {Array.isArray(player.achievements?.total) && player.achievements.total.length > player.achievements.display.length && (
                   <button
                     onClick={() => setShowAllAchievements(true)}
                     className="text-sm text-primary hover:underline"
                   >
-                    {t('common.showAll', { defaultValue: 'Show All' })}
+                    {t('common.showAll')}
                   </button>
                 )}
               </div>
@@ -282,7 +308,7 @@ export function PlayerPageClient() {
           {/* Achievements Modal */}
           <Dialog open={showAllAchievements} onOpenChange={setShowAllAchievements}>
             <DialogContent
-              title={t('player.achievements', { defaultValue: 'Achievements' })}
+              title={t('player.achievements')}
               className="max-h-[90vh]"
             >
               <div className="space-y-6">
@@ -291,7 +317,7 @@ export function PlayerPageClient() {
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       <Award className="h-5 w-5 text-primary" />
-                      {t('player.highlightedAchievements', { defaultValue: 'Highlighted Achievements' })} ({player.achievements.display.length})
+                      {t('player.highlightedAchievements')} ({player.achievements.display.length})
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {player.achievements.display.map((achievement, index) => (
@@ -315,7 +341,7 @@ export function PlayerPageClient() {
                   <div>
                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                       <Award className="h-5 w-5 text-primary" />
-                      {t('player.allAchievements', { defaultValue: 'All Achievements' })} ({player.achievements.total.length})
+                      {t('player.allAchievements')} ({player.achievements.total.length})
                     </h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {player.achievements.total.map((achievement, index) => (
@@ -346,7 +372,7 @@ export function PlayerPageClient() {
                 onClick={() => router.push(`/match/${latestMatch.id}`)}
               >
                 <Swords className="h-4 w-4" />
-                {t('player.latestMatch', { defaultValue: 'Latest Match' })}
+                {t('player.latestMatch')}
                 <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             )}

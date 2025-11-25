@@ -14,7 +14,7 @@ import {
   formatEloChange,
 } from '@/lib/utils/formatters';
 import { getEloChangeColor, getMatchTypeColor } from '@/lib/utils/colors';
-import type { MatchInfo } from '@/types/api';
+import type { MatchInfo, TimelineEvent } from '@/types/api';
 import { MatchType } from '@/types/api';
 import { useRouter } from 'next/navigation';
 import {
@@ -26,6 +26,8 @@ import {
   Crown,
   X,
   Minus,
+  Swords,
+  Flag,
 } from 'lucide-react';
 
 export interface MatchCardProps {
@@ -97,24 +99,57 @@ export function MatchCard({
     }
   };
 
+  // Get player completion times from timelines or completions
+  const getPlayerFinishTime = (playerUuid: string): number | null => {
+    // Check completions first
+    if (match.completions) {
+      const completion = match.completions.find(c => c.uuid === playerUuid);
+      if (completion) return completion.time;
+    }
+    // Fall back to timelines
+    if (match.timelines) {
+      const finishEvent = match.timelines.find(
+        e => e.uuid === playerUuid &&
+        (e.type.toLowerCase().includes('finish') || e.type.toLowerCase().includes('complete'))
+      );
+      if (finishEvent) return finishEvent.time;
+    }
+    return null;
+  };
+
   return (
-    <div>
-      <Card
-        variant="mc"
-        className={cn('cursor-pointer transition-transform hover:-translate-y-0.5 active:scale-[0.98]', className)}
-        onClick={() => router.push(`/match/${id}`)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            router.push(`/match/${id}`);
-          }
-        }}
-      >
-        <CardContent className="p-3 sm:p-4">
-          {/* Header: Match type and date */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+    <Card
+      variant="mc"
+      className={cn(
+        'cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.99] overflow-hidden',
+        matchOutcome === 'win' && 'ring-1 ring-emerald/30',
+        matchOutcome === 'loss' && 'ring-1 ring-destructive/20',
+        className
+      )}
+      onClick={() => router.push(`/match/${id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          router.push(`/match/${id}`);
+        }
+      }}
+    >
+      {/* Match outcome indicator bar */}
+      {matchOutcome && (
+        <div className={cn(
+          'h-1',
+          matchOutcome === 'win' && 'bg-emerald',
+          matchOutcome === 'loss' && 'bg-destructive',
+          matchOutcome === 'draw' && 'bg-muted-foreground'
+        )} />
+      )}
+
+      <CardContent className="p-3 sm:p-4">
+        {/* Header: Match type, outcome badge, and date */}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
             <Badge
               variant={
                 type === MatchType.Ranked
@@ -128,148 +163,162 @@ export function MatchCard({
             >
               {getMatchTypeName(type)}
             </Badge>
-            <div className="flex items-center gap-1 text-sm text-muted-foreground font-monocraft">
-              <Calendar className="h-3 w-3" />
-              {formatRelativeTime(date)}
-            </div>
+            {matchOutcome && (
+              <span className={cn(
+                'text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded',
+                matchOutcome === 'win' && 'bg-emerald/20 text-emerald',
+                matchOutcome === 'loss' && 'bg-destructive/20 text-destructive',
+                matchOutcome === 'draw' && 'bg-muted text-muted-foreground'
+              )}>
+                {matchOutcome === 'win' ? t('match.win', { defaultValue: 'WIN' }) : matchOutcome === 'loss' ? t('match.loss', { defaultValue: 'LOSS' }) : t('match.draw', { defaultValue: 'DRAW' })}
+              </span>
+            )}
+            {forfeited && (
+              <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded flex items-center gap-1">
+                <Flag className="h-3 w-3" />
+                {t('match.status.forfeited')}
+              </span>
+            )}
           </div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground font-monocraft">
+            <Calendar className="h-3 w-3" />
+            {formatRelativeTime(date)}
+          </div>
+        </div>
 
-          {/* Players */}
-          <div className="space-y-2 sm:space-y-3">
-            {players.map((player) => {
-              const isWinner = winner && player.uuid === winner;
-              const isHighlighted = player.uuid === highlightPlayer;
-              const playerChange = changes.find((c) => c.uuid === player.uuid);
-              const eloChange = playerChange?.change || null;
+        {/* VS Display - Two players side by side */}
+        <div className="flex items-stretch gap-2 sm:gap-3">
+          {players.map((player, idx) => {
+            const isWinner = winner && player.uuid === winner;
+            const isHighlighted = player.uuid === highlightPlayer;
+            const playerChange = changes.find((c) => c.uuid === player.uuid);
+            const eloChange = playerChange?.change ?? null;
+            const finishTime = getPlayerFinishTime(player.uuid);
+            const isLeft = idx === 0;
 
-              // Determine styling based on match outcome for highlighted player
-              let outcomeStyles = {
-                container: 'bg-background',
-                icon: null as React.ReactNode,
-                textColor: '',
-              };
+            return (
+              <React.Fragment key={player.uuid}>
+                {/* VS separator between players */}
+                {idx === 1 && (
+                  <div className="flex items-center justify-center px-1 sm:px-2">
+                    <div className="flex flex-col items-center gap-1">
+                      <Swords className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      <span className="text-[10px] font-bold text-muted-foreground">VS</span>
+                    </div>
+                  </div>
+                )}
 
-              if (isHighlighted && matchOutcome) {
-                if (matchOutcome === 'win') {
-                  outcomeStyles = {
-                    container: 'bg-emerald/10 border border-emerald/30',
-                    icon: <Crown className="h-5 w-5 text-emerald shrink-0" />,
-                    textColor: 'text-emerald',
-                  };
-                } else if (matchOutcome === 'loss') {
-                  outcomeStyles = {
-                    container: 'bg-destructive/10 border border-destructive/30',
-                    icon: <X className="h-5 w-5 text-destructive shrink-0" />,
-                    textColor: 'text-destructive',
-                  };
-                } else {
-                  // draw
-                  outcomeStyles = {
-                    container: 'bg-muted/50 border border-muted',
-                    icon: <Minus className="h-5 w-5 text-muted-foreground shrink-0" />,
-                    textColor: 'text-muted-foreground',
-                  };
-                }
-              } else if (!isHighlighted && isWinner) {
-                // Non-highlighted winner (opponent won)
-                outcomeStyles = {
-                  container: 'bg-emerald/10 border border-emerald/30',
-                  icon: <Crown className="h-5 w-5 text-emerald shrink-0" />,
-                  textColor: 'text-emerald',
-                };
-              } else if (isHighlighted && !matchOutcome) {
-                // Highlighted but no outcome (shouldn't happen, but fallback)
-                outcomeStyles.container = 'bg-muted';
-              }
-
-              return (
+                {/* Player card */}
                 <div
-                  key={player.uuid}
                   className={cn(
-                    'flex items-center justify-between p-3 rounded-lg transition-colors',
-                    outcomeStyles.container
+                    'flex-1 rounded-lg p-2 sm:p-3 transition-colors relative overflow-hidden',
+                    isWinner && 'bg-emerald/10 border border-emerald/30',
+                    !isWinner && isHighlighted && matchOutcome === 'loss' && 'bg-destructive/5 border border-destructive/20',
+                    !isWinner && !isHighlighted && 'bg-muted/30 border border-transparent',
+                    isHighlighted && !isWinner && !matchOutcome && 'bg-primary/5 border border-primary/20'
                   )}
                 >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    {outcomeStyles.icon}
-                    <PlayerAvatar
-                      uuid={player.uuid}
-                      username={player.nickname}
-                      size="sm"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <CountryFlag country={player.country} size="sm" />
-                        <p
+                  {/* Winner crown */}
+                  {isWinner && (
+                    <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
+                      <Crown className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-500 drop-shadow-[0_0_4px_rgba(234,179,8,0.5)]" />
+                    </div>
+                  )}
+
+                  {/* Player info */}
+                  <div className={cn('flex flex-col gap-2', isLeft ? 'items-start' : 'items-end')}>
+                    <div className={cn('flex items-center gap-2', !isLeft && 'flex-row-reverse')}>
+                      <PlayerAvatar
+                        uuid={player.uuid}
+                        username={player.nickname}
+                        size="sm"
+                      />
+                      <div className={cn('min-w-0', !isLeft && 'text-right')}>
+                        <div className={cn('flex items-center gap-1.5', !isLeft && 'flex-row-reverse')}>
+                          <CountryFlag country={player.country} size="xs" />
+                          <p className={cn(
+                            'font-semibold text-sm truncate max-w-[80px] sm:max-w-[120px]',
+                            isWinner && 'text-emerald'
+                          )}>
+                            {player.nickname}
+                          </p>
+                        </div>
+                        {/* ELO display */}
+                        {player.eloRate && (
+                          <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">
+                            {player.eloRate} ELO
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Time and ELO change */}
+                    <div className={cn('flex flex-col gap-1', !isLeft && 'items-end')}>
+                      {/* Finish time */}
+                      {finishTime && (
+                        <div className={cn(
+                          'flex items-center gap-1 text-sm font-mono font-medium',
+                          isWinner ? 'text-emerald' : 'text-muted-foreground'
+                        )}>
+                          <Clock className="h-3 w-3" />
+                          {formatTime(finishTime)}
+                        </div>
+                      )}
+                      {/* ELO Change */}
+                      {type === MatchType.Ranked && eloChange !== null && (
+                        <div
                           className={cn(
-                            'font-semibold truncate mc-heading',
-                            outcomeStyles.textColor
+                            'flex items-center gap-0.5 font-semibold text-xs font-mono',
+                            getEloChangeColor(eloChange)
                           )}
                         >
-                          {player.nickname}
-                        </p>
-                      </div>
-                      {isWinner && result.time && (
-                        <div className="flex items-center gap-1 text-sm text-muted-foreground font-monocraft">
-                          <Clock className="h-3 w-3" />
-                          {formatTime(result.time)}
+                          {eloChange > 0 ? (
+                            <TrendingUp className="h-3 w-3" />
+                          ) : (
+                            <TrendingDown className="h-3 w-3" />
+                          )}
+                          {formatEloChange(eloChange)}
                         </div>
                       )}
                     </div>
                   </div>
+                </div>
+              </React.Fragment>
+            );
+          })}
+        </div>
 
-                  {/* ELO Change */}
-                  {type === MatchType.Ranked && eloChange !== null && (
-                    <div
-                      className={cn(
-                        'flex items-center gap-1 font-semibold text-sm font-monocraft',
-                        getEloChangeColor(eloChange)
-                      )}
-                    >
-                      {eloChange > 0 ? (
-                        <TrendingUp className="h-4 w-4" />
-                      ) : (
-                        <TrendingDown className="h-4 w-4" />
-                      )}
-                      {formatEloChange(eloChange)}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Seed info */}
-          {seed && (
-            <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border">
-              <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4 gap-y-2 text-xs text-foreground font-mono">
-                <div className="flex items-center gap-2">
-                  <MinecraftIcon 
-                    name={getOverworldIcon(seed.overworld)} 
-                    size="sm" 
-                    title={`${t('match.seed')}: ${seed.overworld}`} 
-                    className="flex-shrink-0 image-pixelated" 
-                  />
-                  <span className="uppercase">
-                    <span className="text-muted-foreground">{t('match.seed')}:</span> {seed.overworld}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MinecraftIcon 
-                    name={getBastionIcon(seed.nether)} 
-                    size="sm" 
-                    title={`${t('match.bastion')}: ${seed.nether}`} 
-                    className="flex-shrink-0 image-pixelated" 
-                  />
-                  <span className="uppercase">
-                    <span className="text-muted-foreground">{t('match.bastion')}:</span> {seed.nether}
-                  </span>
-                </div>
+        {/* Seed info */}
+        {seed && (
+          <div className="mt-3 pt-3 border-t border-border/50">
+            <div className="flex items-center justify-center gap-4 sm:gap-6">
+              <div className="flex items-center gap-2">
+                <MinecraftIcon
+                  name={getOverworldIcon(seed.overworld)}
+                  size="sm"
+                  title={seed.overworld}
+                  className="image-pixelated"
+                />
+                <span className="text-xs font-mono uppercase text-muted-foreground">
+                  {seed.overworld.replace(/_/g, ' ')}
+                </span>
+              </div>
+              <div className="w-px h-4 bg-border" />
+              <div className="flex items-center gap-2">
+                <MinecraftIcon
+                  name={getBastionIcon(seed.nether)}
+                  size="sm"
+                  title={seed.nether}
+                  className="image-pixelated"
+                />
+                <span className="text-xs font-mono uppercase text-muted-foreground">
+                  {seed.nether}
+                </span>
               </div>
             </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

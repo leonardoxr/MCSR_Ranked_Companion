@@ -4,6 +4,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 
 export type MinecraftIconName =
+  // Nether related
   | 'nether-portal'
   | 'netherrack'
   | 'blackstone'
@@ -13,26 +14,53 @@ export type MinecraftIconName =
   | 'blaze-powder'
   | 'obsidian'
   | 'crying-obsidian'
+  | 'crimson-fungus'
+  | 'warped-fungus'
+  | 'crimson-nylium'
+  | 'lava'
+  // End related
   | 'end-portal'
   | 'end-portal-frame'
   | 'end-stone'
   | 'end-stone-bricks'
   | 'ender-pearl'
   | 'ender-eye'
+  | 'ender-chest'
   | 'dragon-egg'
+  | 'dragon-head'
+  | 'dragon-breath'
+  | 'end-crystal'
+  | 'end-rod'
+  // Stronghold related
   | 'stone-bricks'
   | 'cobblestone'
+  | 'spawner'
+  // Overworld related
   | 'grass-block'
   | 'oak-planks'
+  | 'oak-boat'
+  | 'gravel'
+  | 'flint'
+  | 'flint-and-steel'
+  | 'bucket'
+  | 'compass'
+  // Blocks
   | 'diamond-block'
   | 'gold-block'
   | 'iron-block'
+  | 'netherite-block'
+  // Items
   | 'bow'
   | 'arrow'
   | 'bed'
-  | 'spawner'
-  | 'crimson-fungus'
-  | 'warped-fungus';
+  | 'string'
+  | 'clock'
+  | 'gold-ingot'
+  | 'gold-nugget'
+  | 'golden-apple'
+  | 'golden-axe'
+  | 'golden-pickaxe'
+  | 'golden-sword';
 
 export interface MinecraftIconProps {
   name: MinecraftIconName;

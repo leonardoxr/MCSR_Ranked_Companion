@@ -176,7 +176,7 @@ export default function Header() {
               <NavLink href="/" label={t('nav.leaderboard')} />
               <LiveNavLink href="/live" label={t('nav.whosLive')} />
               <NavLink href="/compare" label={t('nav.playerComparison')} />
-              <NavLink href="/getting-started" label="Guide" />
+              <NavLink href="/getting-started" label={t('nav.guide')} />
               {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
             </nav>
 
@@ -285,7 +285,7 @@ export default function Header() {
                 <MobileNavLink href="/" label={t('nav.leaderboard')} />
                 <MobileLiveNavLink href="/live" label={t('nav.whosLive')} />
                 <MobileNavLink href="/compare" label={t('nav.playerComparison')} />
-                <MobileNavLink href="/getting-started" label="Getting Started" />
+                <MobileNavLink href="/getting-started" label={t('nav.gettingStarted')} />
                 {isAuthenticated && <MobileNavLink href="/my-stats" label="My Stats" />}
               </nav>
 

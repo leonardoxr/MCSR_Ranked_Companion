@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { RoleType } from '@/types/api';
-import { Gem, ShieldCheck } from 'lucide-react';
 
 export interface SupporterBadgeProps {
   roleType: RoleType | number;
@@ -16,33 +15,31 @@ export interface SupporterBadgeProps {
 }
 
 /**
- * Supporter tier information
+ * Supporter tier information - based on Minecraft pickaxes
+ * Stone Pickaxe, Iron Pickaxe, Diamond Pickaxe
  */
 const SUPPORTER_TIERS = {
   [RoleType.None]: null,
   [RoleType.Stone]: {
     name: 'Stone',
-    color: 'from-gray-400 to-gray-500',
-    bgColor: 'bg-gray-500/20',
-    borderColor: 'border-gray-400/50',
-    textColor: 'text-gray-300',
-    icon: '🪨',
+    bgColor: 'bg-stone-500/20',
+    borderColor: 'border-stone-400/50',
+    textColor: 'text-stone-300',
+    icon: '⛏️',
   },
   [RoleType.Iron]: {
     name: 'Iron',
-    color: 'from-slate-300 to-slate-400',
     bgColor: 'bg-slate-400/20',
     borderColor: 'border-slate-300/50',
     textColor: 'text-slate-200',
-    icon: '⚙️',
+    icon: '⛏️',
   },
   [RoleType.Diamond]: {
     name: 'Diamond',
-    color: 'from-cyan-400 to-blue-500',
     bgColor: 'bg-cyan-500/20',
     borderColor: 'border-cyan-400/50',
     textColor: 'text-cyan-300',
-    icon: '💎',
+    icon: '⛏️',
   },
 } as const;
 
@@ -79,7 +76,7 @@ export function SupporterBadge({
     <span
       className={cn(
         'inline-flex items-center rounded-full font-semibold transition-all',
-        'border bg-gradient-to-r',
+        'border',
         tier.bgColor,
         tier.borderColor,
         tier.textColor,
@@ -87,7 +84,7 @@ export function SupporterBadge({
         linkToStore && 'hover:brightness-125 cursor-pointer',
         className
       )}
-      title={linkToStore ? `${tier.name} Supporter - Click to visit store` : `${tier.name} Supporter`}
+      title={linkToStore ? `${tier.name} Pickaxe Supporter - Click to visit store` : `${tier.name} Pickaxe Supporter`}
     >
       {showIcon && (
         <span className={cn(iconSizes[size])} aria-hidden="true">

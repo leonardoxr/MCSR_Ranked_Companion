@@ -16,7 +16,7 @@ import { MatchFilters, defaultFilters, type MatchFiltersState } from '@/componen
 import { Pagination } from '@/components/features/Pagination';
 import { Card, CardContent, CardHeader, CardTitle, Dialog, DialogContent, Separator } from '@/components/ui';
 import { Button } from '@/components/ui/button';
-import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User } from 'lucide-react';
+import { Trophy, Target, TrendingUp, Clock, Award, LogOut, User, Swords, ChevronRight } from 'lucide-react';
 import { PrivateKeyManager } from '@/components/features/PrivateKeyManager';
 import { formatRelativeTime, formatTime } from '@/lib/utils/formatters';
 import { AchievementCard } from '@/components/features/AchievementIcon';
@@ -59,6 +59,9 @@ export function PlayerPageClient() {
   }, [filteredMatches, currentPage]);
 
   const totalPages = getTotalPages(filteredMatches.length, MATCHES_PER_PAGE);
+
+  // Get latest match for quick access button
+  const latestMatch = Array.isArray(matches) && matches.length > 0 ? matches[0] : null;
 
   // Reset to page 1 when filters change
   React.useEffect(() => {
@@ -152,7 +155,7 @@ export function PlayerPageClient() {
       )}
 
       {/* Player Header */}
-      <PlayerCard player={player} variant="default" />
+      <PlayerCard player={player} variant="hero" latestMatch={latestMatch} />
 
       {/* Personalized Insights (only shown when viewing own profile) */}
       {isOwnProfile && <PlayerInsights player={player} />}
@@ -333,7 +336,21 @@ export function PlayerPageClient() {
       {/* Match History */}
       <Card variant="mc">
         <CardHeader>
-          <CardTitle>{t('player.matchHistory')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>{t('player.matchHistory')}</CardTitle>
+            {latestMatch && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 group"
+                onClick={() => router.push(`/match/${latestMatch.id}`)}
+              >
+                <Swords className="h-4 w-4" />
+                {t('player.latestMatch', { defaultValue: 'Latest Match' })}
+                <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Filters */}

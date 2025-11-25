@@ -154,40 +154,6 @@ export function LivePageClient() {
 
   return (
     <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6">
-      {/* DEBUG: Pickaxe icon test - remove after debugging */}
-      <div className="p-4 bg-card rounded-lg border border-yellow-500">
-        <p className="text-yellow-500 mb-2">DEBUG: All pickaxe icons (hover for name)</p>
-        <div className="flex gap-4 items-center">
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="wooden-pickaxe" size="sm" />
-            <span className="text-xs">Wooden</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="stone-pickaxe" size="sm" />
-            <span className="text-xs">Stone</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="iron-pickaxe" size="sm" />
-            <span className="text-xs">Iron</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="golden-pickaxe" size="sm" />
-            <span className="text-xs">Golden</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="copper-pickaxe" size="sm" />
-            <span className="text-xs">Copper</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="diamond-pickaxe" size="sm" />
-            <span className="text-xs">Diamond</span>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <MinecraftIcon name="netherite-pickaxe" size="sm" />
-            <span className="text-xs">Netherite</span>
-          </div>
-        </div>
-      </div>
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

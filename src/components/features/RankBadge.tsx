@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui';
 import { getRankTier } from '@/lib/utils/colors';
 import { getRankTier as getSpriteRankTier } from '@/utils/ranks';
-import { RANK_SPRITE_BASE64 } from '@/constants/rankSprite';
+import { MinecraftIcon, type MinecraftIconName } from '@/components/features/MinecraftIcon';
 import { cn } from '@/lib/utils';
 import type { EloRate } from '@/types/api';
 
@@ -25,6 +25,17 @@ const rankVariantMap: Record<string, 'coal' | 'iron' | 'gold' | 'emerald' | 'dia
   Netherite: 'netherite',
 };
 
+// Map rank names to Minecraft pickaxe icons
+const rankPickaxeMap: Record<string, MinecraftIconName> = {
+  Unrated: 'wooden-pickaxe',
+  Coal: 'stone-pickaxe',
+  Iron: 'iron-pickaxe',
+  Gold: 'golden-pickaxe',
+  Emerald: 'copper-pickaxe', // No emerald pickaxe in Minecraft, using copper
+  Diamond: 'diamond-pickaxe',
+  Netherite: 'netherite-pickaxe',
+};
+
 /**
  * RankBadge component for displaying player rank based on ELO
  * Shows rank tier with optional ELO rating
@@ -34,6 +45,7 @@ export function RankBadge({ elo, className, showElo = false, showText = true }: 
   const rank = getRankTier(elo);
   const spriteTier = getSpriteRankTier(elo);
   const variant = rankVariantMap[rank.name] || 'coal';
+  const pickaxeIcon = rankPickaxeMap[spriteTier.name] || 'wooden-pickaxe';
 
   // Translate rank name
   const rankNameKey = `ranks.${rank.name.toLowerCase()}`;
@@ -41,19 +53,7 @@ export function RankBadge({ elo, className, showElo = false, showText = true }: 
 
   return (
     <Badge variant={variant} className={cn('font-semibold flex items-center gap-1', className)}>
-      <span
-        style={{
-          ['--sprite-index' as any]: spriteTier.spriteIndex,
-          ['--rank-sprite-url' as any]: `url('${RANK_SPRITE_BASE64}')`,
-          width: 13,
-          height: 13,
-          display: 'inline-block',
-          backgroundImage: `var(--rank-sprite-url)` as any,
-          backgroundPosition: `calc(var(--sprite-index) * -13px) 0`,
-          backgroundRepeat: 'no-repeat',
-          imageRendering: 'pixelated',
-        } as React.CSSProperties}
-      />
+      <MinecraftIcon name={pickaxeIcon} size="sm" className="flex-shrink-0" />
       {showText && (
         <span>
           {spriteTier.name}

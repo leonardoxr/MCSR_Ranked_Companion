@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { RoleType } from '@/types/api';
+import { MinecraftIcon, type MinecraftIconName } from './MinecraftIcon';
 
 export interface SupporterBadgeProps {
   roleType: RoleType | number;
@@ -18,30 +19,30 @@ export interface SupporterBadgeProps {
  * Supporter tier information - based on Minecraft pickaxes
  * Stone Pickaxe, Iron Pickaxe, Diamond Pickaxe
  */
-const SUPPORTER_TIERS = {
+const SUPPORTER_TIERS: Record<number, { name: string; bgColor: string; borderColor: string; textColor: string; pickaxe: MinecraftIconName } | null> = {
   [RoleType.None]: null,
   [RoleType.Stone]: {
     name: 'Stone',
     bgColor: 'bg-stone-500/20',
     borderColor: 'border-stone-400/50',
     textColor: 'text-stone-300',
-    icon: '⛏️',
+    pickaxe: 'stone-pickaxe',
   },
   [RoleType.Iron]: {
     name: 'Iron',
     bgColor: 'bg-slate-400/20',
     borderColor: 'border-slate-300/50',
     textColor: 'text-slate-200',
-    icon: '⛏️',
+    pickaxe: 'iron-pickaxe',
   },
   [RoleType.Diamond]: {
     name: 'Diamond',
     bgColor: 'bg-cyan-500/20',
     borderColor: 'border-cyan-400/50',
     textColor: 'text-cyan-300',
-    icon: '⛏️',
+    pickaxe: 'diamond-pickaxe',
   },
-} as const;
+};
 
 /**
  * SupporterBadge component for displaying player supporter tier
@@ -66,12 +67,6 @@ export function SupporterBadge({
     lg: 'text-sm px-2.5 py-1 gap-1.5',
   };
 
-  const iconSizes = {
-    sm: 'text-[10px]',
-    md: 'text-xs',
-    lg: 'text-sm',
-  };
-
   const badge = (
     <span
       className={cn(
@@ -87,9 +82,7 @@ export function SupporterBadge({
       title={linkToStore ? `${tier.name} Pickaxe Supporter - Click to visit store` : `${tier.name} Pickaxe Supporter`}
     >
       {showIcon && (
-        <span className={cn(iconSizes[size])} aria-hidden="true">
-          {tier.icon}
-        </span>
+        <MinecraftIcon name={tier.pickaxe} size="sm" className="flex-shrink-0" />
       )}
       {showText && <span>{tier.name}</span>}
     </span>

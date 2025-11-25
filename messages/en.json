@@ -257,7 +257,7 @@
       "treasure": "Treasure",
       "unknown": "Unknown",
       "opponent": "Opponent",
-      "matchesVs": "Matches vs",
+      "matchesVs": "Matches",
       "record": "Record",
       "lastPlayed": "Last Played",
       "noOpponentData": "No opponent data available",
@@ -385,7 +385,11 @@
     "average": "Average:",
     "best": "Best:",
     "matches": "matches",
-    "tier": "Tier"
+    "tier": "Tier",
+    "peak": "Peak",
+    "change": "Change",
+    "clickToView": "Click point to view match",
+    "clickToViewMatch": "Click to view match"
   },
   "eloTimeline": {
     "title": "ELO Timeline",

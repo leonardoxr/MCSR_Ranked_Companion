@@ -257,7 +257,7 @@
       "treasure": "Tesouro",
       "unknown": "Desconhecido",
       "opponent": "Oponente",
-      "matchesVs": "Partidas contra",
+      "matchesVs": "Partidas",
       "record": "Histórico",
       "lastPlayed": "Última Partida",
       "noOpponentData": "Nenhum dado de oponente disponível",
@@ -362,7 +362,11 @@
     "average": "Média:",
     "best": "Melhor:",
     "matches": "partidas",
-    "tier": "Nível"
+    "tier": "Nível",
+    "peak": "Pico",
+    "change": "Mudança",
+    "clickToView": "Clique no ponto para ver a partida",
+    "clickToViewMatch": "Clique para ver a partida"
   },
   "eloTimeline": {
     "title": "Histórico de ELO",

@@ -33,6 +33,7 @@ import {
   Crown,
   Zap,
 } from 'lucide-react';
+import { SupporterBadge } from './SupporterBadge';
 
 export interface PlayerCardProps {
   player: UserProfile | UserInfo;
@@ -86,6 +87,7 @@ export function PlayerCard({
               <div className="flex items-center gap-2 mb-1">
                 <CountryFlag country={country} size="sm" />
                 <h3 className="font-semibold text-lg truncate">{nickname}</h3>
+                <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
                 {eloRate && <RankBadge elo={eloRate} />}
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -150,6 +152,7 @@ export function PlayerCard({
               <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
                 {nickname}
               </CardTitle>
+              <SupporterBadge roleType={player.roleType} size="md" />
             </div>
 
             {/* Rank and ELO Display */}

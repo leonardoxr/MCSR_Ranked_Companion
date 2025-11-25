@@ -128,7 +128,13 @@
     "inProgress": "In progress",
     "matchTime": "Match Time",
     "players": "Players",
-    "watchStream": "Watch Stream"
+    "watchStream": "Watch Stream",
+    "watch": "Watch",
+    "noStream": "No stream",
+    "highElo": "High ELO",
+    "sortEloHigh": "Highest ELO first",
+    "sortEloLow": "Lowest ELO first",
+    "sortTime": "Match duration"
   },
   "player": {
     "loading": "Loading player profile...",
@@ -253,6 +259,8 @@
       "enter_end": "Entered End",
       "finish": "Finished",
       "died": "Died",
+      "blind_travel": "Blind Travel",
+      "overworld": "Overworld",
       "story_iron_tools": "Iron Tools",
       "story_mine_stone": "Stone",
       "story_upgrade_tools": "Stone Tools",
@@ -263,13 +271,13 @@
       "story_root": "Root",
       "nether_root": "Root",
       "adventure_root": "Root",
-      "story_enter_the_nether": "Root",
-      "nether_loot_bastion": "Root",
-      "story_form_obsidian": "Root",
-      "adventure_kill_a_mob": "Root",
+      "story_enter_the_nether": "Entered Nether",
+      "nether_loot_bastion": "Looting Bastion",
+      "story_form_obsidian": "Formed Obsidian",
+      "adventure_kill_a_mob": "Kill a Mob",
       "husbandry_root": "Root",
-      "nether_find_bastion": "Root",
-      "story_enter_the_bastion": "Root"
+      "nether_find_bastion": "Found Bastion",
+      "story_enter_the_bastion": "Entered Bastion"
     },
     "milestones": {
       "title": "Milestones",

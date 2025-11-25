@@ -1,4 +1,7 @@
+'use client';
+
 import * as React from 'react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -8,6 +11,8 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   alt?: string;
   fallback?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  /** Priority loading - set true for above-the-fold images */
+  priority?: boolean;
 }
 
 const sizeMap = {
@@ -18,8 +23,17 @@ const sizeMap = {
   xl: 'h-24 w-24 text-xl',
 };
 
+// Pixel sizes for Next.js Image optimization
+const pixelSizes = {
+  xs: 24,
+  sm: 32,
+  md: 48,
+  lg: 64,
+  xl: 96,
+};
+
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
-  ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', ...props }, ref) => {
+  ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', priority = false, ...props }, ref) => {
     // Build array of all image sources to try
     const allSrcs = React.useMemo(() => {
       const sources: string[] = [];
@@ -38,6 +52,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
     const currentSrc = allSrcs[srcIndex];
     const allSourcesFailed = srcIndex >= allSrcs.length;
+    const pixelSize = pixelSizes[size];
 
     const handleError = () => {
       // Try next source in the list
@@ -55,12 +70,16 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {...props}
       >
         {currentSrc && !allSourcesFailed ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={currentSrc}
             alt={alt || 'Avatar'}
+            width={pixelSize}
+            height={pixelSize}
             className="aspect-square h-full w-full object-cover image-pixelated"
             onError={handleError}
+            loading={priority ? 'eager' : 'lazy'}
+            priority={priority}
+            unoptimized={false}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald to-diamond text-white font-semibold">

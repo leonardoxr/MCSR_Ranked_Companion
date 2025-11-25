@@ -4,6 +4,7 @@ import { leaderboardKeys } from './hooks/useLeaderboard';
 import { liveMatchKeys } from './hooks/useLiveMatches';
 import { matchKeys } from './hooks/useMatches';
 import { versusKeys } from './hooks/useVersus';
+import { forceRefreshAvatars, clearForcedRefresh } from './avatar-cache';
 
 /**
  * Cache utility functions for manual cache management
@@ -134,4 +135,21 @@ export function getCacheStats(queryClient: QueryClient) {
       {} as Record<string, number>
     ),
   };
+}
+
+/**
+ * Force refresh all avatar/skin images by bumping the cache version.
+ * Use when a user has changed their skin and wants to see the update immediately.
+ * This bypasses the daily cache rotation.
+ */
+export function refreshAllAvatars() {
+  forceRefreshAvatars();
+}
+
+/**
+ * Reset avatar caching back to normal daily rotation.
+ * Use after a forced refresh to return to normal caching behavior.
+ */
+export function resetAvatarCaching() {
+  clearForcedRefresh();
 }

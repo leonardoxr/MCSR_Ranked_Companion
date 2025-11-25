@@ -10,6 +10,17 @@
 
 export const CACHE_TIMES = {
   /**
+   * IMAGES: 24 hours stale, 7 days in memory
+   * Used for rarely-changing image data (player skins, avatars)
+   * Players rarely change skins, so aggressive caching is safe
+   * Can force refresh via cache version bump
+   */
+  IMAGES: {
+    staleTime: 24 * 60 * 60 * 1000, // 24 hours
+    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+  },
+
+  /**
    * STATIC: 30 minutes stale, 1 hour in memory
    * Used for data that never changes once created
    */
@@ -96,6 +107,16 @@ export const BACKGROUND_REFETCH = {
  * Cache presets combining stale times and refetch strategies
  */
 export const CACHE_PRESETS = {
+  /**
+   * For player avatars and skin images (rarely change)
+   * 24 hour stale time - skins almost never change
+   * No background refetch needed for images
+   */
+  PLAYER_AVATAR: {
+    ...CACHE_TIMES.IMAGES,
+    ...BACKGROUND_REFETCH.CONSERVATIVE,
+  },
+
   /**
    * For completed match details (immutable historical data)
    */

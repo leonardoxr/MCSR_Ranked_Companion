@@ -9,6 +9,7 @@ import LanguageSwitcher from "@/components/features/LanguageSwitcher";
 import { PlayerNameInput } from "@/components/features/PlayerNameInput";
 import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '@/lib/api/endpoints';
+import { leaderboardKeys } from '@/lib/api/hooks/useLeaderboard';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LogOut, User, Menu, X, Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -116,11 +117,12 @@ export default function Header() {
     (async () => {
       try {
         for (let page = 1; page <= 3; page++) {
-          const key = ['leaderboard', 'list', { page, count: 100 }];
-          const cached = queryClient.getQueryData(key as any);
+          const params = { page, count: 100 };
+          const key = leaderboardKeys.list(params);
+          const cached = queryClient.getQueryData(key);
           if (!cached && !cancelled) {
-            const data = await getLeaderboard({ page, count: 100 });
-            if (!cancelled) queryClient.setQueryData(key as any, data);
+            const data = await getLeaderboard(params);
+            if (!cancelled) queryClient.setQueryData(key, data);
           }
         }
       } catch { }

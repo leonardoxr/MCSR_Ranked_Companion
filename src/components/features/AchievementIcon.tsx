@@ -261,76 +261,108 @@ interface AchievementCardProps {
  */
 export function AchievementCard({ achievement, className = '' }: AchievementCardProps) {
   const t = useTranslations();
+  const [showTooltip, setShowTooltip] = React.useState(false);
   const translationKey = getAchievementTranslationKey(achievement.id);
-  
+
   // Get translated name and description
-  const achievementName = t(`achievements.${translationKey}`, { 
-    defaultValue: translationKey 
+  const achievementName = t(`achievements.${translationKey}`, {
+    defaultValue: translationKey
   });
-  const achievementDescription = t(`achievements.${translationKey}Description`, { 
-    defaultValue: '' 
+  const achievementDescription = t(`achievements.${translationKey}Description`, {
+    defaultValue: ''
   });
-  
+
   // Format date if available
-  const formattedDate = achievement.date 
-    ? new Date(achievement.date * 1000).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+  const formattedDate = achievement.date
+    ? new Date(achievement.date * 1000).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
       })
     : null;
 
   return (
     <div
-      className={cn('mc-card flex flex-col items-center justify-center p-4 rounded-lg hover:bg-accent/40 transition-colors relative', className)}
+      className={cn(
+        'mc-card flex flex-col items-center justify-center p-4 rounded-lg hover:bg-accent/40 transition-colors relative cursor-pointer',
+        className
+      )}
       style={{ minHeight: '100px' }}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+      onFocus={() => setShowTooltip(true)}
+      onBlur={() => setShowTooltip(false)}
+      tabIndex={0}
+      role="button"
+      aria-label={achievementName}
     >
-      {/* Achievement icon with overlays rendered on top - wrapped in tooltip */}
-      <div className="relative group">
-        <AchievementIcon achievement={achievement} size={64} className="mb-0" showOverlays={true} />
-        
-        {/* Tooltip on hover */}
-        <div className="absolute z-50 hidden group-hover:block bottom-full left-1/2 transform -translate-x-1/2 mb-3 pointer-events-none w-max">
-          <div className="mc-card rounded-lg shadow-xl p-3 min-w-[240px] max-w-[320px] bg-background border border-border">
-            <div className="font-bold text-sm mb-1.5 font-monocraft text-foreground">
-              {achievementName} {achievement.level > 1 && achievement.level}
+      {/* Achievement icon with overlays */}
+      <AchievementIcon achievement={achievement} size={64} className="mb-0" showOverlays={true} />
+
+      {/* Tooltip on hover - now covers the entire card */}
+      {showTooltip && (
+        <div
+          className="absolute z-[100] bottom-full left-1/2 transform -translate-x-1/2 mb-3 pointer-events-none"
+          style={{ minWidth: '240px', maxWidth: '320px' }}
+        >
+          <div
+            className="rounded-lg shadow-2xl p-3 border-2"
+            style={{
+              backgroundColor: '#1a1a2e',
+              borderColor: '#3d3d5c',
+              color: '#ffffff'
+            }}
+          >
+            <div
+              className="font-bold text-sm mb-1.5 font-monocraft"
+              style={{ color: '#ffffff' }}
+            >
+              {achievementName} {achievement.level > 1 && `Lv.${achievement.level}`}
             </div>
             {achievementDescription && (
-              <div className="text-xs text-muted-foreground mb-2 font-monocraft leading-relaxed">
+              <div
+                className="text-xs mb-2 font-monocraft leading-relaxed"
+                style={{ color: '#a0a0b0' }}
+              >
                 {achievementDescription}
               </div>
             )}
             {formattedDate && (
-              <div className="text-xs text-muted-foreground border-t border-border pt-2 font-monocraft">
-                {formattedDate}
+              <div
+                className="text-xs pt-2 font-monocraft"
+                style={{
+                  color: '#808090',
+                  borderTop: '1px solid #3d3d5c'
+                }}
+              >
+                Earned: {formattedDate}
               </div>
             )}
-            <div 
-              className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-px"
+            {/* Arrow pointing down */}
+            <div
+              className="absolute top-full left-1/2 transform -translate-x-1/2"
+              style={{
+                width: 0,
+                height: 0,
+                borderLeft: '10px solid transparent',
+                borderRight: '10px solid transparent',
+                borderTop: '10px solid #3d3d5c',
+              }}
+            />
+            <div
+              className="absolute top-full left-1/2 transform -translate-x-1/2"
               style={{
                 width: 0,
                 height: 0,
                 borderLeft: '8px solid transparent',
                 borderRight: '8px solid transparent',
-                borderTop: '8px solid hsl(var(--border))',
-              }}
-            />
-            <div 
-              className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-px"
-              style={{
-                width: 0,
-                height: 0,
-                borderLeft: '7px solid transparent',
-                borderRight: '7px solid transparent',
-                borderTop: '7px solid hsl(var(--background))',
-                marginTop: '-1px',
+                borderTop: '8px solid #1a1a2e',
+                marginTop: '-2px',
               }}
             />
           </div>
         </div>
-      </div>
-      
-      {/* No text below - removed as per user request */}
+      )}
     </div>
   );
 }

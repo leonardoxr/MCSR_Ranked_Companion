@@ -111,7 +111,7 @@
     }
   },
   "live": {
-    "title": "实时比赛",
+    "title": "谁在直播？",
     "description": "实时观看正在进行的比赛",
     "count": "{count} 场直播",
     "loading": "加载实时比赛中...",

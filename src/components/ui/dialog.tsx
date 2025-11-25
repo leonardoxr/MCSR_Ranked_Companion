@@ -50,7 +50,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         }}
       >
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
-        <div className="relative z-50 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+        <div className="relative z-50 w-full max-w-4xl max-h-[90vh]">
           {children}
         </div>
       </div>
@@ -69,7 +69,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        'mc-card relative w-full overflow-y-auto p-6 shadow-lg',
+        'mc-card relative w-full max-h-[85vh] overflow-y-auto overflow-x-visible p-6 shadow-lg',
         className
       )}
     >

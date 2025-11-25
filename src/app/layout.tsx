@@ -97,6 +97,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="stylesheet" href="/icons/icons-minecraft-229.css" />
+      </head>
       <body className={cn('font-mono antialiased bg-obsidian')}>
         <Script
           id="adsense-init"

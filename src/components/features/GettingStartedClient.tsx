@@ -345,7 +345,7 @@ export function GettingStartedClient() {
                 <li className="flex gap-4">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-minecraft-diamond/20 text-minecraft-diamond flex items-center justify-center font-monocraft text-sm">2</span>
                   <div>
-                    <div className="font-monocraft text-sm text-white">Click "Ranked" on the Main Menu</div>
+                    <div className="font-monocraft text-sm text-white">Click &quot;Ranked&quot; on the Main Menu</div>
                     <p className="text-xs text-white/60 mt-1">
                       If the button is greyed out, check your connection or mod version
                     </p>
@@ -384,7 +384,7 @@ export function GettingStartedClient() {
                 <h4 className="font-monocraft text-sm text-minecraft-diamond mb-2">Casual Mode</h4>
                 <p className="text-xs text-white/70">
                   Practice without affecting your rank. Queue times may be longer
-                  unless you enable "Unlimited Casual Queue" for wider matchmaking.
+                  unless you enable &quot;Unlimited Casual Queue&quot; for wider matchmaking.
                 </p>
               </div>
             </div>
@@ -569,7 +569,7 @@ export function GettingStartedClient() {
                 </div>
                 <div className="mt-3 p-2 rounded bg-yellow-500/10 border border-yellow-500/20">
                   <p className="text-xs text-yellow-400">
-                    <strong>Tip:</strong> Calibrate your "standard deviation" setting based on your
+                    <strong>Tip:</strong> Calibrate your &quot;standard deviation&quot; setting based on your
                     precision at reading ender eye angles (typically 0.005-0.200).
                   </p>
                 </div>

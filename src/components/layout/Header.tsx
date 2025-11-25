@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '@/lib/api/endpoints';
 import { useAuthStore } from '@/lib/store/useAuthStore';
 import { LogOut, User, Menu, X, Search } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 const NavLink = ({ href, label }: { href: string; label: string }) => {
   const pathname = usePathname();
@@ -48,12 +49,66 @@ const MobileNavLink = ({ href, label }: { href: string; label: string }) => {
   );
 };
 
+const LiveNavLink = ({ href, label }: { href: string; label: string }) => {
+  const pathname = usePathname();
+  const active = pathname === href || (href !== "/" && pathname?.startsWith(href));
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "relative px-3 py-2 rounded-md text-sm font-medium transition-colors group",
+        active
+          ? "bg-red-500/20 text-red-400"
+          : "text-white/80 hover:text-white hover:bg-white/10"
+      )}
+    >
+      <span className="relative z-10 flex items-center gap-1.5">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+        </span>
+        {label}
+      </span>
+      <span className={cn(
+        "absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+        "bg-gradient-to-r from-red-500/10 via-red-400/5 to-red-500/10",
+        "animate-pulse"
+      )} />
+    </Link>
+  );
+};
+
+const MobileLiveNavLink = ({ href, label }: { href: string; label: string }) => {
+  const pathname = usePathname();
+  const active = pathname === href || (href !== "/" && pathname?.startsWith(href));
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "block px-4 py-3 rounded-md font-monocraft text-base transition-colors relative group",
+        active
+          ? "bg-red-500/20 text-red-400"
+          : "text-white/80 hover:text-white hover:bg-white/10"
+      )}
+    >
+      <span className="relative z-10 flex items-center gap-2">
+        <span className="relative flex h-2.5 w-2.5">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+        </span>
+        {label}
+      </span>
+    </Link>
+  );
+};
+
 export default function Header() {
   const router = useRouter();
   const [query, setQuery] = React.useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const { username, isAuthenticated, logout } = useAuthStore();
+  const t = useTranslations();
 
   // Background prefetch first 3 pages to enrich local search cache (no-ops if cached)
   React.useEffect(() => {
@@ -116,9 +171,9 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="ml-6 hidden md:flex items-center gap-1">
-              <NavLink href="/" label="Leaderboard" />
-              <NavLink href="/live" label="Live" />
-              <NavLink href="/compare" label="Compare" />
+              <NavLink href="/" label={t('nav.leaderboard')} />
+              <LiveNavLink href="/live" label={t('nav.whosLive')} />
+              <NavLink href="/compare" label={t('nav.playerComparison')} />
               {isAuthenticated && <NavLink href="/my-stats" label="My Stats" />}
             </nav>
 
@@ -224,9 +279,9 @@ export default function Header() {
 
               {/* Mobile Navigation Links */}
               <nav className="py-4 space-y-2">
-                <MobileNavLink href="/" label="Leaderboard" />
-                <MobileNavLink href="/live" label="Live Matches" />
-                <MobileNavLink href="/compare" label="Compare Players" />
+                <MobileNavLink href="/" label={t('nav.leaderboard')} />
+                <MobileLiveNavLink href="/live" label={t('nav.whosLive')} />
+                <MobileNavLink href="/compare" label={t('nav.playerComparison')} />
                 {isAuthenticated && <MobileNavLink href="/my-stats" label="My Stats" />}
               </nav>
 

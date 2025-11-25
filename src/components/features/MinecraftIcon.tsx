@@ -60,7 +60,14 @@ export type MinecraftIconName =
   | 'golden-apple'
   | 'golden-axe'
   | 'golden-pickaxe'
-  | 'golden-sword';
+  | 'golden-sword'
+  // Pickaxes (for rank icons)
+  | 'wooden-pickaxe'
+  | 'stone-pickaxe'
+  | 'iron-pickaxe'
+  | 'diamond-pickaxe'
+  | 'netherite-pickaxe'
+  | 'copper-pickaxe';
 
 export interface MinecraftIconProps {
   name: MinecraftIconName;

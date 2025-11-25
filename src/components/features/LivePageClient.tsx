@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui
 import { Radio, Activity, ArrowUpDown, ExternalLink, Tv } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { LiveMatch } from '@/types/api';
+import { cn } from '@/lib/utils';
 
 type SortOption = 'time' | 'elo-desc' | 'elo-asc';
 
@@ -104,6 +105,29 @@ function getTimelineIcon(type: string): React.ReactNode {
   }
 
   return <MinecraftIcon name="compass" size="sm" />;
+}
+
+// Mini ELO bar component (same as leaderboard)
+function EloMiniBar({ elo }: { elo: number }) {
+  const percentage = Math.min((elo / 3000) * 100, 100);
+
+  const getBarColor = () => {
+    if (elo >= 2000) return 'bg-gradient-to-r from-purple-500 to-purple-400'; // Netherite
+    if (elo >= 1500) return 'bg-gradient-to-r from-cyan-400 to-cyan-300'; // Diamond
+    if (elo >= 1200) return 'bg-gradient-to-r from-emerald-500 to-emerald-400'; // Emerald
+    if (elo >= 900) return 'bg-gradient-to-r from-yellow-500 to-yellow-400'; // Gold
+    if (elo >= 600) return 'bg-gradient-to-r from-slate-400 to-slate-300'; // Iron
+    return 'bg-gradient-to-r from-zinc-600 to-zinc-500'; // Coal
+  };
+
+  return (
+    <div className="w-12 h-1 bg-white/10 rounded-full overflow-hidden">
+      <div
+        className={cn('h-full rounded-full', getBarColor())}
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
 }
 
 export function LivePageClient() {
@@ -302,8 +326,8 @@ function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
         )}
 
         {/* Players - Improved layout */}
-        <div className="space-y-2">
-          {match.players.map((player, index) => {
+        <div className="space-y-3">
+          {match.players.map((player) => {
             const playerData = match.data[player.uuid];
             const isStreaming = !!playerData?.liveUrl;
             const isHighEloPlayer = (player.eloRate ?? 0) >= 2000;
@@ -311,64 +335,81 @@ function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
             return (
               <div
                 key={player.uuid}
-                className={`flex items-center gap-3 p-2.5 rounded-lg transition-colors cursor-pointer ${
+                className={cn(
+                  'p-3 rounded-lg transition-colors cursor-pointer',
                   isHighEloPlayer
                     ? 'bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20'
                     : 'bg-muted/40 hover:bg-muted/60'
-                }`}
+                )}
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(`/player/${player.nickname}`);
                 }}
               >
-                <PlayerAvatar
-                  uuid={player.uuid}
-                  username={player.nickname}
-                  size="sm"
-                />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <CountryFlag country={player.country} size="sm" />
-                    <span className={`font-semibold truncate text-sm ${isHighEloPlayer ? 'text-amber-400' : ''}`}>
-                      {player.nickname}
-                    </span>
-                    {isStreaming && (
-                      <Tv className="h-3 w-3 text-purple-400 flex-shrink-0" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    {player.eloRate != null && (
-                      <RankBadge elo={player.eloRate} showText={false} showElo />
-                    )}
-                    {playerData?.timeline && (
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        {getTimelineIcon(playerData.timeline.type)}
-                        <span className="truncate max-w-[80px]">
-                          {t.has(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
-                            ? t(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
-                            : playerData.timeline.type.replace(/_/g, ' ').replace(/\./g, ': ')}
-                        </span>
+                {/* Top row: Avatar, Name, Stream button */}
+                <div className="flex items-center gap-3">
+                  <PlayerAvatar
+                    uuid={player.uuid}
+                    username={player.nickname}
+                    size="sm"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <CountryFlag country={player.country} size="sm" />
+                      <span className={cn(
+                        'font-semibold truncate text-sm',
+                        isHighEloPlayer && 'text-amber-400'
+                      )}>
+                        {player.nickname}
                       </span>
-                    )}
+                      {isStreaming && (
+                        <Tv className="h-3 w-3 text-purple-400 flex-shrink-0" />
+                      )}
+                    </div>
                   </div>
+                  {/* Stream button */}
+                  {isStreaming && (
+                    <a
+                      href={playerData.liveUrl!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      <span>{t('live.watch')}</span>
+                    </a>
+                  )}
                 </div>
-                {/* Stream button */}
-                {isStreaming ? (
-                  <a
-                    href={playerData.liveUrl!}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <ExternalLink className="h-3 w-3" />
-                    <span className="hidden sm:inline">{t('live.watch')}</span>
-                  </a>
-                ) : (
-                  <span className="text-[10px] text-muted-foreground/60 px-2">
-                    {t('live.noStream')}
-                  </span>
-                )}
+
+                {/* Bottom row: ELO + Timeline */}
+                <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                  {/* ELO display - leaderboard style */}
+                  {player.eloRate != null ? (
+                    <div className="flex items-center gap-2">
+                      <RankBadge elo={player.eloRate} showText showElo={false} className="text-xs" />
+                      <span className="text-muted-foreground text-xs">•</span>
+                      <span className="font-mono font-bold text-sm">
+                        {player.eloRate.toLocaleString()}
+                      </span>
+                      <EloMiniBar elo={player.eloRate} />
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground text-xs">{t('common.unranked')}</span>
+                  )}
+
+                  {/* Timeline progress */}
+                  {playerData?.timeline && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      {getTimelineIcon(playerData.timeline.type)}
+                      <span>
+                        {t.has(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
+                          ? t(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
+                          : playerData.timeline.type.replace(/_/g, ' ').replace(/\./g, ': ')}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}

@@ -137,7 +137,26 @@
     "highElo": "高分段",
     "sortEloHigh": "最高分优先",
     "sortEloLow": "最低分优先",
-    "sortTime": "比赛时长"
+    "sortTime": "比赛时长",
+    "leading": "领先",
+    "leadingBy": "领先",
+    "closeMatch": "势均力敌！",
+    "gap": "差距",
+    "splitGap": "时间差",
+    "behind": "落后",
+    "ahead": "领先",
+    "samePhase": "相同阶段",
+    "phases": {
+      "starting": "开始中",
+      "overworld": "主世界",
+      "nether": "下界",
+      "bastion": "堡垒遗迹",
+      "fortress": "下界要塞",
+      "exitingNether": "离开下界",
+      "stronghold": "要塞",
+      "theEnd": "末地",
+      "finished": "已完成"
+    }
   },
   "player": {
     "loading": "加载玩家档案中...",

@@ -137,7 +137,26 @@
     "highElo": "Alto ELO",
     "sortEloHigh": "Maior ELO primeiro",
     "sortEloLow": "Menor ELO primeiro",
-    "sortTime": "Duração da partida"
+    "sortTime": "Duração da partida",
+    "leading": "LIDERANDO",
+    "leadingBy": "lidera por",
+    "closeMatch": "Partida equilibrada!",
+    "gap": "diferença",
+    "splitGap": "diferença de tempo",
+    "behind": "atrás",
+    "ahead": "à frente",
+    "samePhase": "Mesma fase",
+    "phases": {
+      "starting": "Iniciando",
+      "overworld": "Overworld",
+      "nether": "Nether",
+      "bastion": "Bastião",
+      "fortress": "Fortaleza",
+      "exitingNether": "Saindo do Nether",
+      "stronghold": "Fortaleza do End",
+      "theEnd": "O End",
+      "finished": "Terminado"
+    }
   },
   "player": {
     "loading": "Carregando perfil do jogador...",

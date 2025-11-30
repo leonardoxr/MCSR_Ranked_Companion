@@ -9,11 +9,13 @@ import { CountryFlag } from '@/components/features/CountryFlag';
 import { LoadingState } from '@/components/features/LoadingState';
 import { ErrorState } from '@/components/features/ErrorState';
 import { MinecraftIcon } from '@/components/features/MinecraftIcon';
+import { LiveMatchPaceComparison } from '@/components/features/LiveMatchPaceComparison';
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/components/ui';
 import { Radio, Activity, ArrowUpDown, ExternalLink, Tv } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { LiveMatch } from '@/types/api';
 import { cn } from '@/lib/utils';
+import { comparePace, getPlayerPhase } from '@/lib/utils/liveMatchUtils';
 
 type SortOption = 'time' | 'elo-desc' | 'elo-asc';
 
@@ -311,117 +313,115 @@ function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
       </CardHeader>
 
       <CardContent className="space-y-3 pt-0">
-        {/* Progress indicator with icon */}
-        {furthestProgress && (
-          <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/30 border border-border/50">
-            <span className="flex-shrink-0">
-              {getTimelineIcon(furthestProgress)}
-            </span>
-            <span className="text-xs text-muted-foreground truncate">
-              {t.has(`timeline.events.${getTimelineEventKey(furthestProgress)}`)
-                ? t(`timeline.events.${getTimelineEventKey(furthestProgress)}`)
-                : furthestProgress.replace(/_/g, ' ').replace(/\./g, ': ')}
-            </span>
-          </div>
-        )}
+        {/* Use the new pace comparison component for 2-player matches */}
+        {match.players.length === 2 ? (
+          <LiveMatchPaceComparison match={match} isHighElo={isHighElo} />
+        ) : (
+          <>
+            {/* Progress indicator with icon for non-2-player matches */}
+            {furthestProgress && (
+              <div className="flex items-center gap-2 px-2 py-1.5 rounded-md bg-muted/30 border border-border/50">
+                <span className="flex-shrink-0">
+                  {getTimelineIcon(furthestProgress)}
+                </span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {t.has(`timeline.events.${getTimelineEventKey(furthestProgress)}`)
+                    ? t(`timeline.events.${getTimelineEventKey(furthestProgress)}`)
+                    : furthestProgress.replace(/_/g, ' ').replace(/\./g, ': ')}
+                </span>
+              </div>
+            )}
 
-        {/* Players - Improved layout */}
-        <div className="space-y-3">
-          {match.players.map((player) => {
-            const playerData = match.data[player.uuid];
-            const isStreaming = !!playerData?.liveUrl;
-            const isHighEloPlayer = (player.eloRate ?? 0) >= 2000;
+            {/* Players list for non-2-player matches */}
+            <div className="space-y-3">
+              {match.players.map((player) => {
+                const playerData = match.data[player.uuid];
+                const isStreaming = !!playerData?.liveUrl;
+                const isHighEloPlayer = (player.eloRate ?? 0) >= 2000;
 
-            return (
-              <div
-                key={player.uuid}
-                className={cn(
-                  'p-3 rounded-lg transition-colors cursor-pointer',
-                  isHighEloPlayer
-                    ? 'bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20'
-                    : 'bg-muted/40 hover:bg-muted/60'
-                )}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/player/${player.nickname}`);
-                }}
-              >
-                {/* Top row: Avatar, Name, Stream button */}
-                <div className="flex items-center gap-3">
-                  <PlayerAvatar
-                    uuid={player.uuid}
-                    username={player.nickname}
-                    size="sm"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <CountryFlag country={player.country} size="sm" />
-                      <span className={cn(
-                        'font-semibold truncate text-sm',
-                        isHighEloPlayer && 'text-amber-400'
-                      )}>
-                        {player.nickname}
-                      </span>
+                return (
+                  <div
+                    key={player.uuid}
+                    className={cn(
+                      'p-3 rounded-lg transition-colors cursor-pointer',
+                      isHighEloPlayer
+                        ? 'bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/20'
+                        : 'bg-muted/40 hover:bg-muted/60'
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/player/${player.nickname}`);
+                    }}
+                  >
+                    {/* Top row: Avatar, Name, Stream button */}
+                    <div className="flex items-center gap-3">
+                      <PlayerAvatar
+                        uuid={player.uuid}
+                        username={player.nickname}
+                        size="sm"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <CountryFlag country={player.country} size="sm" />
+                          <span className={cn(
+                            'font-semibold truncate text-sm',
+                            isHighEloPlayer && 'text-amber-400'
+                          )}>
+                            {player.nickname}
+                          </span>
+                          {isStreaming && (
+                            <Tv className="h-3 w-3 text-purple-400 flex-shrink-0" />
+                          )}
+                        </div>
+                      </div>
+                      {/* Stream button */}
                       {isStreaming && (
-                        <Tv className="h-3 w-3 text-purple-400 flex-shrink-0" />
+                        <a
+                          href={playerData.liveUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                          <span>{t('live.watch')}</span>
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Bottom row: ELO + Timeline */}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
+                      {/* ELO display - leaderboard style */}
+                      {player.eloRate != null ? (
+                        <div className="flex items-center gap-2">
+                          <RankBadge elo={player.eloRate} showText showElo={false} className="text-xs" />
+                          <span className="text-muted-foreground text-xs">•</span>
+                          <span className="font-mono font-bold text-sm">
+                            {player.eloRate.toLocaleString()}
+                          </span>
+                          <EloMiniBar elo={player.eloRate} />
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">{t('common.unranked')}</span>
+                      )}
+
+                      {/* Timeline progress */}
+                      {playerData?.timeline && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          {getTimelineIcon(playerData.timeline.type)}
+                          <span>
+                            {t.has(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
+                              ? t(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
+                              : playerData.timeline.type.replace(/_/g, ' ').replace(/\./g, ': ')}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
-                  {/* Stream button */}
-                  {isStreaming && (
-                    <a
-                      href={playerData.liveUrl!}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 text-white rounded-md transition-colors"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      <span>{t('live.watch')}</span>
-                    </a>
-                  )}
-                </div>
-
-                {/* Bottom row: ELO + Timeline */}
-                <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-                  {/* ELO display - leaderboard style */}
-                  {player.eloRate != null ? (
-                    <div className="flex items-center gap-2">
-                      <RankBadge elo={player.eloRate} showText showElo={false} className="text-xs" />
-                      <span className="text-muted-foreground text-xs">•</span>
-                      <span className="font-mono font-bold text-sm">
-                        {player.eloRate.toLocaleString()}
-                      </span>
-                      <EloMiniBar elo={player.eloRate} />
-                    </div>
-                  ) : (
-                    <span className="text-muted-foreground text-xs">{t('common.unranked')}</span>
-                  )}
-
-                  {/* Timeline progress */}
-                  {playerData?.timeline && (
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      {getTimelineIcon(playerData.timeline.type)}
-                      <span>
-                        {t.has(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
-                          ? t(`timeline.events.${getTimelineEventKey(playerData.timeline.type)}`)
-                          : playerData.timeline.type.replace(/_/g, ' ').replace(/\./g, ': ')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* VS indicator for 2-player matches */}
-        {match.players.length === 2 && (
-          <div className="flex items-center justify-center">
-            <span className="text-xs text-muted-foreground font-semibold px-3 py-0.5 bg-muted/30 rounded-full">
-              {t('common.vs')}
-            </span>
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

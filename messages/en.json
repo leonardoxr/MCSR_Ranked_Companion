@@ -137,7 +137,26 @@
     "highElo": "High ELO",
     "sortEloHigh": "Highest ELO first",
     "sortEloLow": "Lowest ELO first",
-    "sortTime": "Match duration"
+    "sortTime": "Match duration",
+    "leading": "LEADING",
+    "leadingBy": "leads by",
+    "closeMatch": "Close match!",
+    "gap": "gap",
+    "splitGap": "split gap",
+    "behind": "behind",
+    "ahead": "ahead",
+    "samePhase": "Same phase",
+    "phases": {
+      "starting": "Starting",
+      "overworld": "Overworld",
+      "nether": "Nether",
+      "bastion": "Bastion",
+      "fortress": "Fortress",
+      "exitingNether": "Exiting Nether",
+      "stronghold": "Stronghold",
+      "theEnd": "The End",
+      "finished": "Finished"
+    }
   },
   "player": {
     "loading": "Loading player profile...",

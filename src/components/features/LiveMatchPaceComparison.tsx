@@ -6,7 +6,7 @@ import { PlayerAvatar } from '@/components/features/PlayerAvatar';
 import { RankBadge } from '@/components/features/RankBadge';
 import { CountryFlag } from '@/components/features/CountryFlag';
 import { MinecraftIcon } from '@/components/features/MinecraftIcon';
-import { Tv, ExternalLink, Trophy, TrendingUp, Swords, Clock, Zap, ArrowRight, Timer, Activity } from 'lucide-react';
+import { Tv, ExternalLink, Trophy, TrendingUp, Swords, Clock, Zap, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { LiveMatch } from '@/types/api';
 import { cn } from '@/lib/utils';
@@ -17,13 +17,10 @@ import {
   type PaceComparison,
   type PlayerPaceInfo,
 } from '@/lib/utils/liveMatchUtils';
-import { useRtaTimer, formatMatchTime } from '@/lib/hooks/useRtaTimer';
 
 interface LiveMatchPaceComparisonProps {
   match: LiveMatch;
   isHighElo?: boolean;
-  /** Timestamp when the data was last fetched (from React Query) */
-  dataUpdatedAt?: number;
 }
 
 // Phase icon based on current phase
@@ -425,89 +422,9 @@ function formatSplitTime(milliseconds: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
-// Live RTA Timer Display
-function RtaTimerDisplay({
-  apiTime,
-  rtaTime,
-  elapsed,
-  isStale,
-  isHighElo,
-}: {
-  apiTime: number;
-  rtaTime: number;
-  elapsed: number;
-  isStale: boolean;
-  isHighElo?: boolean;
-}) {
-  const t = useTranslations();
-
-  // Calculate freshness indicator (0-100%, where 100% = just updated, 0% = 30s since update)
-  const freshnessPercent = Math.max(0, Math.min(100, 100 - (elapsed / 300))); // 30s = 0%
-
-  return (
-    <div className={cn(
-      'flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg border',
-      isStale
-        ? 'bg-yellow-500/10 border-yellow-500/30'
-        : isHighElo
-          ? 'bg-gradient-to-r from-amber-500/10 to-purple-500/10 border-amber-500/30'
-          : 'bg-gradient-to-r from-blue-500/10 to-emerald-500/10 border-blue-500/30'
-    )}>
-      {/* RTA Timer (main) */}
-      <div className="flex items-center gap-2">
-        <Timer className={cn(
-          'h-5 w-5',
-          isStale ? 'text-yellow-400' : 'text-green-400'
-        )} />
-        <div className="flex flex-col">
-          <span className="text-lg font-mono font-bold tabular-nums">
-            {formatMatchTime(rtaTime)}
-          </span>
-          <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
-            {t('live.rtaTimer')}
-          </span>
-        </div>
-      </div>
-
-      {/* Freshness indicator */}
-      <div className="flex flex-col items-center gap-1">
-        <Activity className={cn(
-          'h-4 w-4',
-          elapsed < 5000 ? 'text-green-400 animate-pulse' : 'text-muted-foreground'
-        )} />
-        <div className="w-12 h-1 bg-muted/30 rounded-full overflow-hidden">
-          <div
-            className={cn(
-              'h-full rounded-full transition-all duration-1000',
-              elapsed < 5000 ? 'bg-green-500' :
-              elapsed < 15000 ? 'bg-blue-500' :
-              elapsed < 30000 ? 'bg-yellow-500' : 'bg-red-500'
-            )}
-            style={{ width: `${freshnessPercent}%` }}
-          />
-        </div>
-      </div>
-
-      {/* API Timer (secondary) */}
-      <div className="flex items-center gap-2">
-        <div className="flex flex-col items-end">
-          <span className="text-sm font-mono text-muted-foreground tabular-nums">
-            {formatMatchTime(apiTime)}
-          </span>
-          <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">
-            {t('live.apiTimer')}
-          </span>
-        </div>
-        <Clock className="h-4 w-4 text-muted-foreground/60" />
-      </div>
-    </div>
-  );
-}
-
-export function LiveMatchPaceComparison({ match, isHighElo = false, dataUpdatedAt }: LiveMatchPaceComparisonProps) {
+export function LiveMatchPaceComparison({ match, isHighElo = false }: LiveMatchPaceComparisonProps) {
   const t = useTranslations();
   const comparison = comparePace(match);
-  const rtaState = useRtaTimer(match, dataUpdatedAt);
 
   if (!comparison) {
     return null;
@@ -525,17 +442,6 @@ export function LiveMatchPaceComparison({ match, isHighElo = false, dataUpdatedA
 
   return (
     <div className="space-y-3">
-      {/* RTA Timer Display */}
-      {rtaState && (
-        <RtaTimerDisplay
-          apiTime={rtaState.apiTime}
-          rtaTime={rtaState.rtaTime}
-          elapsed={rtaState.elapsed}
-          isStale={rtaState.isStale}
-          isHighElo={isHighElo}
-        />
-      )}
-
       {/* Gap indicator - prominent */}
       <GapBadge
         leader={leader}

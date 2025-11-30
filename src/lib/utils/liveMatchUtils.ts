@@ -130,6 +130,16 @@ export interface PaceComparison {
 
 /**
  * Compare pace between two players in a live match
+ *
+ * Gap calculation logic:
+ * 1. If both players are at the SAME phase: gap = difference in split times
+ *    - Lower split time = faster = leading
+ * 2. If players are at DIFFERENT phases:
+ *    - The player at the higher phase is leading
+ *    - Gap estimate: We use the match's currentTime to calculate real-time gap
+ *    - Real gap = (matchTime - trailerSplitTime) - (matchTime - leaderSplitTime)
+ *    - Simplified: leaderSplitTime - trailerSplitTime (when leader is ahead in phases)
+ *    - But more accurately: estimate how far behind the trailer is
  */
 export function comparePace(match: LiveMatch): PaceComparison | null {
   if (match.players.length !== 2) {
@@ -166,13 +176,58 @@ export function comparePace(match: LiveMatch): PaceComparison | null {
 
   // If players are at different events, the one at a higher priority event is leading
   if (p1Priority !== p2Priority) {
-    leader = p1Priority > p2Priority ? p1 : p2;
+    const leaderInfo = p1Priority > p2Priority ? player1Info : player2Info;
+    const trailerInfo = p1Priority > p2Priority ? player2Info : player1Info;
+    leader = leaderInfo.player;
     gapType = 'progress';
 
-    // Calculate approximate time gap based on split times
-    if (player1Info.splitTime !== null && player2Info.splitTime !== null) {
-      // Gap is the difference between when they hit their current event
-      gapMilliseconds = Math.abs(player1Info.splitTime - player2Info.splitTime);
+    // Calculate the real-time gap estimate
+    // The leader hit their current split at leaderSplitTime
+    // The trailer is still working towards a lower phase
+    // Real-time gap = how much time the trailer needs to catch up
+
+    if (leaderInfo.splitTime !== null && trailerInfo.splitTime !== null) {
+      // Both have split times - calculate based on current match time
+      // The leader reached their current phase at leaderSplitTime
+      // The trailer is at their phase, which they reached at trailerSplitTime
+      //
+      // Time since leader hit their split: matchTime - leaderSplitTime
+      // Time since trailer hit their split: matchTime - trailerSplitTime
+      //
+      // But to estimate the gap, we consider:
+      // - Leader is at phase X (higher), trailer is at phase Y (lower)
+      // - The gap is approximately how long until trailer reaches leader's phase
+      // - Conservative estimate: (matchTime - trailerSplitTime) = time trailer has been at their phase
+      //   They still need to progress through the phases between them
+      // - Simple estimate: matchTime - leaderSplitTime (time since leader reached current phase)
+
+      // Best approximation: the trailer needs to cover the same ground the leader did
+      // If leader reached nether at 3:00, and trailer is at overworld (split at 2:00),
+      // the trailer is ~1:00 behind in reaching nether (plus whatever time since then)
+
+      // Using match.currentTime as reference point:
+      // Gap = (currentTime - trailerSplitTime) - (currentTime - leaderSplitTime)
+      //     = leaderSplitTime - trailerSplitTime (if trailer is behind)
+      // But we also add the progression difference
+
+      const timeDiff = leaderInfo.splitTime - trailerInfo.splitTime;
+
+      if (timeDiff > 0) {
+        // Leader hit their split AFTER trailer hit theirs
+        // But leader is at a higher phase, so they're faster
+        // Gap estimate: how long ago did the trailer hit their split + phase progression time
+        gapMilliseconds = match.currentTime - trailerInfo.splitTime;
+      } else {
+        // Leader hit their split BEFORE trailer hit theirs AND is at a higher phase
+        // The trailer is significantly behind
+        gapMilliseconds = Math.abs(timeDiff) + (match.currentTime - leaderInfo.splitTime);
+      }
+
+      // Cap the gap at a reasonable value (15 minutes max)
+      gapMilliseconds = Math.min(gapMilliseconds, 15 * 60 * 1000);
+    } else if (leaderInfo.splitTime !== null) {
+      // Only leader has split time - estimate based on match time
+      gapMilliseconds = match.currentTime - leaderInfo.splitTime;
     }
   }
   // If at the same event, compare split times (lower time = faster = leading)

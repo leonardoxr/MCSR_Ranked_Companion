@@ -146,6 +146,10 @@
     "behind": "behind",
     "ahead": "ahead",
     "samePhase": "Same phase",
+    "rtaTimer": "RTA",
+    "apiTimer": "API",
+    "dataFresh": "Data fresh",
+    "dataStale": "Data may be stale",
     "phases": {
       "starting": "Starting",
       "overworld": "Overworld",

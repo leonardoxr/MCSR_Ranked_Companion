@@ -146,6 +146,10 @@
     "behind": "落后",
     "ahead": "领先",
     "samePhase": "相同阶段",
+    "rtaTimer": "RTA",
+    "apiTimer": "API",
+    "dataFresh": "数据已更新",
+    "dataStale": "数据可能已过时",
     "phases": {
       "starting": "开始中",
       "overworld": "主世界",

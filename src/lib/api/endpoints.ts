@@ -178,11 +178,71 @@ export async function getVersusMatches(
 // ============================================================================
 
 /**
- * Get currently active matches
+ * Populate missing non-streaming users in live matches.
+ * The API returns player timeline data in match.data by UUID, but match.players
+ * may not contain all players (especially non-streaming ones).
+ * This function fetches missing player information.
+ */
+async function populateNonStreamingUsers(matches: LiveMatch[]): Promise<LiveMatch[]> {
+  const populatedMatches = await Promise.all(
+    matches.map(async (match) => {
+      // Get UUIDs that exist in match.players
+      const knownUuids = new Set(match.players.map((p) => p.uuid));
+
+      // Find UUIDs in match.data that aren't in match.players
+      const missingUuids = Object.keys(match.data).filter(
+        (uuid) => !knownUuids.has(uuid)
+      );
+
+      if (missingUuids.length === 0) {
+        return match;
+      }
+
+      // Fetch user data for missing players
+      const missingPlayers = await Promise.all(
+        missingUuids.map(async (uuid) => {
+          try {
+            const userData = await get<UserInfo>(`/users/${uuid}`);
+            return {
+              uuid: userData.uuid,
+              nickname: userData.nickname,
+              roleType: userData.roleType,
+              eloRate: userData.eloRate,
+              eloRank: userData.eloRank,
+              country: userData.country,
+            };
+          } catch {
+            // If we can't fetch user data, create a minimal profile
+            return {
+              uuid,
+              nickname: 'Unknown',
+              roleType: 0 as const,
+              eloRate: null,
+              eloRank: null,
+              country: null,
+            };
+          }
+        })
+      );
+
+      // Return match with all players populated
+      return {
+        ...match,
+        players: [...match.players, ...missingPlayers],
+      };
+    })
+  );
+
+  return populatedMatches;
+}
+
+/**
+ * Get currently active matches with all players populated
  */
 export async function getLiveMatches(): Promise<LiveMatch[]> {
   const response = await get<LiveMatchesResponse>('/live');
-  return response.liveMatches;
+  // Populate any missing non-streaming users
+  return populateNonStreamingUsers(response.liveMatches);
 }
 
 // ============================================================================

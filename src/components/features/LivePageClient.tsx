@@ -135,7 +135,7 @@ function EloMiniBar({ elo }: { elo: number }) {
 export function LivePageClient() {
   const t = useTranslations();
   const router = useRouter();
-  const { data: liveMatches, isLoading, error } = useLiveMatches();
+  const { data: liveMatches, isLoading, error, dataUpdatedAt } = useLiveMatches();
   const [sortBy, setSortBy] = React.useState<SortOption>('elo-desc');
 
   // Sort matches based on selected option
@@ -218,6 +218,7 @@ export function LivePageClient() {
                 key={matchKey}
                 match={match}
                 isHighElo={hasHighEloPlayer(match)}
+                dataUpdatedAt={dataUpdatedAt}
               />
             );
           })}
@@ -246,9 +247,10 @@ export function LivePageClient() {
 interface LiveMatchCardProps {
   match: LiveMatch;
   isHighElo?: boolean;
+  dataUpdatedAt?: number;
 }
 
-function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
+function LiveMatchCard({ match, isHighElo = false, dataUpdatedAt }: LiveMatchCardProps) {
   const t = useTranslations();
   const router = useRouter();
   const [currentTime, setCurrentTime] = React.useState(match.currentTime);
@@ -315,7 +317,7 @@ function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
       <CardContent className="space-y-3 pt-0">
         {/* Use the new pace comparison component for 2-player matches */}
         {match.players.length === 2 ? (
-          <LiveMatchPaceComparison match={match} isHighElo={isHighElo} />
+          <LiveMatchPaceComparison match={match} isHighElo={isHighElo} dataUpdatedAt={dataUpdatedAt} />
         ) : (
           <>
             {/* Progress indicator with icon for non-2-player matches */}

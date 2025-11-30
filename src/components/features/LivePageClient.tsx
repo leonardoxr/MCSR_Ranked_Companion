@@ -135,7 +135,7 @@ function EloMiniBar({ elo }: { elo: number }) {
 export function LivePageClient() {
   const t = useTranslations();
   const router = useRouter();
-  const { data: liveMatches, isLoading, error, dataUpdatedAt } = useLiveMatches();
+  const { data: liveMatches, isLoading, error } = useLiveMatches();
   const [sortBy, setSortBy] = React.useState<SortOption>('elo-desc');
 
   // Sort matches based on selected option
@@ -218,7 +218,6 @@ export function LivePageClient() {
                 key={matchKey}
                 match={match}
                 isHighElo={hasHighEloPlayer(match)}
-                dataUpdatedAt={dataUpdatedAt}
               />
             );
           })}
@@ -247,21 +246,35 @@ export function LivePageClient() {
 interface LiveMatchCardProps {
   match: LiveMatch;
   isHighElo?: boolean;
-  dataUpdatedAt?: number;
 }
 
-function LiveMatchCard({ match, isHighElo = false, dataUpdatedAt }: LiveMatchCardProps) {
+function LiveMatchCard({ match, isHighElo = false }: LiveMatchCardProps) {
   const t = useTranslations();
   const router = useRouter();
-  const [currentTime, setCurrentTime] = React.useState(match.currentTime);
 
+  // RTA timer: updates every 100ms for smooth display
+  const [rtaTime, setRtaTime] = React.useState(match.currentTime);
+  const [elapsed, setElapsed] = React.useState(0);
+  const lastUpdateRef = React.useRef(Date.now());
+
+  // Track when match data changes
+  React.useEffect(() => {
+    lastUpdateRef.current = Date.now();
+    setRtaTime(match.currentTime);
+    setElapsed(0);
+  }, [match.currentTime]);
+
+  // Update RTA timer smoothly
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime((prev) => prev + 1000);
-    }, 1000);
+      const now = Date.now();
+      const newElapsed = now - lastUpdateRef.current;
+      setElapsed(newElapsed);
+      setRtaTime(match.currentTime + newElapsed);
+    }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [match.currentTime]);
 
   // Get the furthest progress from any player
   const getFurthestProgress = () => {
@@ -306,9 +319,16 @@ function LiveMatchCard({ match, isHighElo = false, dataUpdatedAt }: LiveMatchCar
               </Badge>
             )}
           </div>
-          <div className="text-right">
-            <div className={`text-xl font-mono font-bold ${isHighElo ? 'text-amber-500' : 'text-red-500'}`}>
-              {formatElapsedTime(currentTime)}
+          <div className="flex items-center gap-2">
+            {/* Freshness indicator dot */}
+            <div className={cn(
+              'w-2 h-2 rounded-full transition-colors',
+              elapsed < 5000 ? 'bg-green-500 animate-pulse' :
+              elapsed < 15000 ? 'bg-blue-500' :
+              elapsed < 30000 ? 'bg-yellow-500' : 'bg-red-500'
+            )} />
+            <div className={`text-xl font-mono font-bold tabular-nums ${isHighElo ? 'text-amber-500' : 'text-red-500'}`}>
+              {formatElapsedTime(rtaTime)}
             </div>
           </div>
         </div>
@@ -317,7 +337,7 @@ function LiveMatchCard({ match, isHighElo = false, dataUpdatedAt }: LiveMatchCar
       <CardContent className="space-y-3 pt-0">
         {/* Use the new pace comparison component for 2-player matches */}
         {match.players.length === 2 ? (
-          <LiveMatchPaceComparison match={match} isHighElo={isHighElo} dataUpdatedAt={dataUpdatedAt} />
+          <LiveMatchPaceComparison match={match} isHighElo={isHighElo} />
         ) : (
           <>
             {/* Progress indicator with icon for non-2-player matches */}

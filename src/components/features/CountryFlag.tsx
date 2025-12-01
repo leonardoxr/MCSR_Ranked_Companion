@@ -22,8 +22,9 @@ const sizeMap = {
 /**
  * CountryFlag component for displaying nationality flags
  * Uses flagcdn.com API for flag images
+ * Memoized to prevent unnecessary re-renders in live match contexts
  */
-export function CountryFlag({
+export const CountryFlag = React.memo(function CountryFlag({
   country,
   size = 'sm',
   className,
@@ -48,8 +49,8 @@ export function CountryFlag({
         width={width}
         height={height}
         className="rounded-sm object-cover"
-        unoptimized={false}
+        unoptimized
       />
     </span>
   );
-}
+});

@@ -32,8 +32,14 @@ const pixelSizes = {
   xl: 96,
 };
 
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = React.memo(React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', priority = false, ...props }, ref) => {
+    // Create stable key from sources to detect actual content changes
+    // This prevents reset loops caused by array reference changes
+    const sourcesKey = React.useMemo(() => {
+      return [src, ...fallbackSrcs].filter(Boolean).join('|');
+    }, [src, fallbackSrcs]);
+
     // Build array of all image sources to try
     const allSrcs = React.useMemo(() => {
       const sources: string[] = [];
@@ -45,10 +51,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     // Track which source index we're currently trying
     const [srcIndex, setSrcIndex] = React.useState(0);
 
-    // Reset source index when sources change
+    // Reset source index only when actual source URLs change (not just references)
     React.useEffect(() => {
       setSrcIndex(0);
-    }, [src, fallbackSrcs]);
+    }, [sourcesKey]);
 
     const currentSrc = allSrcs[srcIndex];
     const allSourcesFailed = srcIndex >= allSrcs.length;
@@ -79,7 +85,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
             onError={handleError}
             loading={priority ? 'eager' : 'lazy'}
             priority={priority}
-            unoptimized={false}
+            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald to-diamond text-white font-semibold">
@@ -89,7 +95,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       </div>
     );
   }
-);
+));
 Avatar.displayName = 'Avatar';
 
 export { Avatar };

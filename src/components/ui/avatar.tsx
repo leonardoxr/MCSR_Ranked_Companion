@@ -32,7 +32,7 @@ const pixelSizes = {
   xl: 96,
 };
 
-const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = React.memo(React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', priority = false, ...props }, ref) => {
     // Create stable key from sources to detect actual content changes
     // This prevents reset loops caused by array reference changes
@@ -95,7 +95,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       </div>
     );
   }
-);
+));
 Avatar.displayName = 'Avatar';
 
 export { Avatar };

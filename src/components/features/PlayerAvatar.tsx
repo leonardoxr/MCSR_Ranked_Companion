@@ -21,8 +21,11 @@ export interface PlayerAvatarProps {
  * PlayerAvatar component for displaying Minecraft player avatars
  * Uses Crafatar API for rendering player heads with Cloudhaven as fallback
  * Implements smart caching with daily rotation for efficient loading
+ *
+ * Memoized to prevent unnecessary re-renders in frequently updating contexts
+ * (e.g., live matches with 100ms timer updates)
  */
-export function PlayerAvatar({
+export const PlayerAvatar = React.memo(function PlayerAvatar({
   uuid,
   username,
   size = 'md',
@@ -60,4 +63,4 @@ export function PlayerAvatar({
       className={cn('border-2 border-border', className)}
     />
   );
-}
+});

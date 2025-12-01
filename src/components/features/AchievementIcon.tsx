@@ -16,8 +16,9 @@ interface AchievementIconProps {
 
 /**
  * AchievementIcon component that displays achievement images with fallback and overlays
+ * Memoized to prevent unnecessary re-renders
  */
-export function AchievementIcon({
+export const AchievementIcon = React.memo(function AchievementIcon({
   achievement,
   size = 64,
   className = '',
@@ -249,7 +250,7 @@ export function AchievementIcon({
       </div>
     </div>
   );
-}
+});
 
 interface AchievementCardProps {
   achievement: Achievement;

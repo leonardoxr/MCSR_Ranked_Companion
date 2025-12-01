@@ -105,7 +105,7 @@ export default function RootLayout({
           id="adsense-init"
           strategy="afterInteractive"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4130479240951623"
-          crossOrigin="anonymous"
+          async
         />
         <Providers>
           <div className="relative min-h-screen bg-background">

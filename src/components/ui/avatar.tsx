@@ -34,6 +34,12 @@ const pixelSizes = {
 
 const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
   ({ className, src, fallbackSrcs = [], alt, fallback, size = 'md', priority = false, ...props }, ref) => {
+    // Create stable key from sources to detect actual content changes
+    // This prevents reset loops caused by array reference changes
+    const sourcesKey = React.useMemo(() => {
+      return [src, ...fallbackSrcs].filter(Boolean).join('|');
+    }, [src, fallbackSrcs]);
+
     // Build array of all image sources to try
     const allSrcs = React.useMemo(() => {
       const sources: string[] = [];
@@ -45,10 +51,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
     // Track which source index we're currently trying
     const [srcIndex, setSrcIndex] = React.useState(0);
 
-    // Reset source index when sources change
+    // Reset source index only when actual source URLs change (not just references)
     React.useEffect(() => {
       setSrcIndex(0);
-    }, [src, fallbackSrcs]);
+    }, [sourcesKey]);
 
     const currentSrc = allSrcs[srcIndex];
     const allSourcesFailed = srcIndex >= allSrcs.length;

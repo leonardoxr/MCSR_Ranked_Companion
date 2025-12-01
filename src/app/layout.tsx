@@ -103,9 +103,8 @@ export default function RootLayout({
       <body className={cn('font-mono antialiased bg-obsidian')}>
         <Script
           id="adsense-init"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4130479240951623"
-          async
         />
         <Providers>
           <div className="relative min-h-screen bg-background">

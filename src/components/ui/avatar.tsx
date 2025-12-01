@@ -85,7 +85,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
             onError={handleError}
             loading={priority ? 'eager' : 'lazy'}
             priority={priority}
-            unoptimized={false}
+            unoptimized
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald to-diamond text-white font-semibold">

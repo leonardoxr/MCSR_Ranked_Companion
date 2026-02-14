@@ -39,9 +39,9 @@ export function HomePageClient() {
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes (override default)
   });
 
-  // Get current season from API response, fallback to 9 if not available
+  // Get current season from API response, fallback to 10 if not available
   const currentSeasonFromApi = seasonData?.season?.number;
-  const defaultSeason = currentSeasonFromApi ?? 9;
+  const defaultSeason = currentSeasonFromApi ?? 10;
 
   const [season, setSeason] = React.useState<number | null>(null);
   const [country, setCountry] = React.useState('');

@@ -41,7 +41,11 @@
     "whosLive": "¿Quién Está en Vivo?",
     "playerComparison": "Comparación de Jugadores",
     "guide": "Guía",
-    "gettingStarted": "Comenzar"
+    "gettingStarted": "Comenzar",
+    "records": "Récords",
+    "weeklyRace": "Carrera Semanal",
+    "phase": "Fase",
+    "playoffs": "Playoffs"
   },
   "home": {
     "title": "MCSR Ranked Companion",
@@ -705,5 +709,75 @@
       "watchLive": "Ver Partidas en Vivo"
     },
     "attribution": "Esta guía resume información del Wiki oficial de MCSR Ranked. Para información más actualizada y detallada, consulta la documentación original."
+  },
+  "records": {
+    "title": "Tiempos Récord",
+    "description": "Los tiempos de finalización más rápidos en la historia de MCSR Ranked",
+    "table": {
+      "rank": "Posición",
+      "player": "Jugador",
+      "time": "Tiempo",
+      "season": "Temporada",
+      "date": "Fecha",
+      "seed": "Seed"
+    },
+    "noRecords": "No se encontraron récords"
+  },
+  "weeklyRace": {
+    "title": "Carrera Semanal",
+    "description": "Carrera semanal de speedrun actual",
+    "endsIn": "Termina en",
+    "seedInfo": "Información de Seed",
+    "overworld": "Overworld",
+    "nether": "Nether",
+    "end": "End",
+    "table": {
+      "rank": "Posición",
+      "player": "Jugador",
+      "time": "Tiempo",
+      "replay": "Replay"
+    },
+    "noEntries": "Aún no hay entradas"
+  },
+  "phase": {
+    "title": "Clasificación de Fase",
+    "description": "Tabla de puntos de fase actual",
+    "phaseNumber": "Fase {number}",
+    "season": "Temporada {season}",
+    "endsIn": "Termina en",
+    "table": {
+      "rank": "Posición",
+      "player": "Jugador",
+      "elo": "ELO",
+      "phasePoints": "Puntos de Fase",
+      "predicted": "Predicción"
+    },
+    "noPlayers": "No hay datos de fase disponibles"
+  },
+  "playoffs": {
+    "title": "Playoffs",
+    "description": "Bracket de playoffs de MCSR Ranked",
+    "season": "Temporada {season}",
+    "bracket": "Bracket",
+    "results": "Resultados",
+    "players": "Jugadores",
+    "roundOf16": "Octavos de Final",
+    "quarterfinals": "Cuartos de Final",
+    "semifinals": "Semifinales",
+    "grandFinals": "Gran Final",
+    "bestOf": "Mejor de {n}",
+    "watchVod": "Ver VOD",
+    "placement": "Posición",
+    "prize": "Premio",
+    "seed": "Seed",
+    "personalBest": "PB",
+    "states": {
+      "done": "Completado",
+      "live": "En Vivo",
+      "scheduled": "Programado"
+    },
+    "noPlayoffs": "No hay datos de playoffs disponibles",
+    "prevSeason": "Anterior",
+    "nextSeason": "Siguiente"
   }
 }

@@ -119,9 +119,7 @@ export default function VersusPage() {
     );
   }
 
-  const vsAny: any = versusStats as any;
-  const playersArr: any[] | undefined = vsAny?.players;
-  if (statsError || !versusStats || !Array.isArray(playersArr) || playersArr.length < 2) {
+  if (statsError || !versusStats || !versusStats.players || versusStats.players.length < 2) {
     return (
       <div className="container mx-auto px-4 py-8">
         <ErrorState
@@ -135,13 +133,13 @@ export default function VersusPage() {
     );
   }
 
-  const [p1Info, p2Info] = playersArr as any[];
+  const [p1Info, p2Info] = versusStats.players;
   const p1Name = p1Info?.nickname || String(player1Name);
   const p2Name = p2Info?.nickname || String(player2Name);
 
   // Use calculated stats or API stats
   const currentStats = statsPerType ? statsPerType[matchTypeFilter] : null;
-  const rankedStats = vsAny?.results?.ranked ?? null;
+  const rankedStats = versusStats.results?.ranked ?? null;
 
   // Determine which stats to show based on filter
   const p1Wins = currentStats?.p1Wins ?? (rankedStats?.[p1Info?.uuid] ?? 0);

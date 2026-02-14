@@ -310,28 +310,153 @@ export interface WeeklyRaceInfo {
   seed: {
     overworld: string;
     nether: string;
-    the_end: string;
+    theEnd: string;
     rng: string;
+    flags: unknown | null;
   };
   endsAt: Timestamp;
   leaderboard: Array<{
     rank: number;
     player: UserProfile;
     time: Milliseconds;
-    replayExists: boolean;
+    replayExist: boolean;
   }>;
 }
 
 /**
- * Head-to-head statistics
+ * Head-to-head results breakdown by match type
+ * Keys are player UUIDs mapping to their win counts, plus a "total" key
+ */
+export interface VersusResultsByType {
+  total: number;
+  [uuid: string]: number;
+}
+
+/**
+ * Head-to-head statistics between two players
+ * Actual API response from GET /users/{user1}/versus/{user2}
  */
 export interface VersusStats {
-  player1: UserProfile;
-  player2: UserProfile;
-  player1Wins: number;
-  player2Wins: number;
-  totalMatches: number;
-  recentMatches: MatchInfo[];
+  players: [UserProfile, UserProfile];
+  results: {
+    ranked: VersusResultsByType;
+    casual: VersusResultsByType;
+  };
+  changes: {
+    [uuid: string]: number;
+  };
+}
+
+// ============================================================================
+// Record Leaderboard Types
+// ============================================================================
+
+/**
+ * Entry in the record (fastest times) leaderboard
+ */
+export interface RecordLeaderboardEntry {
+  rank: number;
+  id: number;
+  season: number;
+  date: Timestamp;
+  time: Milliseconds;
+  user: UserProfile;
+  seed: MatchSeed;
+}
+
+// ============================================================================
+// Phase Leaderboard Types
+// ============================================================================
+
+/**
+ * Phase information for the phase leaderboard
+ */
+export interface PhaseInfo {
+  endsAt: Timestamp;
+  number: number;
+  season: number;
+}
+
+/**
+ * User entry in the phase points leaderboard
+ */
+export interface PhaseLeaderboardUser extends UserProfile {
+  predPhasePoint: number;
+  seasonResult: {
+    eloRate: EloRate;
+    eloRank: Rank;
+    phasePoint: number;
+  };
+}
+
+/**
+ * Phase leaderboard response
+ */
+export interface PhaseLeaderboardResponse {
+  phase: PhaseInfo;
+  users: PhaseLeaderboardUser[];
+}
+
+// ============================================================================
+// Playoffs Types
+// ============================================================================
+
+/**
+ * Player in the playoffs bracket
+ */
+export interface PlayoffPlayer {
+  uuid: UUID;
+  nickname: string;
+  seasonEloRate: EloRate;
+  seasonEloRank: Rank;
+  seedNumber: number;
+  personalBest: Milliseconds;
+}
+
+/**
+ * A match in the playoffs bracket
+ */
+export interface PlayoffMatch {
+  id: number;
+  name: string;
+  nextMatchId: number | null;
+  maxRoundScore: number;
+  startTime: Timestamp;
+  state: string;
+  participants: Array<{
+    player: number;
+    roundScore: number;
+  }>;
+  vod: string;
+}
+
+/**
+ * Final placement result in playoffs
+ */
+export interface PlayoffResult {
+  player: number;
+  place: number;
+  prize: number;
+}
+
+/**
+ * Full playoffs bracket data
+ */
+export interface PlayoffsBracket {
+  type: string;
+  players: PlayoffPlayer[];
+  matches: PlayoffMatch[];
+  results: PlayoffResult[];
+  season: number;
+}
+
+/**
+ * Playoffs response with navigation
+ */
+export interface PlayoffsResponse {
+  data: PlayoffsBracket;
+  next: number | null;
+  prev: number | null;
 }
 
 /**

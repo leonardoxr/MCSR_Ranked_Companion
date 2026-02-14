@@ -25,6 +25,12 @@ export { AchievementIcon, AchievementCard } from './AchievementIcon';
 export { MinecraftIcon } from './MinecraftIcon';
 export type { MinecraftIconName, MinecraftIconProps } from './MinecraftIcon';
 
+// Page client components
+export { WeeklyRaceClient } from './WeeklyRaceClient';
+export { RecordLeaderboardClient } from './RecordLeaderboardClient';
+export { PhaseLeaderboardClient } from './PhaseLeaderboardClient';
+export { PlayoffsClient } from './PlayoffsClient';
+
 // Utility components
 export { SearchBar } from './SearchBar';
 export { PlayerNameInput } from './PlayerNameInput';

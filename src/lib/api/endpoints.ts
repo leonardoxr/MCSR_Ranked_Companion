@@ -11,6 +11,9 @@ import type {
   WeeklyRaceInfo,
   MatchFilterParams,
   PaginationParams,
+  RecordLeaderboardEntry,
+  PhaseLeaderboardResponse,
+  PlayoffsResponse,
 } from '@/types/api';
 
 /**
@@ -258,4 +261,41 @@ export async function getWeeklyRace(params?: {
   season?: number;
 }): Promise<WeeklyRaceInfo> {
   return get<WeeklyRaceInfo>('/weekly-race', { params });
+}
+
+// ============================================================================
+// Record Leaderboard Endpoints
+// ============================================================================
+
+/**
+ * Get the record (fastest times) leaderboard
+ * Returns top 100 fastest ranked completion times
+ */
+export async function getRecordLeaderboard(): Promise<RecordLeaderboardEntry[]> {
+  return get<RecordLeaderboardEntry[]>('/record-leaderboard');
+}
+
+// ============================================================================
+// Phase Leaderboard Endpoints
+// ============================================================================
+
+/**
+ * Get the current phase points leaderboard
+ */
+export async function getPhaseLeaderboard(): Promise<PhaseLeaderboardResponse> {
+  return get<PhaseLeaderboardResponse>('/phase-leaderboard');
+}
+
+// ============================================================================
+// Playoffs Endpoints
+// ============================================================================
+
+/**
+ * Get playoffs bracket data
+ * @param params - Optional id for historical playoffs
+ */
+export async function getPlayoffs(params?: {
+  id?: number;
+}): Promise<PlayoffsResponse> {
+  return get<PlayoffsResponse>('/playoffs', { params });
 }

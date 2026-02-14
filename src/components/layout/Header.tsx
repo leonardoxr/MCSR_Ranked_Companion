@@ -174,6 +174,10 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className="ml-6 hidden md:flex items-center gap-1">
               <NavLink href="/" label={t('nav.leaderboard')} />
+              <NavLink href="/records" label={t('nav.records')} />
+              <NavLink href="/phase" label={t('nav.phase')} />
+              <NavLink href="/weekly-race" label={t('nav.weeklyRace')} />
+              <NavLink href="/playoffs" label={t('nav.playoffs')} />
               <NavLink href="/elo-timeline" label={t('nav.eloTimeline')} />
               <NavLink href="/compare" label={t('nav.playerComparison')} />
               <NavLink href="/getting-started" label={t('nav.guide')} />
@@ -284,6 +288,10 @@ export default function Header() {
               {/* Mobile Navigation Links */}
               <nav className="py-4 space-y-2">
                 <MobileNavLink href="/" label={t('nav.leaderboard')} />
+                <MobileNavLink href="/records" label={t('nav.records')} />
+                <MobileNavLink href="/phase" label={t('nav.phase')} />
+                <MobileNavLink href="/weekly-race" label={t('nav.weeklyRace')} />
+                <MobileNavLink href="/playoffs" label={t('nav.playoffs')} />
                 <MobileNavLink href="/elo-timeline" label={t('nav.eloTimeline')} />
                 <MobileNavLink href="/compare" label={t('nav.playerComparison')} />
                 <MobileNavLink href="/getting-started" label={t('nav.gettingStarted')} />

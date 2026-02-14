@@ -41,7 +41,11 @@
     "whosLive": "Who's Live?",
     "playerComparison": "Player Comparison",
     "guide": "Guide",
-    "gettingStarted": "Getting Started"
+    "gettingStarted": "Getting Started",
+    "records": "Records",
+    "weeklyRace": "Weekly Race",
+    "phase": "Phase",
+    "playoffs": "Playoffs"
   },
   "home": {
     "title": "MCSR Ranked Companion",
@@ -756,5 +760,75 @@
       "watchLive": "Watch Live Matches"
     },
     "attribution": "This guide summarizes information from the official MCSR Ranked Wiki. For the most up-to-date and detailed information, please refer to the original documentation."
+  },
+  "records": {
+    "title": "Record Times",
+    "description": "Fastest completion times in MCSR Ranked history",
+    "table": {
+      "rank": "Rank",
+      "player": "Player",
+      "time": "Time",
+      "season": "Season",
+      "date": "Date",
+      "seed": "Seed"
+    },
+    "noRecords": "No records found"
+  },
+  "weeklyRace": {
+    "title": "Weekly Race",
+    "description": "Current weekly speedrun race",
+    "endsIn": "Ends in",
+    "seedInfo": "Seed Information",
+    "overworld": "Overworld",
+    "nether": "Nether",
+    "end": "End",
+    "table": {
+      "rank": "Rank",
+      "player": "Player",
+      "time": "Time",
+      "replay": "Replay"
+    },
+    "noEntries": "No race entries yet"
+  },
+  "phase": {
+    "title": "Phase Standings",
+    "description": "Current phase points leaderboard",
+    "phaseNumber": "Phase {number}",
+    "season": "Season {season}",
+    "endsIn": "Ends in",
+    "table": {
+      "rank": "Rank",
+      "player": "Player",
+      "elo": "ELO",
+      "phasePoints": "Phase Points",
+      "predicted": "Predicted"
+    },
+    "noPlayers": "No phase data available"
+  },
+  "playoffs": {
+    "title": "Playoffs",
+    "description": "MCSR Ranked playoffs bracket",
+    "season": "Season {season}",
+    "bracket": "Bracket",
+    "results": "Results",
+    "players": "Players",
+    "roundOf16": "Round of 16",
+    "quarterfinals": "Quarterfinals",
+    "semifinals": "Semifinals",
+    "grandFinals": "Grand Finals",
+    "bestOf": "Best of {n}",
+    "watchVod": "Watch VOD",
+    "placement": "Place",
+    "prize": "Prize",
+    "seed": "Seed",
+    "personalBest": "PB",
+    "states": {
+      "done": "Completed",
+      "live": "Live",
+      "scheduled": "Scheduled"
+    },
+    "noPlayoffs": "No playoffs data available",
+    "prevSeason": "Previous",
+    "nextSeason": "Next"
   }
 }

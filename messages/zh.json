@@ -41,7 +41,11 @@
     "whosLive": "谁在直播？",
     "playerComparison": "玩家对比",
     "guide": "指南",
-    "gettingStarted": "入门指南"
+    "gettingStarted": "入门指南",
+    "records": "最快记录",
+    "weeklyRace": "每周竞速",
+    "phase": "阶段",
+    "playoffs": "季后赛"
   },
   "home": {
     "title": "MCSR Ranked Companion",
@@ -705,5 +709,75 @@
       "watchLive": "观看实时比赛"
     },
     "attribution": "本指南总结了 MCSR Ranked 官方 Wiki 的信息。如需最新和详细的信息，请参阅原始文档。"
+  },
+  "records": {
+    "title": "最快记录",
+    "description": "MCSR Ranked 历史上最快的完成时间",
+    "table": {
+      "rank": "排名",
+      "player": "玩家",
+      "time": "时间",
+      "season": "赛季",
+      "date": "日期",
+      "seed": "种子"
+    },
+    "noRecords": "未找到记录"
+  },
+  "weeklyRace": {
+    "title": "每周竞速",
+    "description": "当前每周速通竞赛",
+    "endsIn": "距离结束",
+    "seedInfo": "种子信息",
+    "overworld": "主世界",
+    "nether": "下界",
+    "end": "末地",
+    "table": {
+      "rank": "排名",
+      "player": "玩家",
+      "time": "时间",
+      "replay": "回放"
+    },
+    "noEntries": "暂无参赛记录"
+  },
+  "phase": {
+    "title": "阶段排名",
+    "description": "当前阶段积分排行榜",
+    "phaseNumber": "第 {number} 阶段",
+    "season": "第 {season} 赛季",
+    "endsIn": "距离结束",
+    "table": {
+      "rank": "排名",
+      "player": "玩家",
+      "elo": "ELO",
+      "phasePoints": "阶段积分",
+      "predicted": "预测"
+    },
+    "noPlayers": "暂无阶段数据"
+  },
+  "playoffs": {
+    "title": "季后赛",
+    "description": "MCSR Ranked 季后赛对阵表",
+    "season": "第 {season} 赛季",
+    "bracket": "对阵表",
+    "results": "结果",
+    "players": "选手",
+    "roundOf16": "十六强",
+    "quarterfinals": "四分之一决赛",
+    "semifinals": "半决赛",
+    "grandFinals": "总决赛",
+    "bestOf": "{n} 局制",
+    "watchVod": "观看录像",
+    "placement": "名次",
+    "prize": "奖金",
+    "seed": "种子位",
+    "personalBest": "PB",
+    "states": {
+      "done": "已结束",
+      "live": "直播中",
+      "scheduled": "待开始"
+    },
+    "noPlayoffs": "暂无季后赛数据",
+    "prevSeason": "上一赛季",
+    "nextSeason": "下一赛季"
   }
 }

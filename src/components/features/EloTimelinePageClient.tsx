@@ -364,13 +364,13 @@ export function EloTimelinePageClient() {
     setSelectedPlayers(new Set(playerTimelines.slice(0, 10).map((p) => p.uuid)));
   };
 
-  // Rank tier reference lines
+  // Rank tier reference lines (at actual tier start boundaries)
   const rankTiers = [
     { name: t('ranks.netherite'), elo: 2000, color: '#4A5568' },
-    { name: t('ranks.diamond'), elo: 1600, color: '#4299E1' },
-    { name: t('ranks.emerald'), elo: 1250, color: '#48BB78' },
-    { name: t('ranks.gold'), elo: 950, color: '#ECC94B' },
-    { name: t('ranks.iron'), elo: 700, color: '#A0AEC0' },
+    { name: t('ranks.diamond'), elo: 1500, color: '#4299E1' },
+    { name: t('ranks.emerald'), elo: 1200, color: '#48BB78' },
+    { name: t('ranks.gold'), elo: 900, color: '#ECC94B' },
+    { name: t('ranks.iron'), elo: 600, color: '#A0AEC0' },
   ];
 
   if (isLoadingLeaderboard) {

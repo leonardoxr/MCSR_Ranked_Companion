@@ -42,6 +42,31 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Verify Vercel secrets
+        run: |
+          missing=0
+
+          if [ -z "${VERCEL_TOKEN}" ]; then
+            echo "::error title=Missing Vercel secret::Configure VERCEL_TOKEN in the GitHub production environment secrets."
+            missing=1
+          fi
+
+          if [ -z "${VERCEL_ORG_ID}" ]; then
+            echo "::error title=Missing Vercel secret::Configure VERCEL_ORG_ID in the GitHub production environment secrets."
+            missing=1
+          fi
+
+          if [ -z "${VERCEL_PROJECT_ID}" ]; then
+            echo "::error title=Missing Vercel secret::Configure VERCEL_PROJECT_ID in the GitHub production environment secrets."
+            missing=1
+          fi
+
+          exit "$missing"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
       - name: Pull Vercel environment
         run: npx vercel pull --yes --environment=production --token="${VERCEL_TOKEN}"
         env:

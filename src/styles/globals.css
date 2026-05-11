@@ -1,0 +1,193 @@
+/* Minecraft icons CSS is loaded via link tag in layout.tsx */
+/* Monocraft font - local and optional web */
+/* Uses TTC files added under /public/fonts */
+@font-face {
+  font-family: 'Monocraft';
+  src:
+    local('Monocraft'),
+    url('/fonts/Monocraft.ttc') format('truetype-collection'),
+    url('/fonts/Monocraft-no-ligatures.ttc') format('truetype-collection'),
+    url('/fonts/Monocraft-nerd-fonts-patched.ttc') format('truetype-collection');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Modern Obsidian Theme */
+    --background: 240 10% 4%; /* Very dark, almost black */
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 180 100% 50%; /* Diamond Blue */
+    --primary-foreground: 240 10% 4%;
+    
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 157 100% 50%; /* Emerald Green */
+    --accent-foreground: 240 10% 4%;
+    
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 180 100% 50%;
+    
+    --radius: 0.5rem;
+    
+    /* Minecraft accents (Vibrant) */
+    --emerald: 157 100% 50%;
+    --diamond: 180 100% 50%;
+    --gold: 51 100% 50%;
+    --redstone: 0 100% 60%;
+    
+    /* App-wide monospace stack */
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .dark {
+    /* Same as root for now, enforcing dark mode feel */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 180 100% 50%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 6% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 157 100% 50%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 100% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
+    --ring: 180 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    background-color: hsl(var(--background));
+  }
+}
+
+@layer utilities {
+  /* Sleek Obsidian Background */
+  .bg-obsidian {
+    background-color: #050505;
+    background-image: 
+      /* Subtle grid */
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      /* Deep glow spots */
+      radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.08), transparent 25%),
+      radial-gradient(circle at 85% 30%, rgba(0, 255, 157, 0.06), transparent 25%);
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+    background-attachment: fixed;
+  }
+
+  /* Neon title glow */
+  .mc-title {
+    text-shadow:
+      0 0 10px rgba(0, 229, 255, 0.5),
+      0 0 20px rgba(0, 255, 157, 0.3);
+  }
+
+  /* Pixel-art rendering helper */
+  .image-pixelated {
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+  }
+
+  /* 3D head rotation styles */
+  .head-3d-container {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+  }
+
+  .head-3d-face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  /* Modern Glassy Card */
+  .mc-card {
+    @apply bg-card/40 backdrop-blur-md border border-white/10;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.5),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+
+  .mc-card:hover {
+    @apply border-white/20 bg-card/60;
+    box-shadow: 
+      0 8px 30px rgba(0, 0, 0, 0.6),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 15px rgba(0, 229, 255, 0.1); /* Subtle diamond glow on hover */
+  }
+
+  /* Pixel frame for icons - Modernized */
+  .pixel-frame {
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 4px 12px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(4px);
+  }
+
+  /* Glow Utilities */
+  .glow-emerald { filter: drop-shadow(0 0 8px rgba(0, 255, 157, 0.6)); }
+  .glow-diamond { filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6)); }
+  .glow-gold { filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)); }
+  .glow-redstone { filter: drop-shadow(0 0 8px rgba(255, 51, 51, 0.6)); }
+
+  /* Pace colors */
+  .pace-ahead { color: #00ff9d; text-shadow: 0 0 10px rgba(0, 255, 157, 0.3); }
+  .pace-behind { color: #ff3333; text-shadow: 0 0 10px rgba(255, 51, 51, 0.3); }
+  .pace-even { color: rgba(255,255,255,0.9); }
+
+  /* Progress track */
+  .progress-track { height: 4px; border-radius: 9999px; background: rgba(255,255,255,0.1); overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #00ff9d, #00e5ff); box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); }
+
+  /* Monocraft font utility */
+  .font-monocraft {
+    font-family: 'Monocraft', 'Courier New', 'Courier', 'Lucida Console', 'Monaco', monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
+  .mc-heading { font-family: 'Monocraft', var(--font-mono); letter-spacing: 0.015em; }
+  .mc-accent { color: #00ff9d; }
+  .mc-accent-diamond { color: #00e5ff; }
+}

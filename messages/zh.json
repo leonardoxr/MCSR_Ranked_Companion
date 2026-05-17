@@ -389,10 +389,12 @@
     "best": "最佳：",
     "matches": "比赛",
     "tier": "等级",
+    "range": "范围",
     "peak": "峰值",
     "change": "变化",
     "clickToView": "点击查看比赛详情",
-    "clickToViewMatch": "点击查看比赛"
+    "clickToViewMatch": "点击查看比赛",
+    "viewMatch": "查看比赛"
   },
   "eloTimeline": {
     "title": "ELO 历史",

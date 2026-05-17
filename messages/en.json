@@ -413,10 +413,12 @@
     "best": "Best:",
     "matches": "matches",
     "tier": "Tier",
+    "range": "Range",
     "peak": "Peak",
     "change": "Change",
     "clickToView": "Click point to view match",
-    "clickToViewMatch": "Click to view match"
+    "clickToViewMatch": "Click to view match",
+    "viewMatch": "View Match"
   },
   "eloTimeline": {
     "title": "ELO Timeline",

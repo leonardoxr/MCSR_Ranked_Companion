@@ -390,10 +390,12 @@
     "best": "Melhor:",
     "matches": "partidas",
     "tier": "Nível",
+    "range": "Intervalo",
     "peak": "Pico",
     "change": "Mudança",
     "clickToView": "Clique no ponto para ver a partida",
-    "clickToViewMatch": "Clique para ver a partida"
+    "clickToViewMatch": "Clique para ver a partida",
+    "viewMatch": "Ver partida"
   },
   "eloTimeline": {
     "title": "Histórico de ELO",

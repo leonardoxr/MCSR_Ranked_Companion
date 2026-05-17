@@ -28,11 +28,11 @@ export function PlayerHead3D({
   const [skinUrlIndex, setSkinUrlIndex] = React.useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Generate skin URLs with cache versioning - primary Crafatar, fallback Cloudhaven
+  // Generate skin URLs with cache versioning and provider fallbacks.
   const skinUrls = React.useMemo(() => {
     if (!uuid) return [];
     const urls = getSkinUrls(uuid);
-    return [urls.primary, urls.fallback];
+    return [urls.primary, ...urls.fallbacks];
   }, [uuid]);
 
   const skinUrl = skinUrls[skinUrlIndex] || null;
@@ -501,4 +501,3 @@ function Face({
     />
   );
 }
-

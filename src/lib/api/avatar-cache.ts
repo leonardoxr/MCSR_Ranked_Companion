@@ -72,36 +72,62 @@ export function clearForcedRefresh(): void {
   }
 }
 
+type AvatarProvider = {
+  avatar: (uuid: string, overlay: boolean, size?: number) => string;
+  skin: (uuid: string) => string;
+};
+
+function appendCacheVersion(url: string): string {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}v=${encodeURIComponent(getEffectiveCacheVersion())}`;
+}
+
+function getMineatarScale(size?: number): number | undefined {
+  if (!size) return undefined;
+  return Math.max(1, Math.round(size / 8));
+}
+
 // Avatar URL configuration
 const AVATAR_PROVIDERS = {
   primary: {
     avatar: (uuid: string, overlay: boolean, size?: number) => {
       const params = new URLSearchParams();
+      const scale = getMineatarScale(size);
+      if (scale) params.set('scale', String(scale));
       params.set('overlay', String(overlay));
-      if (size) params.set('size', String(size));
+      params.set('format', 'png');
       params.set('v', getEffectiveCacheVersion());
-      return `https://crafatar.com/avatars/${uuid}?${params.toString()}`;
+      return `https://api.mineatar.io/face/${uuid}?${params.toString()}`;
     },
     skin: (uuid: string) => {
       const params = new URLSearchParams();
       params.set('v', getEffectiveCacheVersion());
-      return `https://crafatar.com/skins/${uuid}?${params.toString()}`;
+      return `https://api.mineatar.io/skin/${uuid}?${params.toString()}`;
     },
   },
   fallback: {
-    avatar: (uuid: string, overlay: boolean) => {
-      const params = new URLSearchParams();
-      params.set('overlay', String(overlay));
-      params.set('v', getEffectiveCacheVersion());
-      return `https://avatars.cloudhaven.gg/avatars/${uuid}?${params.toString()}`;
+    avatar: (uuid: string, overlay: boolean, size?: number) => {
+      const sizePath = size ? `/${size}` : '';
+      const helmPath = overlay ? '' : '/nohelm';
+      return appendCacheVersion(`https://mc-heads.net/avatar/${uuid}${sizePath}${helmPath}.png`);
     },
     skin: (uuid: string) => {
-      const params = new URLSearchParams();
-      params.set('v', getEffectiveCacheVersion());
-      return `https://avatars.cloudhaven.gg/skins/${uuid}?${params.toString()}`;
+      return appendCacheVersion(`https://mc-heads.net/skin/${uuid}`);
     },
   },
-} as const;
+  secondaryFallback: {
+    avatar: (uuid: string, overlay: boolean, size?: number) => {
+      const sizePath = size ? `/${size}` : '';
+      const endpoint = overlay ? 'helm' : 'avatar';
+      return appendCacheVersion(`https://minotar.net/${endpoint}/${uuid}${sizePath}.png`);
+    },
+    skin: (uuid: string) => {
+      return appendCacheVersion(`https://minotar.net/skin/${uuid}`);
+    },
+  },
+} satisfies Record<string, AvatarProvider>;
+
+type AvatarProviderName = keyof typeof AVATAR_PROVIDERS;
 
 /**
  * Generate avatar URL with proper caching parameters.
@@ -113,7 +139,7 @@ export function getAvatarUrl(
   options: {
     overlay?: boolean;
     size?: number;
-    provider?: 'primary' | 'fallback';
+    provider?: AvatarProviderName;
   } = {}
 ): string {
   const { overlay = true, size, provider = 'primary' } = options;
@@ -127,7 +153,7 @@ export function getAvatarUrl(
  */
 export function getSkinUrl(
   uuid: string,
-  provider: 'primary' | 'fallback' = 'primary'
+  provider: AvatarProviderName = 'primary'
 ): string {
   return AVATAR_PROVIDERS[provider].skin(uuid);
 }
@@ -139,26 +165,41 @@ export function getSkinUrl(
 export function getAvatarUrls(
   uuid: string,
   options: { overlay?: boolean; size?: number } = {}
-): { primary: string; fallback: string } {
+): { primary: string; fallback: string; fallbacks: string[] } {
+  const fallback = getAvatarUrl(uuid, { ...options, provider: 'fallback' });
+  const secondaryFallback = getAvatarUrl(uuid, {
+    ...options,
+    provider: 'secondaryFallback',
+  });
+
   return {
     primary: getAvatarUrl(uuid, { ...options, provider: 'primary' }),
-    fallback: getAvatarUrl(uuid, { ...options, provider: 'fallback' }),
+    fallback,
+    fallbacks: [fallback, secondaryFallback],
   };
 }
 
 /**
  * Get both primary and fallback skin URLs for a player.
  */
-export function getSkinUrls(uuid: string): { primary: string; fallback: string } {
+export function getSkinUrls(uuid: string): {
+  primary: string;
+  fallback: string;
+  fallbacks: string[];
+} {
+  const fallback = getSkinUrl(uuid, 'fallback');
+  const secondaryFallback = getSkinUrl(uuid, 'secondaryFallback');
+
   return {
     primary: getSkinUrl(uuid, 'primary'),
-    fallback: getSkinUrl(uuid, 'fallback'),
+    fallback,
+    fallbacks: [fallback, secondaryFallback],
   };
 }
 
 /**
  * Recommended sizes for different use cases.
- * Crafatar supports: 8, 16, 32, 64, 128, 256, 512
+ * Avatar providers support the app's standard Minecraft head sizes.
  */
 export const AVATAR_SIZES = {
   xs: 32,   // Tiny icons

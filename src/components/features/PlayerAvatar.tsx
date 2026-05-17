@@ -19,7 +19,7 @@ export interface PlayerAvatarProps {
 
 /**
  * PlayerAvatar component for displaying Minecraft player avatars
- * Uses Crafatar API for rendering player heads with Cloudhaven as fallback
+ * Uses Mineatar for rendering player heads with MCHeads/Minotar fallbacks
  * Implements smart caching with daily rotation for efficient loading
  *
  * Memoized to prevent unnecessary re-renders in frequently updating contexts
@@ -36,7 +36,7 @@ export const PlayerAvatar = React.memo(function PlayerAvatar({
   const t = useTranslations();
 
   // Get optimized avatar URLs with cache versioning
-  // Request appropriate size from Crafatar to avoid over-fetching
+  // Request appropriate size from the avatar provider to avoid over-fetching
   const requestedSize = uuid ? AVATAR_SIZES[size] : undefined;
 
   // Memoize URLs to prevent unnecessary re-renders and image reloads
@@ -49,8 +49,8 @@ export const PlayerAvatar = React.memo(function PlayerAvatar({
 
   // Memoize fallback array to maintain stable reference
   const fallbackSrcs = React.useMemo(() => {
-    return urls ? [urls.fallback] : [];
-  }, [urls?.fallback]);
+    return urls?.fallbacks ?? [];
+  }, [urls]);
 
   return (
     <Avatar

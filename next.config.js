@@ -11,27 +11,27 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'crafatar.com',
-        pathname: '/avatars/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'crafatar.com',
-        pathname: '/renders/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'crafatar.com',
-        pathname: '/skins/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'flagcdn.com',
+        hostname: 'api.mineatar.io',
         pathname: '/**',
       },
       {
         protocol: 'https',
-        hostname: 'avatars.cloudhaven.gg',
+        hostname: 'mc-heads.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'minotar.net',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'crafatar.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'flagcdn.com',
         pathname: '/**',
       },
     ],

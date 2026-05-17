@@ -5,12 +5,12 @@ import type {
   Achievement,
   LeaderboardUser,
   LeaderboardResponse,
+  LeaderboardParams,
   VersusStats,
   LiveMatch,
   LiveMatchesResponse,
   WeeklyRaceInfo,
   MatchFilterParams,
-  PaginationParams,
   RecordLeaderboardEntry,
   PhaseLeaderboardResponse,
   PlayoffsResponse,
@@ -131,10 +131,10 @@ export async function getMatch(matchId: string): Promise<MatchInfo> {
  * @param params - Pagination parameters and optional season filter
  */
 export async function getLeaderboard(
-  params?: PaginationParams & { season?: number }
+  params?: LeaderboardParams
 ): Promise<LeaderboardUser[]> {
   const response = await get<LeaderboardResponse>('/leaderboard', { params });
-  return response.users;
+  return sortLeaderboardUsers(response.users);
 }
 
 /**
@@ -142,9 +142,32 @@ export async function getLeaderboard(
  * @param params - Pagination parameters and optional season filter
  */
 export async function getLeaderboardWithSeason(
-  params?: PaginationParams & { season?: number }
+  params?: LeaderboardParams
 ): Promise<LeaderboardResponse> {
-  return get<LeaderboardResponse>('/leaderboard', { params });
+  const response = await get<LeaderboardResponse>('/leaderboard', { params });
+  return {
+    ...response,
+    users: sortLeaderboardUsers(response.users),
+  };
+}
+
+function sortLeaderboardUsers(users: LeaderboardUser[]): LeaderboardUser[] {
+  return [...users].sort((a, b) => {
+    const aRank = a.seasonResult?.eloRank ?? a.eloRank;
+    const bRank = b.seasonResult?.eloRank ?? b.eloRank;
+
+    if (aRank != null && bRank != null && aRank !== bRank) {
+      return aRank - bRank;
+    }
+
+    if (aRank != null && bRank == null) return -1;
+    if (aRank == null && bRank != null) return 1;
+
+    const aElo = a.seasonResult?.eloRate ?? a.eloRate;
+    const bElo = b.seasonResult?.eloRate ?? b.eloRate;
+
+    return (bElo ?? Number.NEGATIVE_INFINITY) - (aElo ?? Number.NEGATIVE_INFINITY);
+  });
 }
 
 // ============================================================================

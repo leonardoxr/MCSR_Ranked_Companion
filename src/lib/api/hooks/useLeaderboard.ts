@@ -1,13 +1,13 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
 import { getLeaderboard } from '../endpoints';
-import type { LeaderboardUser, PaginationParams } from '@/types/api';
+import type { LeaderboardParams, LeaderboardUser } from '@/types/api';
 import type { McsrApiError } from '../client';
 import { CACHE_PRESETS } from '../cache-config';
 
 export const leaderboardKeys = {
   all: ['leaderboard'] as const,
-  list: (params?: PaginationParams & { season?: number }) =>
+  list: (params?: LeaderboardParams) =>
     [...leaderboardKeys.all, 'list', params] as const,
 };
 
@@ -17,7 +17,7 @@ export const leaderboardKeys = {
  * Aggressively refetches to keep data fresh when viewing leaderboard
  */
 export function useLeaderboard(
-  params?: PaginationParams & { season?: number },
+  params?: LeaderboardParams,
   options?: Omit<UseQueryOptions<LeaderboardUser[], McsrApiError>, 'queryKey' | 'queryFn'>
 ) {
   return useQuery<LeaderboardUser[], McsrApiError>({

@@ -58,17 +58,13 @@ export const COUNTRIES = [
 
 /**
  * Season options for the leaderboard filter
- * Seasons 1-10 are currently supported by the MCSR Ranked API
+ * Generated from the current season reported by the MCSR Ranked API.
  */
-export const SEASONS = [
-  { value: 1, label: 'Season 1' },
-  { value: 2, label: 'Season 2' },
-  { value: 3, label: 'Season 3' },
-  { value: 4, label: 'Season 4' },
-  { value: 5, label: 'Season 5' },
-  { value: 6, label: 'Season 6' },
-  { value: 7, label: 'Season 7' },
-  { value: 8, label: 'Season 8' },
-  { value: 9, label: 'Season 9' },
-  { value: 10, label: 'Season 10' },
-] as const;
+export function getSeasonOptions(currentSeason: number | null | undefined) {
+  if (!currentSeason || currentSeason < 1) return [];
+
+  return Array.from({ length: currentSeason }, (_, index) => {
+    const season = index + 1;
+    return { value: season, label: `Season ${season}` };
+  });
+}

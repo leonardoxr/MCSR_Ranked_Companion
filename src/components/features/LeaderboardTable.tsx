@@ -32,8 +32,9 @@ export function LeaderboardTable({
   const t = useTranslations();
 
   // Split top 3 from rest for special treatment
-  const topThree = players.slice(0, 3);
-  const restOfPlayers = players.slice(3);
+  const sortedPlayers = React.useMemo(() => sortLeaderboardPlayers(players), [players]);
+  const topThree = sortedPlayers.slice(0, 3);
+  const restOfPlayers = sortedPlayers.slice(3);
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -43,7 +44,7 @@ export function LeaderboardTable({
           {/* Reorder for desktop: 2nd, 1st, 3rd */}
           {[topThree[1], topThree[0], topThree[2]].filter(Boolean).map((player, displayIndex) => {
             if (!player) return null;
-            const actualRank = player.eloRank || (displayIndex === 1 ? 1 : displayIndex === 0 ? 2 : 3);
+            const actualRank = getDisplayRank(player) || (displayIndex === 1 ? 1 : displayIndex === 0 ? 2 : 3);
             const isHighlighted = player.uuid === highlightPlayer;
             const playerUrl = `/player/${encodeURIComponent(player.nickname)}?matches=ranked&sort=newest`;
 
@@ -106,7 +107,7 @@ export function LeaderboardTable({
         </Card>
       )}
 
-      {players.length === 0 && (
+      {sortedPlayers.length === 0 && (
         <Card variant="mc">
           <CardContent className="py-12 text-center text-muted-foreground">
             {t('leaderboard.noPlayersFound')}
@@ -115,6 +116,30 @@ export function LeaderboardTable({
       )}
     </div>
   );
+}
+
+function getDisplayRank(player: LeaderboardUser): number | null {
+  return player.seasonResult?.eloRank ?? player.eloRank ?? null;
+}
+
+function getDisplayElo(player: LeaderboardUser): number | null {
+  return player.seasonResult?.eloRate ?? player.eloRate ?? null;
+}
+
+function sortLeaderboardPlayers(players: LeaderboardUser[]): LeaderboardUser[] {
+  return [...players].sort((a, b) => {
+    const aRank = getDisplayRank(a);
+    const bRank = getDisplayRank(b);
+
+    if (aRank != null && bRank != null && aRank !== bRank) {
+      return aRank - bRank;
+    }
+
+    if (aRank != null && bRank == null) return -1;
+    if (aRank == null && bRank != null) return 1;
+
+    return (getDisplayElo(b) ?? Number.NEGATIVE_INFINITY) - (getDisplayElo(a) ?? Number.NEGATIVE_INFINITY);
+  });
 }
 
 interface TopPlayerCardProps {
@@ -128,6 +153,7 @@ interface TopPlayerCardProps {
 
 function TopPlayerCard({ player, rank, isHighlighted, playerUrl, showRankChange, isFirst }: TopPlayerCardProps) {
   const t = useTranslations();
+  const displayElo = getDisplayElo(player);
 
   const getRankStyles = () => {
     switch (rank) {
@@ -238,10 +264,10 @@ function TopPlayerCard({ player, rank, isHighlighted, playerUrl, showRankChange,
 
           {/* Tier and ELO */}
           <div className="flex flex-col items-center gap-2">
-            {player.eloRate && (
+            {displayElo && (
               <>
                 <RankBadge
-                  elo={player.eloRate}
+                  elo={displayElo}
                   showText
                   showElo={false}
                   className="scale-110"
@@ -249,7 +275,7 @@ function TopPlayerCard({ player, rank, isHighlighted, playerUrl, showRankChange,
                 <div className="flex items-center gap-1.5">
                   <Flame className="h-4 w-4 text-orange-400" />
                   <span className="font-mono font-bold text-xl text-white">
-                    {player.eloRate.toLocaleString()}
+                    {displayElo.toLocaleString()}
                   </span>
                   <span className="text-xs text-muted-foreground">ELO</span>
                 </div>
@@ -284,6 +310,8 @@ function LeaderboardRow({
   animationDelay
 }: LeaderboardRowProps) {
   const t = useTranslations();
+  const displayRank = getDisplayRank(player);
+  const displayElo = getDisplayElo(player);
 
   return (
     <div
@@ -304,7 +332,7 @@ function LeaderboardRow({
         {/* Rank */}
         <div className="col-span-1 flex items-center">
           <span className="font-mono font-semibold text-muted-foreground group-hover:text-foreground transition-colors">
-            #{player.eloRank?.toLocaleString()}
+            {displayRank ? `#${displayRank.toLocaleString()}` : '-'}
           </span>
         </div>
 
@@ -326,7 +354,7 @@ function LeaderboardRow({
               </span>
               <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
             </div>
-            {showRankChange && player.eloRank && (
+            {showRankChange && displayRank && (
               <RankChangeIndicator change={0} />
             )}
           </div>
@@ -334,8 +362,8 @@ function LeaderboardRow({
 
         {/* Tier */}
         <div className="col-span-3 flex items-center">
-          {player.eloRate ? (
-            <RankBadge elo={player.eloRate} showText showElo={false} />
+          {displayElo ? (
+            <RankBadge elo={displayElo} showText showElo={false} />
           ) : (
             <span className="text-muted-foreground">{t('common.unranked')}</span>
           )}
@@ -343,12 +371,12 @@ function LeaderboardRow({
 
         {/* ELO with visual bar */}
         <div className="col-span-3 flex items-center gap-3">
-          {player.eloRate ? (
+          {displayElo ? (
             <div className="flex items-center gap-2">
               <span className="font-mono font-bold text-lg text-white group-hover:text-primary transition-colors">
-                {player.eloRate.toLocaleString()}
+                {displayElo.toLocaleString()}
               </span>
-              <EloMiniBar elo={player.eloRate} />
+              <EloMiniBar elo={displayElo} />
             </div>
           ) : (
             <span className="font-semibold text-lg">{t('common.unranked')}</span>
@@ -370,7 +398,7 @@ function LeaderboardRow({
           {/* Rank */}
           <div className="flex-shrink-0 w-12 text-center">
             <span className="font-mono font-semibold text-muted-foreground">
-              #{player.eloRank?.toLocaleString()}
+              {displayRank ? `#${displayRank.toLocaleString()}` : '-'}
             </span>
           </div>
 
@@ -393,24 +421,24 @@ function LeaderboardRow({
               <SupporterBadge roleType={player.roleType} size="sm" showText={false} />
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {player.eloRate ? (
+              {displayElo ? (
                 <>
                   <RankBadge
-                    elo={player.eloRate}
+                    elo={displayElo}
                     showText
                     showElo={false}
                     className="text-xs"
                   />
                   <span className="text-muted-foreground text-sm">•</span>
                   <span className="font-mono font-bold text-sm">
-                    {player.eloRate.toLocaleString()} ELO
+                    {displayElo.toLocaleString()} ELO
                   </span>
                 </>
               ) : (
                 <span className="text-muted-foreground text-sm">{t('common.unranked')}</span>
               )}
             </div>
-            {showRankChange && player.eloRank && (
+            {showRankChange && displayRank && (
               <RankChangeIndicator change={0} />
             )}
           </div>

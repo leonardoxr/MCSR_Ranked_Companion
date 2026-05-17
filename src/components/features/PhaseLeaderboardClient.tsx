@@ -114,7 +114,10 @@ export function PhaseLeaderboardClient() {
           ) : (
             <div className="divide-y divide-border">
               {data.users.map((user, index) => {
-                const diff = user.predPhasePoint - user.seasonResult.phasePoint;
+                const phasePoint = user.seasonResult?.phasePoint ?? 0;
+                const seasonRank = user.seasonResult?.eloRank ?? user.eloRank;
+                const seasonElo = user.seasonResult?.eloRate ?? user.eloRate;
+                const diff = user.predPhasePoint - phasePoint;
                 return (
                   <Link
                     key={user.uuid}
@@ -135,7 +138,7 @@ export function PhaseLeaderboardClient() {
                       index === 1 && "text-gray-400",
                       index === 2 && "text-amber-700"
                     )}>
-                      #{user.seasonResult.eloRank}
+                      {seasonRank ? `#${seasonRank}` : '-'}
                     </div>
 
                     {/* Player */}
@@ -147,12 +150,16 @@ export function PhaseLeaderboardClient() {
 
                     {/* ELO */}
                     <div className="sm:col-span-2">
-                      <RankBadge elo={user.eloRate ?? 0} showElo />
+                      {seasonElo ? (
+                        <RankBadge elo={seasonElo} showElo />
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{t('common.unranked')}</span>
+                      )}
                     </div>
 
                     {/* Phase Points */}
                     <div className="sm:col-span-2 font-monocraft text-sm">
-                      {user.seasonResult.phasePoint}
+                      {phasePoint}
                     </div>
 
                     {/* Predicted */}

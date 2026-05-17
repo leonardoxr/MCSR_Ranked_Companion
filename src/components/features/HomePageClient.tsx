@@ -20,9 +20,10 @@ import {
   SelectValue,
 } from '@/components/ui';
 import { Trophy, TrendingUp, ChevronRight } from 'lucide-react';
-import { COUNTRIES, SEASONS } from '@/lib/constants/filters';
+import { COUNTRIES, getSeasonOptions } from '@/lib/constants/filters';
 import { CACHE_PRESETS } from '@/lib/api/cache-config';
 import Link from 'next/link';
+import type { LeaderboardParams } from '@/types/api';
 
 const MAX_USERS = 150;
 
@@ -32,32 +33,36 @@ export function HomePageClient() {
   const [searchQuery, setSearchQuery] = React.useState('');
 
   // Fetch current season from API
-  const { data: seasonData } = useQuery({
+  const { data: seasonData, isLoading: seasonLoading } = useQuery({
     queryKey: ['leaderboard', 'current-season'],
     queryFn: () => getLeaderboardWithSeason({ count: 1 }),
     ...CACHE_PRESETS.LEADERBOARD,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes (override default)
   });
 
-  // Get current season from API response, fallback to 10 if not available
-  const currentSeasonFromApi = seasonData?.season?.number;
-  const defaultSeason = currentSeasonFromApi ?? 10;
+  const currentSeason = seasonData?.season?.number;
+  const seasonOptions = React.useMemo(
+    () => getSeasonOptions(currentSeason),
+    [currentSeason]
+  );
 
-  const [season, setSeason] = React.useState<number | null>(null);
+  const [season, setSeason] = React.useState<number | undefined>(undefined);
   const [country, setCountry] = React.useState('');
 
-  // Set season once we have the API data
+  // Set the filter to the current API-reported season once it is known.
   React.useEffect(() => {
-    if (season === null && defaultSeason) {
-      setSeason(defaultSeason);
+    if (season === undefined && currentSeason) {
+      setSeason(currentSeason);
     }
-  }, [defaultSeason, season]);
+  }, [currentSeason, season]);
 
-  const { data: players, isLoading, error } = useLeaderboard({
+  const leaderboardParams: LeaderboardParams = {
     count: MAX_USERS,
     ...(season ? { season } : {}),
-    ...(country ? { country } : {} as any),
-  });
+    ...(country ? { country } : {}),
+  };
+
+  const { data: players, isLoading, error } = useLeaderboard(leaderboardParams);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -132,16 +137,16 @@ export function HomePageClient() {
               <Select
                 value={season?.toString() ?? ''}
                 onValueChange={(value) => setSeason(Number(value))}
-                disabled={season === null}
+                disabled={seasonLoading || seasonOptions.length === 0}
               >
                 <SelectTrigger
                   className="h-9 w-full sm:w-32"
                   allowClear={false}
                 >
-                  <SelectValue placeholder={season === null ? "Loading..." : "Select Season"} />
+                  <SelectValue placeholder={seasonLoading ? "Loading..." : "Select Season"} />
                 </SelectTrigger>
                 <SelectContent searchable searchPlaceholder="Search seasons...">
-                  {SEASONS.map((s) => (
+                  {seasonOptions.map((s) => (
                     <SelectItem key={s.value} value={s.value.toString()}>
                       {s.label}
                     </SelectItem>

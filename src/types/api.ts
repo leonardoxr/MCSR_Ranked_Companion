@@ -287,7 +287,7 @@ export interface LeaderboardUser extends UserProfile {
     eloRate: EloRate;
     eloRank: Rank;
     phasePoint: number; // Note: API uses "phasePoint" not "phasePoints"
-  };
+  } | null;
 }
 
 /**
@@ -386,7 +386,7 @@ export interface PhaseLeaderboardUser extends UserProfile {
     eloRate: EloRate;
     eloRank: Rank;
     phasePoint: number;
-  };
+  } | null;
 }
 
 /**
@@ -502,6 +502,14 @@ export interface ApiError {
 export interface PaginationParams {
   page?: number;
   count?: number;
+}
+
+/**
+ * Leaderboard filter parameters
+ */
+export interface LeaderboardParams extends PaginationParams {
+  season?: number;
+  country?: CountryCode;
 }
 
 /**
